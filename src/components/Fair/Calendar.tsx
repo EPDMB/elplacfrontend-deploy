@@ -32,8 +32,6 @@ export const Calendar = () => {
     }
   };
 
-  const minDate = new Date();
-
   return (
     <div className="flex flex-col mt-5">
       <Datepicker

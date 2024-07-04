@@ -8,39 +8,33 @@ const Ticket = () => {
   const [entidadBenefica, setEntidadBenefica] = useState("");
   const { fair, idFair, timeSelect, dateSelect } = useFair();
 
-  console.log(monto);
-  console.log(entidadBenefica);
-
   const fairSelected = {
     idFair,
     timeSelect,
     dateSelect,
   };
 
-  console.log;
-
   useEffect(() => {
-  if (fair && fair.entryPrice !== undefined) {
-    if (fair.entryPrice > 0) {
-      setMonto(fair.entryPrice); // Ejemplo (esto debe parametrizarlo el ADM)
-      setEntidadBenefica(fair.entryDescription); // Ejemplo (esto debe parametrizarlo el ADM)
-    } else {
-      setMonto("");
-      setEntidadBenefica("");
+    if (fair && fair.entryPrice !== undefined) {
+      if (fair.entryPrice > 0) {
+        setMonto(fair.entryPrice); // Ejemplo (esto debe parametrizarlo el ADM)
+        setEntidadBenefica(fair.entryDescription); // Ejemplo (esto debe parametrizarlo el ADM)
+      } else {
+        setMonto("");
+        setEntidadBenefica("");
+      }
     }
-  }
-}, [fair]);
-
+  }, [fair]);
 
   const handlePagar = () => {
     alert(`Pagar ${monto} a ${entidadBenefica}`);
   };
 
-  //La logica de si "TIENE COSTO?"" La puse para ver cómo renderizaba. Por defecto debe aparecer SIN COSTO
+  // La lógica de si "TIENE COSTO?" La puse para ver cómo renderizaba. Por defecto debe aparecer SIN COSTO
   return (
     <div className="mt-5">
       <div className="flex items-center"></div>
-      {fair.entryPrice === 0 ? (
+      {fair?.entryPrice === 0 ? (
         <input
           type="text"
           value="Sin costo"
@@ -77,7 +71,6 @@ const Ticket = () => {
             onClick={handlePagar}
             className="mt-4 px-4 py-2 bg-primary-default text-white rounded-md hover:bg-primary-dark focus:outline-none focus:bg-primary-darker"
           >
-            {" "}
             Pagar
           </button>
         </div>
