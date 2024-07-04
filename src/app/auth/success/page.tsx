@@ -1,24 +1,33 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 const AuthSuccess = () => {
+  const [isClient, setIsClient] = useState(false);
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    import("ldrs").then((module) => {
-      module.ring.register();
-    });
+    setIsClient(true);
 
-    const token = searchParams.get("token");
+    if (isClient) {
+      import("ldrs").then((module) => {
+        module.ring.register();
+      });
 
-    if (token) {
-      localStorage.setItem("token", token);
-      window.opener.postMessage({ token }, "*");
-      window.close();
+      const token = searchParams.get("token");
+
+      if (token) {
+        localStorage.setItem("token", token);
+        window.opener.postMessage({ token }, "*");
+        window.close();
+      }
     }
-  }, [searchParams]);
+  }, [isClient, searchParams]);
+
+  if (!isClient) {
+    return null;
+  }
 
   return (
     <div>
