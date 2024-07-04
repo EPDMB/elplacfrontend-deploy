@@ -1,26 +1,29 @@
-"use client"
+"use client";
 
-import React, { useState, useRef, useEffect } from 'react'
-import  Datepicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
-import es from 'date-fns/locale/es'
-import { useFair } from '@/context/FairProvider'
-
+import React, { useState, useEffect } from 'react';
+import Datepicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import es from 'date-fns/locale/es';
+import { useFair } from '@/context/FairProvider';
 
 export const Calendar = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const { fair, setDateSelect } = useFair();
 
-  
+  // Verificar si 'fair' está definido
+  const dateStartFair = fair?.dateStartFair?.split("T")[0];
+  const dateEndFair = fair?.dateEndFair?.split("T")[0];
 
-  const dateStartFair = fair.dateStartFair.split("T")[0];
-  const dateEndFair = fair.dateEndFair.split("T")[0];
+  const [highlightedDates, setHighlightedDates] = useState<Date[]>([]);
 
-  //Días de feria. Ver si el ADM lo puede parametrizar
-  const [highlightedDates, setHighlightedDates] = useState<Date[]>([
-    new Date (dateStartFair),
-    new Date (dateEndFair),
-  ]);
+  useEffect(() => {
+    if (dateStartFair && dateEndFair) {
+      setHighlightedDates([
+        new Date(dateStartFair),
+        new Date(dateEndFair),
+      ]);
+    }
+  }, [dateStartFair, dateEndFair]);
 
   const onChange = (date: Date) => {
     if (date) {
@@ -33,8 +36,6 @@ export const Calendar = () => {
 
   return (
     <div className="flex flex-col mt-5">
-      {/* <div className="flex flex-col items-center justify-center p-8 bg-secondary-light rounded-lg shadow-md max-w-md mx-auto"> */}
-
       <Datepicker
         selected={startDate}
         onChange={(date: Date | null) => setStartDate(date)}
@@ -45,7 +46,6 @@ export const Calendar = () => {
         highlightDates={highlightedDates}
         value="Selecciona una fecha"
       />
-
       <p className="mt-2 text-md text-primary-darker">
         Día de la feria: {startDate ? startDate.toDateString() : "____"}
       </p>
@@ -53,4 +53,4 @@ export const Calendar = () => {
   );
 };
 
-export default Calendar
+export default Calendar;
