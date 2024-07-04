@@ -20,6 +20,7 @@ const Ticket = () => {
   console.log;
 
   useEffect(() => {
+  if (fair && fair.entryPrice !== undefined) {
     if (fair.entryPrice > 0) {
       setMonto(fair.entryPrice); // Ejemplo (esto debe parametrizarlo el ADM)
       setEntidadBenefica(fair.entryDescription); // Ejemplo (esto debe parametrizarlo el ADM)
@@ -27,7 +28,9 @@ const Ticket = () => {
       setMonto("");
       setEntidadBenefica("");
     }
-  }, []);
+  }
+}, [fair]);
+
 
   const handlePagar = () => {
     alert(`Pagar ${monto} a ${entidadBenefica}`);
