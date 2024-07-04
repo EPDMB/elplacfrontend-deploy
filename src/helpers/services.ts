@@ -4,7 +4,7 @@ import { URL } from "../../envs";
 //REGISTRO DE USUARIO
 export const postUserRegister = async (user: Partial<IUser>) => {
   try {
-    const res = await fetch(`auth/register/user`, {
+    const res = await fetch(`https://myapp-backend-latest.onrender.com/auth/register/user`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -21,7 +21,7 @@ export const postUserRegister = async (user: Partial<IUser>) => {
 //REGISTRO DE VENDEDOR
 export const postSellerRegister = async (user: ISeller) => {
   try {
-    const res = await fetch(`auth/register/seller`, {
+    const res = await fetch(`https://myapp-backend-latest.onrender.com/auth/register/seller`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
