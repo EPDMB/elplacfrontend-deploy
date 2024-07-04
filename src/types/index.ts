@@ -90,7 +90,7 @@ export interface IFair {
   id: string;
   name: string;
   entryDescription: string;
-  entryPrice: number;
+  entryPrice?: number;
   dateStartFair: string;
   dateEndFair: string;
   hourEndFair: string;
