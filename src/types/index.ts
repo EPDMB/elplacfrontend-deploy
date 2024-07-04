@@ -33,7 +33,7 @@ export interface ILoginFormErrors {
 export interface IUser {
   name: string;
   lastname: string;
-  dni: number;
+  dni: string;
   email: string;
   phone: string | number;
   address: string;
@@ -63,6 +63,10 @@ export interface IInputProps {
   placeholder?: string;
   required?: boolean;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
+  touched?: boolean;
+  errors?: string;
+  edit?: boolean;
 }
 
 export interface IUserLogin {
@@ -79,6 +83,33 @@ export interface IAuthContext {
 }
 
 export interface IAuthProviderProps {
+  children: React.ReactNode;
+}
+
+export interface IFair {
+  id: string;
+  name: string;
+  entryDescription: string;
+  entryPrice: number;
+  dateStartFair: string;
+  dateEndFair: string;
+  hourEndFair: string;
+  hourStartFair: string;
+  address: string;
+  maxBuyers: number;
+  maxSellers: number;
+}
+
+export interface IFairContext {
+  fair: IFair;
+  setDateSelect: (date: Date) => void;
+  setTimeSelect: (time: string) => void;
+  idFair: string;
+  timeSelect: string;
+  dateSelect: Date;
+}
+
+export interface IFairProviderProps {
   children: React.ReactNode;
 }
 
@@ -123,6 +154,7 @@ export interface IPasswordChange {
   current_password: string;
   newPassword: string;
   confirmNewPassword: string;
+  
 }
 
 export interface IPasswordChangeErrors {
@@ -141,15 +173,15 @@ export interface RegisterViewPageProps {
   };
 }
 
-  export interface DashboardProps {
-    userDtos: UserDto;
-  }
+export interface DashboardProps {
+  userDtos: UserDto;
+}
 
-  export interface userDashboardProps {
-    name: string;
-    lastname: string;
-    email: string;
-    phone: string;
-    address: string;
-    userDtos: UserDto;
-  }
+export interface userDashboardProps {
+  name: string;
+  lastname: string;
+  email: string;
+  phone: string;
+  address: string;
+  userDtos: UserDto;
+}

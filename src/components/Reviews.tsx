@@ -18,7 +18,7 @@ export const Reviews = () => {
   const [reviews, setReviews] = useState<PlaceReview[]>([]);
   const [authorName, setAuthorName] = useState("");
   const [reviewText, setReviewText] = useState("");
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(5);
   const [disabled, setDisabled] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [hover, setHover] = useState<number | null>(null);
@@ -27,6 +27,9 @@ export const Reviews = () => {
 
   function onCloseModal() {
     setOpenModal(false);
+    setAuthorName("");
+    setReviewText("");
+    setRating(0);
   }
 
   useEffect(() => {
@@ -57,6 +60,12 @@ export const Reviews = () => {
       },
     ]);
   }, [userDtos]);
+
+  useEffect(() => {
+    setDisabled(
+      authorName.trim() === "" || reviewText.trim() === "" || rating === 0
+    );
+  }, [authorName, rating, reviewText, userDtos]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -90,8 +99,8 @@ export const Reviews = () => {
           <Image
             src={review.profile_photo_url}
             alt="profile"
-            width={10}
-            height={10}
+            width={80}
+            height={80}
             className="rounded-full h-14 w-14 object-cover"
           />
         </div>
@@ -227,9 +236,9 @@ export const Reviews = () => {
 
               <button
                 type="submit"
-                disabled={rating && reviewText && authorName ? false : true}
+                disabled={disabled}
                 className={` $ bg-primary-default w-fit m-auto my-5 rounded-md p-2 text-secondary-light shadow ${
-                  disabled ? " opacity-30" : ""
+                  disabled ? " opacity-30 cursor-not-allowed" : " "
                 } `}>
                 Agregar Reseña
               </button>

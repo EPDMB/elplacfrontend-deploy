@@ -7,7 +7,7 @@ import { FaUser, FaExchangeAlt } from "react-icons/fa";
 
 function Sidebar() {
   return (
-    <div className="border border-red-500 w-32 h-96 flex flex-col items-center justify-around">
+    <div className="w-full h-full flex flex-col items-center justify-around bg-primary-light">
       <div>
         <Image src={logo} alt="logo" />
       </div>

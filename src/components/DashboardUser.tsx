@@ -66,7 +66,7 @@ export const DashboardUser = () => {
       if (decoded && decoded.id) {
         try {
           const res = await fetch(
-            `https://myapp-backend-latest.onrender.com/files/uploadImage/${decoded.id}`,
+            `http://localhost:3000/files/uploadImage/${decoded.id}`,
             {
               method: "POST",
               body: formData,

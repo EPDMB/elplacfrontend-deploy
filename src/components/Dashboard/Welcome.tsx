@@ -26,10 +26,10 @@ import {
   passwordValidations,
 } from "@/helpers/validations";
 import { useProfile } from "@/context/ProfileProvider";
-import CalendaR, { Calendar } from "../Fair/Calendar";
+import { Calendar } from "../Fair/Calendar";
 import Ticket from "../Fair/Ticket";
-import Time from "react-datepicker/dist/time";
 import TimeRange from "../Fair/TimeRange";
+import { useFair } from "@/context/FairProvider";
 
 function Welcome() {
   const [dashBoardFilter, setDashBoardFilter] = useState<string>(
@@ -41,6 +41,8 @@ function Welcome() {
   const [edit, setEdit] = useState(false);
   const [triggerReload, setTriggerReload] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { fair } = useFair();
+  console.log(fair);
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -57,7 +59,6 @@ function Welcome() {
     validate: dashboardUserValidations,
   });
 
-
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
 
@@ -70,7 +71,7 @@ function Welcome() {
       if (decoded && decoded.id) {
         try {
           const res = await fetch(
-            `https://myapp-backend-latest.onrender.com/files/uploadImage/${decoded.id}`,
+            `http://localhost:3000/files/uploadImage/${decoded.id}`,
             {
               method: "POST",
               body: formData,
@@ -140,8 +141,6 @@ function Welcome() {
     }
   };
 
-
-
   const changePassword = async (pass: IPasswordChange) => {
     try {
       const decoded = decodeJWT(token);
@@ -171,6 +170,8 @@ function Welcome() {
       onChange: formikPass.handleChange,
       onBlur: formikPass.handleBlur,
       value: formikPass.values[name as keyof IPasswordChange],
+      touched: formikPass.touched[name as keyof IPasswordChange],
+      errors: formikPass.errors[name as keyof IPasswordChange],
     };
   };
 
@@ -182,19 +183,22 @@ function Welcome() {
       disabled: !edit,
       onBlur: formik.handleBlur,
       value: formik.values[name as keyof IDashboardUser],
+      touched: formik.touched[name as keyof IDashboardUser],
+      errors: formik.errors[name as keyof IDashboardUser],
+      edit: edit,
     };
   };
 
   return (
     <div>
-      <div className="grid grid-cols-3 grid-rows-[1fr_3fr] bg-secondary-lighter gap-0 border-4 border-blue-600 h-screen w-2/2">
-        <div className="col-span-3 bg-red-500">
-          <h1 className="text-[1.4rem] sm:text-2xl lg:text-3xl font-semibold">
+      <div className="grid grid-cols-3  md:grid-rows-12 bg-secondary-lighter gap-0  h-fit md:h-screen w-full pl-4">
+        <div className="col-span-3 row-span-1 md:row-span-1 bg-secondary-lighter ">
+          <h1 className="text-[1.4rem] sm:text-3xl lg:text-3xl xl:text-4xl 2xl:text-5xl  font-semibold text-primary-darker p-5">
             Bienvenid@ {userDtos?.name}!
           </h1>
         </div>
-        <div className="col-span-1 gap-3 text-primary-darker flex flex-col ">
-          <div className="w-full flex  items-center sm:gap-3 sm:pl-4">
+        <div className="col-span-1 gap-3 row-span-3  md:row-span-8 text-primary-darker flex flex-col bg-secondary-lighter text-start md:pt-6 border-r border-[#918484] mr-2 sm:mr-4">
+          <div className="w-full flex  items-center gap-1 pl-1 sm:gap-3 sm:pl-4">
             <div className="h-5 w-5">
               <Image
                 src={dashboard1}
@@ -205,15 +209,15 @@ function Welcome() {
               />
             </div>
             <button
-              className={`text-[10px] sm:text-base xl:text-2xl hover:text-secondary-darker w-fit hover:cursor-pointer ${
-                dashBoardFilter === "Mis datos de contacto" && "font-medium"
+              className={`text-[10px] text-start sm:text-base xl:text-2xl hover:text-secondary-darker w-fit hover:cursor-pointer ${
+                dashBoardFilter === "Mis datos de contacto" && "font-bold"
               }`}
               onClick={() => setDashBoardFilter("Mis datos de contacto")}
             >
               Datos de contacto
             </button>
           </div>
-          <div className="w-full h-auto flex flex-row items-center sm:gap-3 sm:pl-4">
+          <div className="w-full h-auto flex flex-row items-center gap-1 pl-1 sm:gap-3 sm:pl-4">
             <div className="h-5 w-5">
               <Image
                 src={dashboard3}
@@ -224,15 +228,15 @@ function Welcome() {
               />
             </div>
             <button
-              className={`text-[10px] sm:text-base xl:text-2xl hover:text-secondary-dark w-fit hover:cursor-pointer ${
-                dashBoardFilter === "Ferias" && "font-medium"
+              className={`text-[10px] text-start sm:text-base xl:text-2xl hover:text-secondary-dark w-fit hover:cursor-pointer ${
+                dashBoardFilter === "Ferias" && "font-bold"
               }`}
               onClick={() => setDashBoardFilter("Ferias")}
             >
               Ferias
             </button>
           </div>
-          <div className="w-full h-auto flex flex-row items-center sm:gap-3 sm:pl-4">
+          <div className="w-full h-auto flex flex-row items-center gap-1 pl-1 sm:gap-3 sm:pl-4">
             <div className="h-5 w-5">
               <Image
                 src={dashboard4}
@@ -243,8 +247,8 @@ function Welcome() {
               />
             </div>
             <button
-              className={`text-[10px] sm:text-base xl:text-2xl hover:text-secondary-darker w-fit hover:cursor-pointer ${
-                dashBoardFilter === "Ajustes de cuenta" && "font-medium"
+              className={`text-[10px] text-start sm:text-base xl:text-2xl hover:text-secondary-darker w-fit hover:cursor-pointer ${
+                dashBoardFilter === "Ajustes de cuenta" && "font-bold"
               }`}
               onClick={() => setDashBoardFilter("Ajustes de cuenta")}
             >
@@ -274,10 +278,10 @@ function Welcome() {
             </button>
           </div>
         </div>
-        <div className="col-span-2 row-span-1 bg-orange-400">
+        <div className="col-span-2 row-span-1 md:p-5">
           <div className="flex items-center text-primary-dark">
             <div className="relative sm:flex items-center justify-center">
-              <h1 className="text-[1.2rem] sm:text-2xl text-nowrap font-semibold">
+              <h1 className="text-[1rem] sm:text-2xl text-nowrap font-semibold">
                 {dashBoardFilter === "Mis datos de contacto" &&
                   "Datos de contacto"}
                 {dashBoardFilter === "Ferias" && "Ferias"}
@@ -298,7 +302,7 @@ function Welcome() {
               )}
             </div>
           </div>
-          <div className=" flex flex-col mt-2">
+          <div className="col-span-2 row-span-1 mt-2 ">
             {dashBoardFilter === "Mis datos de contacto" && (
               <div className="py-4 text-primary-dark">
                 <form onSubmit={formik.handleSubmit}>
@@ -307,53 +311,31 @@ function Welcome() {
                     label="Nombre"
                     {...getPropsContact("name")}
                   />
-                  {formik.touched.name && formik.errors.name && edit && (
-                    <p className="text-red-600 absolute -translate-y-[120%] font-medium text-center text-sm">
-                      {formik.errors.name}
-                    </p>
-                  )}
+
                   <Input
                     type="text"
                     label="Apellido"
                     {...getPropsContact("lastname")}
                   />
-                  {formik.touched.lastname &&
-                    formik.errors.lastname &&
-                    edit && (
-                      <p className="text-red-600 absolute -translate-y-[120%] font-medium text-center text-sm">
-                        {formik.errors.lastname}
-                      </p>
-                    )}
+
                   <Input
                     type="email"
                     label="Email"
                     {...getPropsContact("email")}
                   />
-                  {formik.touched.email && formik.errors.email && edit && (
-                    <p className="text-red-600 absolute -translate-y-[120%] font-medium text-center text-sm">
-                      {formik.errors.email}
-                    </p>
-                  )}
+
                   <Input
                     type="text"
                     label="Teléfono"
                     {...getPropsContact("phone")}
                   />
-                  {formik.touched.phone && formik.errors.phone && edit && (
-                    <p className="text-red-600 absolute -translate-y-[120%] font-medium text-center text-sm">
-                      {formik.errors.phone}
-                    </p>
-                  )}
+
                   <Input
                     type="text"
                     label="Dirección"
                     {...getPropsContact("address")}
                   />
-                  {formik.touched.address && formik.errors.address && edit && (
-                    <p className="text-red-600 absolute -translate-y-[120%] font-medium text-center text-sm">
-                      {formik.errors.address}
-                    </p>
-                  )}
+
                   {edit && (
                     <button
                       type="submit"
@@ -368,7 +350,7 @@ function Welcome() {
             )}
 
             {dashBoardFilter === "Mis medios de pago" && (
-              <div className="flex flex-col py-4 text-primary-dark">
+              <div className="col-span-2 row-span-1 mt-2 py-4 text-primary-dark">
                 <label className="text-sm font-bold sm:text-base">
                   CBU / CVU / Alias
                 </label>
@@ -386,7 +368,7 @@ function Welcome() {
             )}
 
             {dashBoardFilter === "Ferias" && (
-              <div className="flex flex-col w-fit py-4 text-primary-dark">
+              <div className="col-span-2 row-span-1 mt-2 py-4 text-primary-dark">
                 <label className="text-sm font-semibold sm:text-base">
                   Ferias realizadas
                 </label>
@@ -394,16 +376,18 @@ function Welcome() {
                   {userDtos?.ferias ||
                     "¡No has participado en ninguna feria todavía!"}
                 </div>
-
-
-               <Calendar />
+                <label className="text-sm font-semibold sm:text-base">
+                  Ferias Disponibles
+                </label>
+                <button>{fair?.name || "No hay ferias disponibles"}</button>
+                <Calendar />
                 <TimeRange />
                 <Ticket />
               </div>
             )}
 
             {dashBoardFilter === "Ajustes de cuenta" && (
-              <div className="flex flex-col py-4 text-primary-dark">
+              <div className="col-span-2 row-span-1 mt-2 py-4 mb-12 md:mb-0 text-primary-dark">
                 <form onSubmit={formikPass.handleSubmit}>
                   <div>
                     <Input
@@ -412,42 +396,25 @@ function Welcome() {
                       placeholder="********"
                       {...getProps("current_password")}
                     />
-                    {formikPass.touched.current_password &&
-                      formikPass.errors.current_password && (
-                        <p className="text-red-600 absolute -translate-y-[120%] font-medium text-center text-sm">
-                          {formikPass.errors.current_password}
-                        </p>
-                      )}
 
                     <Input
                       type="password"
                       label="Nueva contraseña"
                       placeholder="********"
-                      {...getProps("new_password")}
+                      {...getProps("newPassword")}
                     />
-                    {formikPass.touched.newPassword &&
-                      formikPass.errors.newPassword && (
-                        <p className="text-red-600 absolute -translate-y-[120%] font-medium text-center text-sm">
-                          {formikPass.errors.newPassword}
-                        </p>
-                      )}
+
                     <Input
                       type="password"
                       label="Confirmar contraseña"
                       placeholder="********"
-                      {...getProps("confirm_password")}
+                      {...getProps("confirmNewPassword")}
                     />
-                    {formikPass.touched.confirmNewPassword &&
-                      formikPass.errors.confirmNewPassword && (
-                        <p className="text-red-600 absolute -translate-y-[120%] font-medium text-center text-sm">
-                          {formikPass.errors.confirmNewPassword}
-                        </p>
-                      )}
                   </div>
                   <button
                     type="submit"
                     disabled={!formikPass.isValid}
-                    className="bg-primary-darker absolute text-white p-2 rounded"
+                    className="bg-primary-darker absolute text-white p-2 rounded hover:bg-primary-dark md:h-8 flex items-center justify-center md:w-36 md:text-base text-xs sm:text-sm "
                   >
                     Guardar Cambios
                   </button>

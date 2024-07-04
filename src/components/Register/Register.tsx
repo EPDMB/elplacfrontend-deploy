@@ -31,15 +31,8 @@ export const Register: React.FC<IRegisterProps> = ({
   };
 
   const signUp = async (user: IUser) => {
-    const parsedUser: Partial<IUser> = {
-      ...user,
-      dni: typeof user.dni === "string" ? parseInt(user.dni, 10) : user.dni,
-      phone:
-        typeof user.phone === "string" ? parseInt(user.phone, 10) : user.phone,
-    };
-
     const filteredParsedUser: Partial<IUser> = Object.fromEntries(
-      Object.entries(parsedUser).filter(
+      Object.entries(user).filter(
         ([_, value]) => value !== "" && value !== undefined
       )
     );
@@ -58,17 +51,8 @@ export const Register: React.FC<IRegisterProps> = ({
     }
   };
   const signUpSeller = async (seller: ISeller) => {
-    const parsedSeller: Partial<ISeller> = {
-      ...seller,
-      dni: typeof seller.dni === "string" ? parseInt(seller.dni) : seller.dni,
-      phone:
-        typeof seller.phone === "string"
-          ? parseInt(seller.phone)
-          : seller.phone,
-    };
     const completeParsedSeller: ISeller = {
       ...seller,
-      ...parsedSeller,
     };
     try {
       await postSellerRegister(completeParsedSeller);
@@ -83,7 +67,7 @@ export const Register: React.FC<IRegisterProps> = ({
     initialValues: {
       name: "",
       lastname: "",
-      dni: 0,
+      dni: "",
       email: "",
       phone: "",
       address: "",
@@ -109,7 +93,7 @@ export const Register: React.FC<IRegisterProps> = ({
 
   return (
     <div className="grow-down">
-      <div className=" relative h-max -translate-y-20 p-10  bg-white rounded-b-[30px] lg:rounded-[30px] shadow-lg mt-6">
+      <div className=" relative h-max -translate-y-20 p-10  bg-white  rounded-b-[30px] lg:rounded-[30px] shadow-lg mt-6">
         {userType ? (
           <>
             <div className="w-80 m-auto">
@@ -184,7 +168,7 @@ export const Register: React.FC<IRegisterProps> = ({
             <div className="mb-6 relative flex flex-col">
               <Input
                 label="DNI"
-                type="number"
+                type="text"
                 placeholder="40500300"
                 {...getProps("dni")}
               />

@@ -3,7 +3,6 @@
 import React, { useEffect } from "react";
 import Image from "next/image";
 import loginBanner from "@/assets/loginBanner.png";
-import gmailLogo from "@/assets/gmailLogo.svg";
 import Link from "next/link";
 import { Login } from "./Login";
 import GoogleLoginButton from "./GoogleLoginButton";
@@ -18,43 +17,41 @@ export const LoginView = () => {
   }, []);
 
   return (
-    <main className="py-6 px-14 bg-secondary-light">
-      <div className="bg-white h-full formGrid rounded-xl ">
-        <div className="loginBanner h-[300px] overflow-hidden" ref={titleRef}>
+    <main className=" lg:py-4 p-6 lg:px-20 xl:px-32 bg-secondary-light">
+      <div className="bg-white h-full formGrid rounded-xl shadow-lg mt-6">
+        <div
+          className="loginBanner h-[8rem] md:h-[10rem] lg:h-[20rem] overflow-hidden mb-4"
+          ref={titleRef}>
           <Image
-            className=" rounded-t-xl object-cover w-full "
+            className="rounded-t-xl object-cover w-full"
             src={loginBanner}
             alt="portada del login"></Image>
         </div>
-        <div className="loginForm flex justify-center">
-          <Login />
-        </div>
-
-        <div className="loginMessage lg:mt-10">
-          <div className="text-center w-full flex h-[45vh] flex-col lg:justify-between">
-            <div className="">
-              <h1 className="text-primary-darker text-4xl mb-4 font-bold">
-                Inicia Sesión
-              </h1>
-              <div className="flex justify-evenly lg:flex-col">
-                <div className="flex items-center lg:flex-col">
-                  <div>
-                    <p className="text-primary-dark">¿No tenés cuenta?</p>
-                    <Link
-                      href="/register/buyer"
-                      className="text-primary-darker font-bold">
-                      ¡Registrate!
-                    </Link>
-                  </div>
+        <div className="loginMessage lg:mt-10 mb-6">
+          <div className="text-center w-full flex flex-col lg:justify-between">
+            <h1 className="text-primary-darker text-4xl mb-4 font-bold">
+              Inicia Sesión
+            </h1>
+            <div className="flex justify-evenly lg:flex-col">
+              <div className="flex gap-6 items-center lg:flex-col mb-4 lg:mb-0">
+                <div>
+                  <p className="text-primary-dark">¿No tenés cuenta?</p>
+                  <Link
+                    href="/register/buyer"
+                    className="text-primary-darker font-bold ml-2 lg:ml-0">
+                    ¡Registrate!
+                  </Link>
                 </div>
                 <div className="text-primary-dark lg:my-5 flex flex-col items-center">
                   <p>O ingresa con:</p>
-
                   <GoogleLoginButton />
                 </div>
               </div>
             </div>
           </div>
+        </div>
+        <div className="loginForm">
+          <Login />
         </div>
       </div>
     </main>

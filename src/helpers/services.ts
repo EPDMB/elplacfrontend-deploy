@@ -4,7 +4,7 @@ import { URL } from "../../envs";
 //REGISTRO DE USUARIO
 export const postUserRegister = async (user: Partial<IUser>) => {
   try {
-    const res = await fetch(`https://myapp-backend-latest.onrender.com/auth/register/user`, {
+    const res = await fetch(`${URL}/auth/register/user`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -21,7 +21,7 @@ export const postUserRegister = async (user: Partial<IUser>) => {
 //REGISTRO DE VENDEDOR
 export const postSellerRegister = async (user: ISeller) => {
   try {
-    const res = await fetch(`https://myapp-backend-latest.onrender.com/auth/register/seller`, {
+    const res = await fetch(`${URL}/auth/register/seller`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -62,7 +62,7 @@ export const postUserLogin = async (user: IUserLogin) => {
 //OBTENER USUARIO POR ID
 export const getUser = async (token: string, id: string) => {
   try {
-    const res = await fetch(`https://myapp-backend-latest.onrender.com/users/${id}`, {
+    const res = await fetch(`http://localhost:3000/users/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -86,7 +86,7 @@ export const putUser = async (
   user: Partial<UserDto>
 ) => {
   try {
-    const res = await fetch(`https://myapp-backend-latest.onrender.com/users/${id}`, {
+    const res = await fetch(`http://localhost:3000/users/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -112,7 +112,7 @@ export const putChangePassword = async (
 ) => {
   try {
     const res = await fetch(
-      `https://myapp-backend-latest.onrender.com/users/update-password/${id}`,
+      `http://localhost:3000/users/update-password/${id}`,
       {
         method: "PUT",
         headers: {
@@ -203,7 +203,7 @@ export const resetPassword = async (token: string, newPassword: string, confirmP
 // NO PUDE PROBARLA!!!!
 export const getAllUsers = async (token: string) => {
   try {
-    const res = await fetch(`https://myapp-backend-latest.onrender.com/users`, {
+    const res = await fetch(`http://localhost:3000/users`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -249,6 +249,26 @@ export const updateStatusUser = async (id: string, accessToken: string) => {
   } catch (error) {
     console.error("Error al actualizar el estado del usuario:", error);
     throw error;
+  }
+};
+
+export const getFair = async (token:string, idFair:string) => {
+  try {
+    const res = await fetch(`http://localhost:3000/fairs/${idFair}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!res.ok) {
+      throw new Error("Error en la petición");
+    }
+    const data = await res.json();
+
+    return data;
+  } catch (error) {
+    console.error(error);
   }
 };
 

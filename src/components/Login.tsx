@@ -52,22 +52,22 @@ export const Login = () => {
 
   return (
     <div className="grow-down">
-      <div className=" relative z-10 -translate-y-20 p-10  bg-white rounded-[30px] shadow-lg mt-6">
-        <div className="w-80 m-auto">
-          <h1 className="text-secondary-darker mb-3 font-bold text-lg leading-relaxed text-center ">
+      <div className="relative h-max -translate-y-20 p-10  bg-white  rounded-[30px] shadow-lg mt-6">
+        <div className="w-full text-center mb-6">
+          <h1 className="text-secondary-darker mb-3 font-bold text-lg leading-relaxed">
             ¡RENOVÁ TU PLACARD!
           </h1>
+          <div className="border border-secondary-darker w-[75%] m-auto mb-5"></div>
         </div>
-        <div className="border border-secondary-darker w-[75%] m-auto mb-5 "></div>
         <button
           type="button"
-          className={`px-6 py-20 z-0 cursor-default ${"bg-white"} rounded-tr-3xl rounded-br-3xl absolute right-0 translate-x-[99%]  shadow-customRight`}>
+          className="hidden lg:inline-block px-6 py-20 z-0 cursor-default bg-white rounded-tr-3xl rounded-br-3xl absolute right-0 translate-x-[99%] shadow-customRight">
           <p className="absolute font-medium left-[120%] text-secondary-darker">
             #Ingresá
           </p>
           <Image src={profile} alt="Icono de perfil" />
         </button>
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit} className="loginFormContent">
           <div className="mb-6 relative flex flex-col">
             <Input
               label="Email"
@@ -76,7 +76,7 @@ export const Login = () => {
               {...getProps("email")}
             />
             {formik.touched.email && formik.errors.email && (
-              <p className=" text-red-600 absolute left-0 bottom-0 translate-y-[100%]  font-medium text-center text-sm">
+              <p className="text-red-600 absolute left-0 bottom-0 translate-y-[100%] font-medium text-center text-sm">
                 {formik.errors.email}
               </p>
             )}
@@ -89,14 +89,14 @@ export const Login = () => {
               {...getProps("password")}
             />
             {formik.touched.password && formik.errors.password && (
-              <p className=" text-red-600 absolute left-0 bottom-0 translate-y-[100%] font-medium text-center text-sm">
+              <p className="text-red-600 absolute left-0 bottom-0 translate-y-[100%] font-medium text-center text-sm">
                 {formik.errors.password}
               </p>
             )}
           </div>
           <div className="flex justify-center">
             <button
-              className={`${"bg-secondary-darker"} w-32 h-9 my-6  rounded-3xl text-center text-white text-base font-bold`}
+              className="bg-secondary-darker w-32 h-9 my-6 rounded-3xl text-center text-white text-base font-bold"
               type="submit"
               disabled={!formik.isValid}>
               Enviar

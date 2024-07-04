@@ -1,8 +1,10 @@
 "use client"
+import { useFair } from '@/context/FairProvider'
 import React, { useState } from 'react'
 
 
 function TimeRange() {
+    const { fair, setTimeSelect } = useFair();
 
     const [horariosCupos, setHorariosCupos] = useState([
         { horario: '10:00 - 10:30', cuposDisponibles: 10 },
@@ -22,6 +24,7 @@ function TimeRange() {
         if (cuposDisponibles > 0) {
             setHorarioSeleccionado(horario)
             setMostrarRangos(false)
+            setTimeSelect(horario)
         }
     }
 

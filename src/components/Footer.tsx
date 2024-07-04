@@ -10,7 +10,7 @@ import logo from "@/assets/logo.svg";
 const Footer: React.FC = () => {
   return (
     <div className="bg-primary-lighter pt-5 pb-5 lg:px-5">
-      <div className="flex flex-row justify-around items-start w-full px-4 py-2 sm:px-5">
+      <div className="flex flex-row justify-around items-end w-full px-4 py-2 sm:px-5">
         <div className="flex flex-col items-start mb-1 lg:mb-0 lg:w-1/3 gap-2">
           <Link href="/">
             <Image
@@ -70,9 +70,6 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="flex flex-col items-end lg:w-1/3 gap-2">
-          <h3 className="my-2 text-base sm:text-lg font-bold text-end">
-            LEGALES
-          </h3>
           <Link
             href="/terms&conditions"
             className="text-sm sm:text-base lg:text-lg font-medium hover:text-secondary-dark text-end">

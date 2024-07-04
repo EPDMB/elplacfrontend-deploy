@@ -38,7 +38,7 @@ const GoogleLoginButton = () => {
     const top = window.screen.height / 2 - height / 2;
 
     window.open(
-      "https://myapp-backend-latest.onrender.com/auth/googleLogin",
+      "http://localhost:3000/auth/googleLogin",
       "Google Login",
       `width=${width},height=${height},top=${top},left=${left}`
     );
