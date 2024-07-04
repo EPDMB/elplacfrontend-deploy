@@ -62,7 +62,7 @@ export const postUserLogin = async (user: IUserLogin) => {
 //OBTENER USUARIO POR ID
 export const getUser = async (token: string, id: string) => {
   try {
-    const res = await fetch(`http://localhost:3000/users/${id}`, {
+    const res = await fetch(`https://myapp-backend-latest.onrender.com/users/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -86,7 +86,7 @@ export const putUser = async (
   user: Partial<UserDto>
 ) => {
   try {
-    const res = await fetch(`http://localhost:3000/users/${id}`, {
+    const res = await fetch(`https://myapp-backend-latest.onrender.com/users/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -112,7 +112,7 @@ export const putChangePassword = async (
 ) => {
   try {
     const res = await fetch(
-      `http://localhost:3000/users/update-password/${id}`,
+      `https://myapp-backend-latest.onrender.com/users/update-password/${id}`,
       {
         method: "PUT",
         headers: {
@@ -203,7 +203,7 @@ export const resetPassword = async (token: string, newPassword: string, confirmP
 // NO PUDE PROBARLA!!!!
 export const getAllUsers = async (token: string) => {
   try {
-    const res = await fetch(`http://localhost:3000/users`, {
+    const res = await fetch(`https://myapp-backend-latest.onrender.com/users`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -254,7 +254,7 @@ export const updateStatusUser = async (id: string, accessToken: string) => {
 
 export const getFair = async (token:string, idFair:string) => {
   try {
-    const res = await fetch(`http://localhost:3000/fairs/${idFair}`, {
+    const res = await fetch(`https://myapp-backend-latest.onrender.com/fairs/${idFair}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
