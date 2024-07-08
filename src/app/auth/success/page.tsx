@@ -81,9 +81,9 @@ const AuthSuccess = () => {
     <div>
       <div className="relative flex items-center justify-center h-full w-full bg-secondary-light">
         <div>
-          {openChooseRole && <ChooseRole email={email} userId={userId} />}
-
-          {!openChooseRole && (
+          {openChooseRole ? (
+            <ChooseRole email={email} userId={userId} />
+          ) : (
             <div className="h-full w-full">
               <l-ring size="80" color="white"></l-ring>
             </div>
