@@ -6,9 +6,11 @@ import { useAuth } from "@/context/AuthProvider";
 import Image from "next/image";
 import profile from "@/assets/profile.png";
 import logo from "@/assets/logo.svg";
+
 import { useRouter } from "next/navigation";
 import "react-toastify/dist/ReactToastify.css";
 import { notify } from "./Notifications/Notifications";
+
 import { useProfile } from "@/context/ProfileProvider";
 
 const Navbar: React.FC = () => {
@@ -18,6 +20,7 @@ const Navbar: React.FC = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     if (profileImageChanged) {
@@ -28,6 +31,10 @@ const Navbar: React.FC = () => {
   const handleToggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
   };
+
+  const handleToggleMobile = () => {
+    setIsMobile(!isMobile);
+  }
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
@@ -52,10 +59,10 @@ const Navbar: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex w-full lg:mr-16 h-full items-center justify-end">
-      <ul className="flex text-xl lg:gap-6 font-semibold text-primary-darker items-center gap-24 md:gap-1 xl:gap-5">
+    <div className={`flex w-full lg:mr-16 h-full items-center justify-end `}>
+      <ul className="flex text-xl lg:gap-6 font-semibold text-primary-darker items-center  gap-24 md:gap-1 xl:gap-5">
         <li>
-          <div className="w-40 sm:mr-5 self-start">
+          <div className="w-40 sm:mr-5 self-start ">
             <Link href="/">
               <Image alt="logo" src={logo} width={400} height={400}></Image>
             </Link>
@@ -64,17 +71,18 @@ const Navbar: React.FC = () => {
         <li className="hover:underline hidden lg:flex">
           <Link href="/">INICIO</Link>
         </li>
-        <li className="hover:underline hidden lg:flex">
+
+        <li className="hover:underline hidden lg:flex ">
           <Link href="/about_us">NOSOTROS</Link>
         </li>
         <li className="hover:underline hidden text-nowrap lg:flex">
-          <Link href="/faq">AYUDA</Link>
+          <Link href="/help">AYUDA</Link>
         </li>
-        <li className="hover:underline hidden sm:flex relative">
+        <li className="hover:underline hidden lg:flex relative">
           {token ? (
             <div className="flex items-center">
-              <div className="relative group h-16 w-16 rounded-full border border-secondary-darker flex items-center justify-center lg:cursor-pointer">
-                <div className="absolute h-[60px] w-[60px] p-0 m-0 bg-slate-100 rounded-full">
+              <div className="relative group h-16 w-16 rounded-full border border-secondary-darker flex items-center justify-center">
+                <button className="absolute h-[60px] w-[60px] p-0 m-0 bg-slate-100 rounded-full">
                   <Image
                     onClick={handleToggleDropdown}
                     src={userDtos?.profile_picture || profile}
@@ -84,29 +92,23 @@ const Navbar: React.FC = () => {
                     objectPosition="-0px -0px"
                     className="overflow-hidden rounded-full"
                   />
-                  <Link
-                    href="/dashboard"
-                    onClick={(e) => e.stopPropagation()}
-                    className="absolute lg:hidden h-[60px] w-[60px] rounded-full font-semibold text-nowrap text-primary-darker z-10"
-                  ></Link>
-                </div>
+                </button>
               </div>
               {token && dropdownVisible && (
                 <div
                   ref={dropdownRef}
-                  className="hidden lg:block lg:absolute top-full -translate-x-[30%] mt-2 py-2 bg-secondary-lighter rounded-md shadow-md z-10"
+                  className="absolute top-full  -translate-x-[30%] mt-2 py-2  bg-secondary-lighter rounded-md shadow-md z-10"
                 >
                   <Link
                     href="/dashboard"
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={() => setDropdownVisible(false)}
                     className="block px-4 py-2 font-semibold text-nowrap text-primary-darker hover:bg-secondary-light"
                   >
-                    Ir al perfil
+                    Mi Cuenta
                   </Link>
                   <Link
                     href="/"
-                    onClick={(e) => {
-                      e.stopPropagation();
+                    onClick={() => {
                       handleLogout();
                       setDropdownVisible(false);
                     }}
@@ -118,25 +120,25 @@ const Navbar: React.FC = () => {
               )}
             </div>
           ) : (
-            <button onClick={handleToggleDropdown} className="hidden lg:block">
+            <button onClick={handleToggleDropdown}>
               <FaUser />
             </button>
           )}
           {!token && dropdownVisible && (
             <div
               ref={dropdownRef}
-              className="hidden lg:block absolute top-full -translate-x-1/2 mt-2 py-2 w-fit bg-secondary-lighter rounded-md shadow-md"
+              className="absolute top-full -translate-x-1/2 mt-2 py-2 w-fit bg-secondary-lighter rounded-md shadow-md z-10"
             >
               <Link
                 href="/login"
-                onClick={(e) => e.stopPropagation()}
+                onClick={() => setDropdownVisible(false)}
                 className="block px-4 py-2 font-semibold text-nowrap text-primary-darker hover:bg-secondary-light"
               >
                 Inicia sesión
               </Link>
               <Link
                 href="/register/buyer"
-                onClick={(e) => e.stopPropagation()}
+                onClick={() => setDropdownVisible(false)}
                 className="block px-4 py-2 font-semibold text-primary-darker hover:bg-secondary-light"
               >
                 Registrate
@@ -144,58 +146,59 @@ const Navbar: React.FC = () => {
             </div>
           )}
         </li>
-        <button
-          className="hover:underline flex lg:hidden mr-5 "
-          onClick={handleToggleDropdown}
-        >
-          <FaBars />
-        </button>
-        {dropdownVisible && (
-          <div
-            ref={dropdownRef}
-            className="absolute right-3 top-20 z-10 text-base sm:text-lg lg:hidden sm:w-fit bg-secondary-lighter rounded-md shadow-md"
-          >
-            {token ? (
-              <>
-                <Link
-                  href="/dashboard"
-                  onClick={(e) => e.stopPropagation()}
-                  className="px-4 py-2 font-semibold text-nowrap text-primary-darker hover:bg-secondary-light"
-                >
-                  Ir al perfil
-                </Link>
-                <Link
-                  href="/"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleLogout();
-                    setDropdownVisible(false);
-                  }}
-                  className="block px-4 py-2 font-semibold text-nowrap text-primary-darker hover:bg-secondary-light"
-                >
-                  Cerrar sesión
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link
-                  href="/login"
-                  onClick={(e) => e.stopPropagation()}
-                  className="block px-4 py-2 font-semibold text-nowrap text-primary-darker hover:bg-secondary-light"
-                >
-                  Inicia sesión
-                </Link>
-                <Link
-                  href="/register/buyer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="block px-4 py-2 font-semibold text-primary-darker hover:bg-secondary-light"
-                >
-                  Registrate
-                </Link>
-              </>
+        <div className="relative">
+          <li className="hover:underline flex lg:hidden mr-5">
+            <button onClick={handleToggleMobile}>
+              <FaBars />
+            </button>
+            {isMobile && (
+              <div
+                style={{
+                  width: "0",
+                  height: "0",
+                  borderLeft: "10px solid transparent",
+                  borderRight: "10px solid transparent",
+                  borderBottom: "25px solid var(--secondary-light)",
+                }}
+                className="absolute top-4 right-5 z-20"
+              ></div>
             )}
-          </div>
-        )}
+          </li>
+          {isMobile && (
+            <div className="bg-secondary-light h-auto w-36 absolute right-0 top-10 z-40 flex flex-col p-5 text-sm shadow-md rounded-lg gap-4">
+              <li className="hover:underline flex lg:hidden  ">
+                <Link href="/">Inicio</Link>
+              </li>
+              <li className="hover:underline hidden ">
+                <Link href="/about_us">NOSOTROS</Link>
+              </li>
+              <li className="hover:underline flex lg:hidden ">
+                <Link href="/help">AYUDA</Link>
+              </li>
+              {!token ? (
+                <>
+                  <li className="hover:underline flex lg:hidden ">
+                    <Link href="/login">Iniciar Sesión</Link>
+                  </li>
+                  <li className="hover:underline flex lg:hidden ">
+                    <Link href="/register/buyer">Registrarse</Link>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li className="hover:underline flex lg:hidden ">
+                    <Link href="/dashboard">Mi Cuenta</Link>
+                  </li>
+                  <li className="hover:underline flex lg:hidden ">
+                    <Link href="/" onClick={handleLogout}>
+                      Cerrar Sesión
+                    </Link>
+                  </li>
+                </>
+              )}
+            </div>
+          )}
+        </div>
       </ul>
     </div>
   );

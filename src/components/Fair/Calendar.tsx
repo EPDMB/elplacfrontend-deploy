@@ -1,52 +1,47 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import Datepicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import es from 'date-fns/locale/es';
-import { useFair } from '@/context/FairProvider';
+import React, { useState, useEffect } from "react";
+import Datepicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { useFair } from "@/context/FairProvider";
+import { CalendarProps } from "@/types";
 
-export const Calendar = () => {
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const { fair, setDateSelect } = useFair();
 
-  // Verificar si 'fair' está definido
-  const dateStartFair = fair?.dateStartFair?.split("T")[0];
-  const dateEndFair = fair?.dateEndFair?.split("T")[0];
-
+export const Calendar: React.FC<CalendarProps> = ({ fairDays = [] }) => {
+  const [dateSelect, setDate] = useState<Date | null>(null);
+  const { fairs, setDateSelect } = useFair();
   const [highlightedDates, setHighlightedDates] = useState<Date[]>([]);
 
   useEffect(() => {
-    if (dateStartFair && dateEndFair) {
-      setHighlightedDates([
-        new Date(dateStartFair),
-        new Date(dateEndFair),
-      ]);
+    if (fairDays.length > 0) {
+      const dates = fairDays.map((day) => day.day);
+      const datesMapping = dates.map((date) => new Date(date));
+      setHighlightedDates(datesMapping);
     }
-  }, [dateStartFair, dateEndFair]);
+  }, [fairDays]);
 
-  const onChange = (date: Date) => {
+  const onChange = (date: Date | null) => {
     if (date) {
-      setStartDate(date);
+      setDate(date);
       setDateSelect(date);
     }
   };
 
   return (
     <div className="flex flex-col mt-5">
+      <label className="font-bold">Fecha</label>
       <Datepicker
-        selected={startDate}
-        onChange={(date: Date | null) => setStartDate(date)}
+        selected={dateSelect}
+        onChange={onChange}
         minDate={new Date()}
-        className="w-fit p-2 border border-secondary-default rounded-md shadow-sm cursor-pointer"
-        calendarClassName="rounded-lg shadow-md"
+        className="flex items-center justify-between w-48 p-2 rounded-md bg-secondary-lighter placeholder:text-primary-dark text-primary-dark shadow-md cursor-pointer"
+        calendarClassName="rounded-lg shadow-md relative z-20 cursor-pointer"
         dateFormat="dd/MM/yyyy"
         highlightDates={highlightedDates}
-        value="Selecciona una fecha"
+        shouldCloseOnSelect={true}
+        focusSelectedMonth={true}
+        placeholderText="Selecciona una fecha 🗓"
       />
-      <p className="mt-2 text-md text-primary-darker">
-        Día de la feria: {startDate ? startDate.toDateString() : "____"}
-      </p>
     </div>
   );
 };

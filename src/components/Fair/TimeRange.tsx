@@ -1,68 +1,67 @@
-"use client"
-import { useFair } from '@/context/FairProvider'
-import React, { useState } from 'react'
-
+"use client";
+import { useFair } from "@/context/FairProvider";
+import React, { useEffect, useState } from "react";
+import Dropdown from "../Dropdown"; 
+import { IFair, FairDay, BuyerCapacity } from "@/types"; 
 
 function TimeRange() {
-    const { fair, setTimeSelect } = useFair();
+  const { fairs, setTimeSelect, dateSelect } = useFair();
 
-    const [horariosCupos, setHorariosCupos] = useState([
-        { horario: '10:00 - 10:30', cuposDisponibles: 10 },
-        { horario: '10:30 - 11:00', cuposDisponibles: 10 },
-        { horario: '11:00 - 11:30', cuposDisponibles: 0 },
-        { horario: '11:30 - 12:00', cuposDisponibles: 10 },
-    ])
+  const [schedulesTurns, setSchedulesTurns] = useState<BuyerCapacity[]>([]);
+  console.log(schedulesTurns)
+  console.log(dateSelect)
 
-    const [mostrarRangos, setMostrarRangos] = useState(false)
-    const [horarioSeleccionado, setHorarioSeleccionado] = useState<string>('')
-
-    const handleInputClick = () => {
-        setMostrarRangos(true)
-    }
-
-    const handleHorarioClick = (horario: string, cuposDisponibles: number) => {
-        if (cuposDisponibles > 0) {
-            setHorarioSeleccionado(horario)
-            setMostrarRangos(false)
-            setTimeSelect(horario)
+  useEffect(() => {
+    if (fairs && dateSelect) {
+      const selectedFair = fairs.find((f: IFair) =>
+        f.fairDays.some(
+          (day: FairDay) =>
+            new Date(day.day).toDateString() === dateSelect.toDateString()
+        )
+      );
+      console.log(selectedFair);
+      if (selectedFair) {
+        const fairDay = selectedFair.fairDays.find(
+          (day: FairDay) =>
+            new Date(day.day).toDateString() === dateSelect.toDateString()
+        );
+        if (fairDay) {
+          setSchedulesTurns(fairDay.buyerCapacities);
         }
+      }
     }
+  }, [fairs, dateSelect]);
 
-    return (
-      <div className='flex flex-col mt-5'>
-        <label className='font-bold'>Horario</label>
-        <input
-          type="text"
-          placeholder="Selecciona horario"
-          value={horarioSeleccionado}
-          onClick={handleInputClick}
-          readOnly
-          style={{ cursor: "pointer" }}
-          className="placeholder:text-primary-dark placeholder:p-2 w-fit p-2 border border-secondary-default rounded-md shadow-sm cursor-pointer "
-        />
-        {mostrarRangos && (
-          <div>
-            {horariosCupos.map((hc, index) => (
-              <div
-                key={index}
-                onClick={() =>
-                  handleHorarioClick(hc.horario, hc.cuposDisponibles)
-                }
-                style={{
-                  cursor: hc.cuposDisponibles > 0 ? "pointer" : "not-allowed",
-                  opacity: hc.cuposDisponibles === 0 ? 0.5 : 1,
-                }}
-              >
-                <p>
-                  {hc.horario} {hc.cuposDisponibles === 0 ? "Agotado" : ""}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
+  const [horarioSeleccionado, setHorarioSeleccionado] = useState<string>("");
+
+  const options = schedulesTurns.map((hc) => ({
+    id: hc.hour,
+    name: `${
+      hc.capacity === 0 ? "Agotado" : `Turnos disponibles (${hc.capacity})`
+    }`,
+  }));
+
+  console.log(options)
+
+  const handleHorarioSelect = (option: { id: string; name: string }) => {
+    const selectedHorario = schedulesTurns.find((hc) => hc.hour === option.id);
+    if (selectedHorario && selectedHorario.capacity > 0) {
+      setHorarioSeleccionado(option.id);
+      setTimeSelect(option.id);
+    }
+  };
+
+  return (
+    <div className="flex flex-col mt-5">
+      <label className="font-bold">Horario</label>
+      <Dropdown
+        options={options}
+        onSelect={handleHorarioSelect}
+        label={horarioSeleccionado || "Selecciona Horario"}
+        className="w-48"
+      />
+    </div>
+  );
 }
 
-
-export default TimeRange
+export default TimeRange;

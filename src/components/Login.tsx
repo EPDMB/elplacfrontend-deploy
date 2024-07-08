@@ -15,6 +15,7 @@ import { useAuth } from "@/context/AuthProvider";
 export const Login = () => {
   const router = useRouter();
   const { setToken } = useAuth();
+  const [ isLoading, setIsLoading ] = React.useState(false);
 
   const signIn = async (user: IUserLogin) => {
     try {
@@ -29,6 +30,8 @@ export const Login = () => {
     } catch (error: any) {
       notify("ToastError", "Datos Incorrectos");
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
   const formik = useFormik({
@@ -47,6 +50,8 @@ export const Login = () => {
       onChange: formik.handleChange,
       onBlur: formik.handleBlur,
       value: formik.values[name as keyof IUserLogin],
+      touched: formik.touched[name as keyof IUserLogin],
+      errors: formik.errors[name as keyof IUserLogin],
     };
   };
 
@@ -75,11 +80,6 @@ export const Login = () => {
               placeholder="Juan"
               {...getProps("email")}
             />
-            {formik.touched.email && formik.errors.email && (
-              <p className="text-red-600 absolute left-0 bottom-0 translate-y-[100%] font-medium text-center text-sm">
-                {formik.errors.email}
-              </p>
-            )}
           </div>
           <div className="mb-6 relative flex flex-col">
             <Input
@@ -88,22 +88,24 @@ export const Login = () => {
               placeholder="******"
               {...getProps("password")}
             />
-            {formik.touched.password && formik.errors.password && (
-              <p className="text-red-600 absolute left-0 bottom-0 translate-y-[100%] font-medium text-center text-sm">
-                {formik.errors.password}
-              </p>
-            )}
           </div>
           <div className="flex justify-center">
             <button
               className="bg-secondary-darker w-32 h-9 my-6 rounded-3xl text-center text-white text-base font-bold"
               type="submit"
-              disabled={!formik.isValid}>
-              Enviar
+              disabled={!formik.isValid || isLoading}>
+              
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-6 w-6"></div>
+                </div>
+              ) : (
+                "Ingresar"
+              )}
             </button>
           </div>
           <p className="font-semibold text-secondary-darker text-center">
-            Olvide mí contraseña
+            Olvidé mi contraseña
           </p>
         </form>
       </div>

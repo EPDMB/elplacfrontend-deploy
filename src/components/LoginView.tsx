@@ -17,8 +17,8 @@ export const LoginView = () => {
   }, []);
 
   return (
-    <main className=" lg:py-4 p-6 lg:px-20 xl:px-32 bg-secondary-light">
-      <div className="bg-white h-full formGrid rounded-xl shadow-lg mt-6">
+    <main className=" lg:py-4 lg:p-6 lg:px-20 xl:px-32 bg-secondary-light">
+      <div className="bg-white h-full formGrid lg:rounded-xl shadow-lg mt-6">
         <div
           className="loginBanner h-[8rem] md:h-[10rem] lg:h-[20rem] overflow-hidden mb-4"
           ref={titleRef}>

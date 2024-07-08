@@ -3,15 +3,14 @@ import React from "react";
 import Link from "next/link";
 import { FiShoppingCart } from "react-icons/fi";
 import { IoMdCart } from "react-icons/io";
-import "./Notifications.css"
+import "./Notifications.css";
 import Image from "next/image";
 import loginBanner from "@/assets/loginBanner.png";
 import shoes from "@/assets/shoes.png";
 import sunglasses from "@/assets/sunglasses.png";
-import { FaGoogle, FaMicrosoft, FaYahoo } from "react-icons/fa";
-import { AiOutlineMail } from 'react-icons/ai';
+import { AiOutlineMail } from "react-icons/ai";
 
-<AiOutlineMail/>;
+<AiOutlineMail />;
 
 interface ToastWithButtonsProps {
   message: string;
@@ -36,15 +35,15 @@ const ToastWithHeader: React.FC<ToastWithButtonsProps> = ({ message }) => (
         objectPosition="0px 0px"
       />
     </div>
-    <div className="absolute translate-y-1  text-primary-darker font-bold flex flex-col items-center justify-center h-3 w-full p-0 m-0">
+    <div className="absolute translate-y-1 text-primary-darker font-bold flex flex-col items-center justify-center h-3 w-full p-0 m-0">
       {message}
     </div>
   </div>
 );
 
 const ToastSuccess: React.FC<ToastWithButtonsProps> = ({ message }) => (
-  <div className="flex flex-col gap-10 p-0 m-0 relative">
-    <div className="absolute translate-x-[30px] -translate-y-5 h-[45px] w-[45px] p-0 m-0">
+  <div className="flex flex-col gap-10 p-0 m-0 relative ">
+    {/* <div className="absolute translate-x-[30px] -translate-y-5 h-[45px] w-[45px] p-0 m-0">
       <Image
         src={sunglasses}
         alt="loginbanner"
@@ -52,15 +51,12 @@ const ToastSuccess: React.FC<ToastWithButtonsProps> = ({ message }) => (
         objectFit="cover"
         objectPosition="0px 0px"
       />
-    </div>
-    <div className="absolute -translate-y-1 translate-x-6  text-primary-darker font-bold flex flex-col items-center justify-center h-3 w-full p-0 m-0">
+    </div> */}
+    <div className=" text-primary-darker font-bold flex flex-col items-center justify-center h-3 w-full p-0 m-0">
       {message}
     </div>
   </div>
 );
-
-
-
 
 const ToastError: React.FC<ToastWithButtonsProps> = ({ message }) => (
   <div className="flex flex-col gap-10 p-0 m-0 relative">
@@ -73,7 +69,7 @@ const ToastError: React.FC<ToastWithButtonsProps> = ({ message }) => (
         objectPosition="0px 0px"
       />
     </div> */}
-    <div className="absolute -translate-y-1 translate-x-7  text-red-800 font-bold flex flex-col items-center justify-center h-3 w-full p-0 m-0">
+    <div className=" text-red-800 font-bold flex flex-col items-center justify-center h-3 w-full p-0 m-0">
       {message}
     </div>
   </div>
@@ -85,39 +81,15 @@ const ToastRedirect: React.FC<ToastWithButtonsProps> = ({
   onCancel,
 }) => (
   <div className="flex flex-col gap-10 p-0 m-0 relative h-16">
-    <div className="absolute translate-y-1 text-center  text-primary-darker font-bold flex flex-col items-center justify-center h-16 w-full p-0 m-0 mb-2">
+    <div className="absolute translate-y-1 text-center text-primary-darker font-bold flex flex-col items-center justify-center h-16 w-full p-0 m-0 mb-2">
       {message}
       <br />
       <div className="flex flex-row gap-4 pt-2">
-        {/* <button
-          className="rounded-3xl border border-neutral-700 p-2 text-sm disabled=true"
-          onClick={onAccept}
-        >
-          <AiOutlineMail />
-        </button> */}
-
-        {/* <Link href="/register">
-        <button
-          className="rounded-3xl border border-neutral-700 p-2 text-sm"
-          onClick={onCancel}
-        >
-          <FaYahoo />
-        </button>
-      </Link>
-
-      <Link href="/register">
-        <button
-          className="rounded-3xl border border-neutral-700 p-2 text-sm"
-          onClick={onCancel}
-        >
-          <FaMicrosoft />
-        </button>
-      </Link> */}
+        {/* Aquí puedes añadir botones de redirección */}
       </div>
     </div>
   </div>
 );
-
 
 const ToastDelete: React.FC<ToastWithButtonsProps> = ({
   message,
@@ -145,6 +117,32 @@ const ToastDelete: React.FC<ToastWithButtonsProps> = ({
   </div>
 );
 
+const ToastChoose: React.FC<ToastWithButtonsProps> = ({
+  message,
+  onAccept,
+  onCancel,
+}) => (
+  <div className="flex flex-col items-center justify-center gap-4 text-center font-bold text-primary-darker">
+    {message}
+    <br />
+    <div className="flex flex-row gap-4">
+      <button
+        className="flex h-12 w-28 items-center justify-center rounded-3xl border border-neutral-700 p-4 text-sm"
+        onClick={onAccept}
+      >
+        Si
+      </button>
+
+      <button
+        className="items-center w-28 flex h-12 justify-center rounded-3xl border border-neutral-700 p-4 text-sm"
+        onClick={onCancel}
+      >
+        No
+      </button>
+    </div>
+  </div>
+);
+
 export const notify = (
   type:
     | "ToastError"
@@ -152,6 +150,7 @@ export const notify = (
     | "ToastRedirect"
     | "ToastSuccess"
     | "ToastWithHeader"
+    | "ToastChoose"
     | "ToastDelete",
   message: string,
   onAccept?: () => void,
@@ -243,6 +242,7 @@ export const notify = (
         }
       );
       break;
+
     case "ToastRedirect":
       toast(
         <ToastRedirect
@@ -285,6 +285,29 @@ export const notify = (
             border: "1px solid #343434",
           },
           autoClose: 4000,
+        }
+      );
+      break;
+
+    case "ToastChoose":
+      toast(
+        <ToastChoose
+          message={message}
+          onAccept={() => {
+            toast.dismiss();
+            notify("ToastSuccess", "Turno confirmado - Revisa tu casilla de correo");
+          }}
+          onCancel={() => toast.dismiss()}
+        />,
+        {
+          position: "bottom-right",
+          style: {
+            color: "#FFFFFF",
+            fontSize: "15px",
+            width: "300px",
+            border: "1px solid #343434",
+          },
+          autoClose: 10000,
         }
       );
       break;

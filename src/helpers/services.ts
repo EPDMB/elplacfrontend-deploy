@@ -1,5 +1,6 @@
 import { IPasswordChange, ISeller, IUser, IUserLogin, UserDto } from "@/types";
 import { URL } from "../../envs";
+import { time } from "console";
 
 //REGISTRO DE USUARIO
 export const postUserRegister = async (user: Partial<IUser>) => {
@@ -14,7 +15,7 @@ export const postUserRegister = async (user: Partial<IUser>) => {
 
     return res;
   } catch (error: any) {
-    console.error(error.message);
+    console.error(error);
   }
 };
 
@@ -85,6 +86,9 @@ export const putUser = async (
   id: string,
   user: Partial<UserDto>
 ) => {
+  console.log(user);
+  console.log(token);
+  console.log(id);
   try {
     const res = await fetch(`https://myapp-backend-latest.onrender.com/users/${id}`, {
       method: "PUT",
@@ -93,6 +97,27 @@ export const putUser = async (
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(user),
+    });
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error(`Error: ${errorText}`);
+      throw new Error("Error en la petición");
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+//ACTUALIZAR ROL DE USUARIO
+export const putUserToSeller = async (id: string, role: Partial<UserDto>) => {
+  try {
+    const res = await fetch(`https://myapp-backend-latest.onrender.com/users/userToSeller/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        
+      },
+      body: JSON.stringify(role),
     });
     if (!res.ok) {
       const errorText = await res.text();
@@ -133,7 +158,7 @@ export const putChangePassword = async (
 };
 
 // RECUPERO DE CONTRASEÑA "OLVIDE MI CONTRASEÑA"
-// TIENE QUE SOLICITAR AL USUARIO QUE ESCRIBA SU CORREO Y LE 
+// TIENE QUE SOLICITAR AL USUARIO QUE ESCRIBA SU CORREO Y LE
 // LLEGA UN MAIL CON UN BOTON "REESTABLECER CONTRASEÑA" QUE LO
 // DEBE REDIRIGIR AL FORMULARIO - FUNCIONA (SE SUPONE)
 export const postForgotPassword = async (email: string) => {
@@ -158,14 +183,21 @@ export const postForgotPassword = async (email: string) => {
       return {};
     }
   } catch (error) {
-    console.error("Error al enviar la solicitud de restablecimiento de contraseña:", error);
+    console.error(
+      "Error al enviar la solicitud de restablecimiento de contraseña:",
+      error
+    );
     throw error;
   }
 };
 
 // FORMULARIO PARA RESTABLECER CONTRASEÑA DONDE ESCRIBE SU NUEVA CONTRASEÑA Y LA CONFIRMA
 // NO PUDE PROBARLA!!!!
-export const resetPassword = async (token: string, newPassword: string, confirmPassword: string) => {
+export const resetPassword = async (
+  token: string,
+  newPassword: string,
+  confirmPassword: string
+) => {
   try {
     if (newPassword !== confirmPassword) {
       throw new Error("Las contraseñas no coinciden");
@@ -193,11 +225,13 @@ export const resetPassword = async (token: string, newPassword: string, confirmP
       return {};
     }
   } catch (error) {
-    console.error("Error al enviar la solicitud de restablecimiento de contraseña:", error);
+    console.error(
+      "Error al enviar la solicitud de restablecimiento de contraseña:",
+      error
+    );
     throw error;
   }
 };
-
 
 //OBTENER TODOS LOS USUARIOS
 // NO PUDE PROBARLA!!!!
@@ -241,7 +275,7 @@ export const updateStatusUser = async (id: string, accessToken: string) => {
     const responseText = await res.text();
     try {
       const responseData = JSON.parse(responseText);
-      return responseData; 
+      return responseData;
     } catch (error) {
       console.error("Error al parsear respuesta JSON:", error);
       throw new Error("Respuesta del servidor no es un JSON válido");
@@ -252,13 +286,12 @@ export const updateStatusUser = async (id: string, accessToken: string) => {
   }
 };
 
-export const getFair = async (token:string, idFair:string) => {
+export const getFair = async () => {
   try {
-    const res = await fetch(`https://myapp-backend-latest.onrender.com/fairs/${idFair}`, {
+    const res = await fetch("https://myapp-backend-latest.onrender.com/fairs/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
     });
     if (!res.ok) {
@@ -272,9 +305,84 @@ export const getFair = async (token:string, idFair:string) => {
   }
 };
 
+export const postInscription = async (
+  fairId: string | undefined,
+  userId: string | undefined,
+  categoryId: string | undefined
+) => {
+  try {
+    const res = await fetch(
+      `https://myapp-backend-latest.onrender.com/sellers/${userId}/register/${fairId}/${categoryId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (!res.ok) {
+      throw new Error("Error en la petición");
+    }
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
 
+export const postTicket = async (
+  fairId: string | undefined,
+  userId: string,
+  token: string,
+  dateSelect: string | null,
+  timeSelect: string
+) => {
+  console.log(dateSelect);
+  console.log(timeSelect);
+  console.log(fairId);
+  console.log(userId);
+  console.log(token);
 
+  try {
+    const res = await fetch(
+      `https://myapp-backend-latest.onrender.com/users/${userId}/register/fair/${fairId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          selectedHour: timeSelect,
+          selectedDay: dateSelect,
+        }),
+      }
+    );
+    if (!res.ok) {
+      throw new Error("Error en la petición");
+    }
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
 
+export const getUniqueData = async () => {
+  try {
+    const res = await fetch(`${URL}/users/uniquedata`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!res.ok) {
+      throw new Error("Error en la petición");
+    }
+    const data = await res.json();
 
-
-
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};

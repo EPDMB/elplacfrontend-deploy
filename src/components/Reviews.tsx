@@ -13,6 +13,10 @@ import Input from "./Input";
 import { FaStar } from "react-icons/fa";
 import { useProfile } from "@/context/ProfileProvider";
 import { useAuth } from "@/context/AuthProvider";
+import { lineSpinner } from "ldrs";
+
+
+lineSpinner.register();
 
 export const Reviews = () => {
   const [reviews, setReviews] = useState<PlaceReview[]>([]);
@@ -24,6 +28,7 @@ export const Reviews = () => {
   const [hover, setHover] = useState<number | null>(null);
   const { userDtos } = useProfile();
   const { token } = useAuth();
+  const [ isLoading, setIsLoading ] = useState(true);
 
   function onCloseModal() {
     setOpenModal(false);
@@ -33,6 +38,7 @@ export const Reviews = () => {
   }
 
   useEffect(() => {
+    setTimeout(() => {
     setReviews([
       {
         author_name: "Lucia Martínez",
@@ -59,6 +65,10 @@ export const Reviews = () => {
         text: "Encontré el regalo perfecto para la fiesta de cumpleaños de mi hijo. Gran variedad de opciones para niños de todas las edades.",
       },
     ]);
+
+    setIsLoading(false);
+  }, 2000)
+
   }, [userDtos]);
 
   useEffect(() => {
@@ -131,6 +141,16 @@ export const Reviews = () => {
           </h1>
         </div>
         <div className="w-full sm:w-[70%] h-1/2">
+          {isLoading ? (
+            <div className="flex justify-center items-center h-full">
+              <l-line-spinner
+                size="40"
+                stroke="3"
+                speed="1"
+                color="black"
+              ></l-line-spinner>
+            </div>
+          ) : (
           <AliceCarousel
             mouseTracking
             items={items}
@@ -154,6 +174,7 @@ export const Reviews = () => {
             paddingLeft={50}
             paddingRight={50}
           />
+          )}
         </div>
         {token && (
           <button

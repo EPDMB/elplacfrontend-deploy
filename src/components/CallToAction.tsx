@@ -12,7 +12,7 @@ export const CallToAction = () => {
       <div className="bg-secondary-light flex flex-col justify-center items-center shadow-md z-20 w-full h-1/2 md:h-auto p-5">
         <div className="flex justify-center items-center w-full h-auto">
           <h1 className="innerShadowTitleOrange text-[5vw] sm:text-[4vw] md:text-[3vw] lg:text-[2.5vw] xl:text-[2vw]">
-            #Comprá&nbsp;&nbsp;#Reciclá
+            #Comprá&nbsp;&nbsp;#Ahorrá
           </h1>
         </div>
 
@@ -42,7 +42,7 @@ export const CallToAction = () => {
       <div className="bg-primary-light flex flex-col justify-center items-center shadow-md z-20 w-full h-1/2 md:h-auto p-5">
         <div className="flex justify-center items-center w-full h-auto">
           <h1 className="innerShadowTitleBlue text-[5vw] sm:text-[4vw] md:text-[3vw] lg:text-[2.5vw] xl:text-[2vw]">
-            #Vendé&nbsp;&nbsp;#Renová
+            #Vendé&nbsp;&nbsp;#Ganá
           </h1>
         </div>
         <div className="bg-slate-50 bg-opacity-50 border-[2px] border-primary-dark rounded-3xl flex flex-col h-auto gap-2 w-3/4 items-center justify-center text-center p-3">

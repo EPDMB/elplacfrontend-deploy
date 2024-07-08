@@ -4,7 +4,7 @@ import React from "react";
 function page() {
   return (
     <div>
-      <MainDashboard/>
+      <MainDashboard />
     </div>
   );
 }

@@ -3,12 +3,17 @@ import React, { useEffect, useState } from "react";
 import { initMercadoPago, Wallet } from "@mercadopago/sdk-react";
 
 import { MERCADOPAGO_PUBLIC_KEY, URL } from "../../../envs";
+import { PaymentsSellerProps, PaymentsUserProps } from "@/types";
 
-export default function Payments() {
-  const [userId, setUserId] = useState(
-    "fbb60972-6f89-4f72-bf5f-0653d01f2aee"
-  ); // Reemplaza con un ID válido
-  const [fairId, setFairId] = useState("2c27d46e-64c8-4f77-9c45-e34b0f6ad2b4"); // Reemplaza con un ID válido
+export default function PaymentsUser({
+  userId,
+  fairId,
+  registrationHour,
+  registratonDay,
+  handleBuy,
+  className,
+  disabled,
+}: PaymentsUserProps) {
   const [transactionType, setTransactionType] = useState("ticket");
   const [preferenceId, setPreferenceId] = useState<string | null>(null);
 
@@ -18,39 +23,89 @@ export default function Payments() {
     });
   }, []);
 
-  const handlePayment = async () => {
-    const response = await fetch(`${URL}/payments/createPreference`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+  const handlePayment = async (
+    userId: string | undefined,
+    fairId: string | undefined,
+    registrationHour: string | undefined | null,
+    registratonDay: string | undefined | null,
+    transactionType: string | undefined
+  ) => {
+    try {
+      console.log(
+        "Body:",
+        JSON.stringify({
+          userId,
+          fairId,
+          registrationHour,
+          registratonDay,
+          transactionType,
+        })
+      );
+      const response = await fetch(`${URL}/payments/createPreferenceBuyer`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          fairId,
+          registrationHour,
+          registratonDay,
+          transactionType,
+        }),
+      });
 
-      body: JSON.stringify({
-        fairId,
-        userId,
-        transactionType,
-      }),
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const text = await response.text();
+      console.log("Response text:", text);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      if (!text) {
+        throw new Error("Empty response");
+      }
+
+      try {
+        const data = JSON.parse(text);
+        return data;
+      } catch (parseError) {
+        throw new Error("Error parsing JSON: " + (parseError as Error).message);
+      }
+    } catch (error: any) {
+      console.error("Error fetching payment preference:", error);
+      throw error;
     }
-
-    const data = await response.json();
-    return data;
   };
+
   const handleClick = async () => {
     try {
-      const preference = await handlePayment();
+      const preference = await handlePayment(
+        userId,
+        fairId,
+        registrationHour,
+        registratonDay,
+        transactionType
+      );
       setPreferenceId(preference.preferenceId);
+      if (preferenceId) {
+        handleBuy();
+      }
     } catch (error: any) {
-      console.error("Error handling click:", error.message);
+      console.error(error.message);
     }
   };
 
   return (
     <div>
-      <h1>Generar Pago</h1>
-      <button onClick={handleClick}>Crear Preferencia</button>
+      <button
+        onClick={handleClick}
+        className={className}
+        disabled={disabled}
+      >
+        Confirmar inscripción
+      </button>
+
       {preferenceId && <Wallet initialization={{ preferenceId }} />}
     </div>
   );

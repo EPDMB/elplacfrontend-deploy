@@ -1,66 +1,57 @@
-"use client"
-import React, { useEffect, useState } from 'react'
-import { useAuth } from '@/context/AuthProvider'
-import { decodeJWT } from '@/helpers/decoder';
-import MainDashboardSeller from './MainDashboardSeller';
-import MainDashboardUser from './MainDashboardUser';
-import { useProfile } from '@/context/ProfileProvider';
-import { getUser } from '@/helpers/services';
-import { UserDto } from '@/types';
-import Navbar from '../Navbar';
+"use client";
+import React, { useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthProvider";
+import { decodeJWT } from "@/helpers/decoder";
+import MainDashboardSeller from "./MainDashboardSeller";
+import MainDashboardUser from "./MainDashboardUser";
+import { useProfile } from "@/context/ProfileProvider";
+import { getUser } from "@/helpers/services";
+import Navbar from "../Navbar";
 
+const MainDashboard: React.FC = () => {
+  const { token } = useAuth();
+  const { userDtos, setUserDtos } = useProfile();
 
-
-function MainDashboard() {
-  const { token } = useAuth()
-  const { userDtos, setUserDtos } = useProfile()
-  const [triggerReload, setTriggerReload] = useState(false);
-
-
-
-    useEffect(() => {
-      if (token) {
-        const decoded = decodeJWT(token);
-        if (decoded && decoded.id) {
-          const userProfile = async () => {
-            const res = await getUser(token, decoded.id);
-            setUserDtos(res);
-          };
-          userProfile();
-        }
+  useEffect(() => {
+    if (token) {
+      const decoded = decodeJWT(token);
+      if (decoded && decoded.id) {
+        const userProfile = async () => {
+          const res = await getUser(token, decoded.id);
+          setUserDtos(res);
+        };
+        userProfile();
       }
-    }, [token, triggerReload, setUserDtos]);
+    }
+  }, [token, setUserDtos]);
 
   if (!userDtos) {
-    return 
+    return;
   }
 
-  console.log(userDtos)
+  console.log(userDtos);
 
-if (userDtos.role === 'seller') {
-  return (
-    <div>
-      <div className="w-full h-32 flex items-center">
-        <Navbar />
+  if (userDtos.role === "seller") {
+    return (
+      <div>
+        <div className="w-full h-32 flex items-center">
+          <Navbar />
+        </div>
+        <MainDashboardSeller />
       </div>
-      <MainDashboardSeller/>
-    </div>
-  );
-}
+    );
+  }
 
-if (userDtos.role === "user") {
-  return (
-    <div>
-      <div className="w-full h-32 flex items-center ">
-        <Navbar />
+  if (userDtos.role === "user") {
+    return (
+      <div>
+        <div className="w-full h-32 flex items-center ">
+          <Navbar />
+        </div>
+        <MainDashboardUser />
       </div>
-      <MainDashboardUser/>
-    </div>
-  );
-}
+    );
+  }
+};
 
-}
-
-
-
-export default MainDashboard
+export default MainDashboard;

@@ -1,80 +1,208 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useFair } from "@/context/FairProvider";
-import React, { use, useEffect, useState } from "react";
+import { useProfile } from "@/context/ProfileProvider";
+import React, { useEffect, useState } from "react";
+import { notify } from "../Notifications/Notifications";
+import { TicketProps } from "@/types";
+import Modal from "../Modal";
+import { postInscription, postTicket } from "@/helpers/services";
+import { useAuth } from "@/context/AuthProvider";
+import PaymentsSeller from "../Payments/PaymentsSeller";
+import Payments from "../Payments/PaymentsSeller";
+import PaymentsUser from "../Payments/PaymentsUser";
+import PaymentWorking from "../Payments/PaymentWorking";
 
-const Ticket = () => {
-  const [monto, setMonto] = useState<number | string>("");
-  const [entidadBenefica, setEntidadBenefica] = useState("");
-  const { fair, idFair, timeSelect, dateSelect } = useFair();
+// Función para formatear la fecha a "YYYY-MM-DD"
+const formatDateToYYYYMMDD = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 
-  const fairSelected = {
-    idFair,
-    timeSelect,
-    dateSelect,
-  };
+const Ticket: React.FC<TicketProps> = ({
+  name,
+  salesChecked,
+  category,
+  termsChecked,
+}) => {
+  const [amount, setAmount] = useState<number | string>("");
+  const [charitableEntity, setCharitableEntity] = useState("");
+  const { fairs, fairSelected, timeSelect, dateSelect } = useFair();
+  const { token } = useAuth();
+  const { userDtos } = useProfile();
+  const [openModal, setOpenModal] = useState(false);
+
+  console.log(category);
+
+  const fairSelectedPerUser = fairs.find((f) => f.name === name);
+
+  console.log(fairSelectedPerUser);
+
+  const categorySelected = fairSelectedPerUser?.fairCategories.find(
+    (c) => c.category.name === category
+  );
+
+  console.log(categorySelected);
+
+  const formattedDate = dateSelect
+    ? formatDateToYYYYMMDD(new Date(dateSelect))
+    : null;
 
   useEffect(() => {
-    if (fair && fair.entryPrice !== undefined) {
-      if (fair.entryPrice > 0) {
-        setMonto(fair.entryPrice); // Ejemplo (esto debe parametrizarlo el ADM)
-        setEntidadBenefica(fair.entryDescription); // Ejemplo (esto debe parametrizarlo el ADM)
+    if (fairSelectedPerUser) {
+      if (
+        userDtos?.role === "seller" &&
+        fairSelectedPerUser.entryPriceSeller !== undefined &&
+        fairSelectedPerUser.entryPriceSeller > 0
+      ) {
+        setAmount(fairSelectedPerUser.entryPriceSeller);
+      } else if (
+        userDtos?.role === "user" &&
+        fairSelectedPerUser.entryPriceBuyer !== undefined &&
+        fairSelectedPerUser.entryPriceBuyer > 0
+      ) {
+        setAmount(fairSelectedPerUser.entryPriceBuyer);
+        setCharitableEntity(fairSelectedPerUser.entryDescription || "");
       } else {
-        setMonto("");
-        setEntidadBenefica("");
+        setAmount("");
+        setCharitableEntity("");
       }
+    } else {
+      setAmount("");
+      setCharitableEntity("");
     }
-  }, [fair]);
+  }, [fairSelectedPerUser, userDtos?.role]);
 
-  const handlePagar = () => {
-    alert(`Pagar ${monto} a ${entidadBenefica}`);
+  console.log(userDtos)
+
+        console.log(fairSelectedPerUser?.id);
+        console.log(userDtos?.seller?.id);
+        console.log(categorySelected?.id);
+
+  const handleBuy = () => {
+    if (userDtos?.role === "seller") {
+      postInscription(
+        fairSelectedPerUser?.id,
+        userDtos?.seller?.id,
+        categorySelected?.id
+      );
+      setOpenModal(true);
+    }
+    if (userDtos?.role === "user") {
+      postTicket(
+        fairSelectedPerUser?.id,
+        userDtos?.id,
+        token,
+        formattedDate,
+        timeSelect
+      );
+      setOpenModal(true);
+    }
   };
 
-  // La lógica de si "TIENE COSTO?" La puse para ver cómo renderizaba. Por defecto debe aparecer SIN COSTO
   return (
     <div className="mt-5">
-      <div className="flex items-center"></div>
-      {fair?.entryPrice === 0 ? (
-        <input
-          type="text"
-          value="Sin costo"
-          readOnly
-          className="mt-1 block w-80 px-3 py-2 border rounded-md shadow-sm bg-primary-lighter text-primary-darker"
-        />
-      ) : (
-        <div>
-          <div className="mb-2">
-            <label className="block text-sm font-medium text-primary-darker">
-              Precio:
-            </label>
-            <input
-              type="text"
-              value={monto}
-              readOnly
-              className="mt-1 block w-80 px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring focus:border-primary-default"
-            />
-          </div>
+      <div className="flex items-center">
+        {userDtos?.role === "user" ? (
+          <>
+            <p className="font-bold"></p>
+            {fairSelectedPerUser &&
+            fairSelectedPerUser.entryPriceBuyer === 0 ? (
+              <div>
+                <input
+                  type="text"
+                  value="Sin costo"
+                  readOnly
+                  className="text-primary-darker bg-transparent"
+                />
+                <button
+                  onClick={handleBuy}
+                  className="mt-4 px-4 py-2 text-white rounded-md hover:bg-primary-dark focus:outline-none bg-primary-darker disabled:cursor-not-allowed disabled:bg-primary-light"
+                  disabled={!fairSelectedPerUser || !dateSelect || !timeSelect}
+                >
+                  Adquirí tu turno
+                </button>
+              </div>
+            ) : (
+              <div>
+                <div className="mb-2">
+                  <label className="font-bold"> Precio:</label>
+                  <p>${amount}</p>
+                </div>
+                <div>
+                  <label className="font-bold">Descripción</label>
+                  <p>{charitableEntity}</p>
+                </div>
+                <div>
+                  <PaymentsUser
+                    userId={userDtos.id}
+                    fairId={fairSelectedPerUser?.id}
+                    registrationHour={timeSelect}
+                    registratonDay={formattedDate}
+                    handleBuy={handleBuy}
+                    className="mt-4 px-4 py-2 text-white rounded-md hover:bg-primary-dark focus:outline-none bg-primary-darker disabled:cursor-not-allowed disabled:bg-primary-light"
+                    disabled={
+                      !fairSelectedPerUser || !dateSelect || !timeSelect
+                    }
+                  />
+                </div>
+                {/* <button
+                  onClick={handleBuy}
+                  className="mt-4 px-4 py-2 text-white rounded-md hover:bg-primary-dark focus:outline-none bg-primary-darker disabled:cursor-not-allowed disabled:bg-primary-light"
+                  disabled={!fairSelectedPerUser || !dateSelect || !timeSelect}
+                >
+                  Inscribirse como usuario
+                </button> */}
+              </div>
+            )}
+          </>
+        ) : (
           <div>
-            <label className="block text-sm font-medium text-primary-darker">
-              Descripción
-            </label>
-            <input
-              type="text"
-              value={entidadBenefica}
-              readOnly
-              className="mt-1 block w-80 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-primary-default"
+            <div className="mb-2">
+              <p>Inscripción:</p>
+              <p>${amount}</p>
+            </div>
+            {/* <div>
+              <PaymentsSeller
+                userId={userDtos?.id}
+                fairId={fairSelectedPerUser?.id}
+                categoryId={categorySelected?.id}
+                handleBuy={handleBuy}
+                className="mt-4 px-4 py-2 text-white rounded-md hover:bg-primary-dark focus:outline-none bg-primary-darker disabled:cursor-not-allowed disabled:bg-primary-light"
+                disabled={
+                  !fairSelectedPerUser ||
+                  !salesChecked ||
+                  !categorySelected ||
+                  !termsChecked
+                }
+              />
+            </div> */}
+            <div>
+              <button
+                onClick={handleBuy}
+                className="mt-4 px-4 py-2 text-white rounded-md hover:bg-primary-dark focus:outline-none bg-primary-darker disabled:cursor-not-allowed disabled:bg-primary-light"
+                disabled={
+                  !fairSelectedPerUser ||
+                  !salesChecked ||
+                  !categorySelected ||
+                  !termsChecked
+                }
+              >
+                Inscribirse como vendedor
+              </button>
+            </div>
+          </div>
+        )}
+        {openModal && (
+          <div>
+            <Modal
+              onCloseModal={() => setOpenModal(false)}
+              message="Gracias por inscribirte en la Feria, en breve te confirmaremos tu participación, y pasos a seguir"
             />
           </div>
-
-          {/* Debe redirigir a la pasarela de pago */}
-          <button
-            onClick={handlePagar}
-            className="mt-4 px-4 py-2 bg-primary-default text-white rounded-md hover:bg-primary-dark focus:outline-none focus:bg-primary-darker"
-          >
-            Pagar
-          </button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

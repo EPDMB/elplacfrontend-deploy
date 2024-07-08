@@ -1,12 +1,22 @@
 "use client";
-
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import ChooseRole from "@/components/ChooseRole";
+import { decodeJWT } from "@/helpers/decoder";
+import { UniqueData } from "@/types";
+import { getUniqueData } from "@/helpers/services";
+import { useRouter } from "next/navigation";
+import "ldrs/ring";
 
 const AuthSuccess = () => {
-  useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
+  const searchParams = useSearchParams();
+  const [email, setEmail] = useState<string>("");
+  const [token, setToken] = useState<string>("");
+  const [userId, setUserId] = useState<string>("");
+  const [openChooseRole, setOpenChooseRole] = useState<boolean>(false);
+  const router = useRouter();
 
+  useEffect(() => {
     import("ldrs").then((module) => {
       module.ring.register();
     });
@@ -15,16 +25,63 @@ const AuthSuccess = () => {
 
     if (token) {
       localStorage.setItem("token", token);
-      window.opener.postMessage({ token }, "*");
-      window.close();
+      setToken(token);
+
+      try {
+        const decodedToken: any = decodeJWT(token);
+        const userEmail = decodedToken.email;
+        const userId = decodedToken.id;
+        setUserId(userId);
+        setEmail(userEmail);
+        console.log("Email:", userEmail);
+        console.log("User ID:", userId);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
     }
-  }, []);
+  }, [searchParams]);
+
+  useEffect(() => {
+    const handleRoleSelection = async () => {
+      try {
+        const response: UniqueData = await getUniqueData();
+        console.log(response);
+
+        const userToCheck = response.userInfo.find(
+          (user) =>
+            user.email === email &&
+            user.email.toLowerCase().includes("gmail") &&
+            user.dni.length === 0
+        );
+
+        console.log(userToCheck);
+
+        if (userToCheck) {
+          console.log("Usuario encontrado:", userToCheck);
+          setOpenChooseRole(true);
+        } else {
+          console.log("No se encontró un usuario que cumpla las condiciones.");
+        }
+      } catch (error) {
+        console.error("Error verificando la relación:", error);
+        router.push("/dashboard");
+      }
+    };
+
+    handleRoleSelection();
+  }, [email, token, userId, router]);
 
   return (
     <div>
       <div className="relative flex items-center justify-center h-full w-full bg-secondary-light">
         <div>
-          <l-ring size="120" color="coral"></l-ring>
+          {openChooseRole && <ChooseRole email={email} userId={userId} />}
+
+          {!openChooseRole && (
+            <div className="h-full w-full">
+              <l-ring size="80" color="white"></l-ring>
+            </div>
+          )}
         </div>
       </div>
     </div>
