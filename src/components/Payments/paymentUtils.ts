@@ -7,7 +7,7 @@ export const handlePayment = async (
   transactionType: string
 ) => {
   try {
-    const response = await fetch(`${URL}/payments/createPreferenceSeller`, {
+    const response = await fetch(`${URL}payments/createPreferenceSeller`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

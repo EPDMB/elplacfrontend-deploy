@@ -5,7 +5,7 @@ import { time } from "console";
 //REGISTRO DE USUARIO
 export const postUserRegister = async (user: Partial<IUser>) => {
   try {
-    const res = await fetch(`${URL}/auth/register/user`, {
+    const res = await fetch(`${URL}auth/register/user`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -22,7 +22,7 @@ export const postUserRegister = async (user: Partial<IUser>) => {
 //REGISTRO DE VENDEDOR
 export const postSellerRegister = async (user: ISeller) => {
   try {
-    const res = await fetch(`${URL}/auth/register/seller`, {
+    const res = await fetch(`${URL}auth/register/seller`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,7 +39,7 @@ export const postSellerRegister = async (user: ISeller) => {
 //LOGIN
 export const postUserLogin = async (user: IUserLogin) => {
   try {
-    const res = await fetch(`${URL}/auth/login`, {
+    const res = await fetch(`${URL}auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -163,7 +163,7 @@ export const putChangePassword = async (
 // DEBE REDIRIGIR AL FORMULARIO - FUNCIONA (SE SUPONE)
 export const postForgotPassword = async (email: string) => {
   try {
-    const res = await fetch(`${URL}/auth/forgot-password`, {
+    const res = await fetch(`${URL}auth/forgot-password`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -203,7 +203,7 @@ export const resetPassword = async (
       throw new Error("Las contraseñas no coinciden");
     }
 
-    const res = await fetch(`${URL}/auth/reset-password/${token}`, {
+    const res = await fetch(`${URL}auth/reset-password/${token}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -258,7 +258,7 @@ export const getAllUsers = async (token: string) => {
 // NO PUDE PROBARLA!!!!
 export const updateStatusUser = async (id: string, accessToken: string) => {
   try {
-    const res = await fetch(`${URL}/users/${id}`, {
+    const res = await fetch(`${URL}users/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -370,7 +370,7 @@ export const postTicket = async (
 
 export const getUniqueData = async () => {
   try {
-    const res = await fetch(`${URL}/users/uniquedata`, {
+    const res = await fetch(`${URL}users/uniquedata`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
