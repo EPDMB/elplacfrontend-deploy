@@ -10,7 +10,6 @@ import { useAuth } from "@/context/AuthProvider";
 import PaymentsSeller from "../Payments/PaymentsSeller";
 import Payments from "../Payments/PaymentsSeller";
 import PaymentsUser from "../Payments/PaymentsUser";
-import PaymentWorking from "../Payments/PaymentWorking";
 
 // Función para formatear la fecha a "YYYY-MM-DD"
 const formatDateToYYYYMMDD = (date: Date): string => {
