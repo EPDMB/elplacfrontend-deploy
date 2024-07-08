@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import ChooseRole from "@/components/ChooseRole";
 import { decodeJWT } from "@/helpers/decoder";
@@ -88,4 +88,12 @@ const AuthSuccess = () => {
   );
 };
 
-export default AuthSuccess;
+const AuthSuccessWrapper = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AuthSuccess />
+    </Suspense>
+  );
+};
+
+export default AuthSuccessWrapper;
