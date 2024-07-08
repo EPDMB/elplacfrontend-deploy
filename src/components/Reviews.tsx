@@ -13,10 +13,10 @@ import Input from "./Input";
 import { FaStar } from "react-icons/fa";
 import { useProfile } from "@/context/ProfileProvider";
 import { useAuth } from "@/context/AuthProvider";
-import { lineSpinner } from "ldrs";
+// import { lineSpinner } from "ldrs";
 
 
-lineSpinner.register();
+// lineSpinner.register();
 
 export const Reviews = () => {
   const [reviews, setReviews] = useState<PlaceReview[]>([]);
@@ -143,12 +143,12 @@ export const Reviews = () => {
         <div className="w-full sm:w-[70%] h-1/2">
           {isLoading ? (
             <div className="flex justify-center items-center h-full">
-              <l-line-spinner
+              {/* <l-line-spinner
                 size="40"
                 stroke="3"
                 speed="1"
                 color="black"
-              ></l-line-spinner>
+              ></l-line-spinner> */}
             </div>
           ) : (
           <AliceCarousel
