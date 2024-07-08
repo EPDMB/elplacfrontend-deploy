@@ -17,12 +17,9 @@ const AuthSuccess = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const importLdrs = async () => {
-        const ldrsModule = await import("ldrs");
-        ldrsModule.ring.register();
-      };
-
-      importLdrs();
+      import("ldrs").then((module) => {
+        module.ring.register();
+      });
 
       const token = searchParams.get("token");
 
