@@ -1,12 +1,11 @@
 "use client";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import ChooseRole from "@/components/ChooseRole";
 import { decodeJWT } from "@/helpers/decoder";
 import { UniqueData } from "@/types";
 import { getUniqueData } from "@/helpers/services";
 import { useRouter } from "next/navigation";
-import "ldrs/ring";
 
 const AuthSuccess = () => {
   const searchParams = useSearchParams();
@@ -17,9 +16,12 @@ const AuthSuccess = () => {
   const router = useRouter();
 
   useEffect(() => {
-    import("ldrs").then((module) => {
+    const importLdrs = async () => {
+      const module = await import("ldrs");
       module.ring.register();
-    });
+    };
+
+    importLdrs();
 
     const token = searchParams.get("token");
 
