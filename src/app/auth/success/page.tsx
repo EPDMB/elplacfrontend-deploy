@@ -16,61 +16,65 @@ const AuthSuccess = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const importLdrs = async () => {
-      const ldrsModule = await import("ldrs");
-      ldrsModule.ring.register();
-    };
+    if (typeof window !== "undefined") {
+      const importLdrs = async () => {
+        const ldrsModule = await import("ldrs");
+        ldrsModule.ring.register();
+      };
 
-    importLdrs();
+      importLdrs();
 
-    const token = searchParams.get("token");
+      const token = searchParams.get("token");
 
-    if (token) {
-      localStorage.setItem("token", token);
-      setToken(token);
+      if (token) {
+        localStorage.setItem("token", token);
+        setToken(token);
 
-      try {
-        const decodedToken: any = decodeJWT(token);
-        const userEmail = decodedToken.email;
-        const userId = decodedToken.id;
-        setUserId(userId);
-        setEmail(userEmail);
-        console.log("Email:", userEmail);
-        console.log("User ID:", userId);
-      } catch (error) {
-        console.error("Error decoding token:", error);
+        try {
+          const decodedToken: any = decodeJWT(token);
+          const userEmail = decodedToken.email;
+          const userId = decodedToken.id;
+          setUserId(userId);
+          setEmail(userEmail);
+          console.log("Email:", userEmail);
+          console.log("User ID:", userId);
+        } catch (error) {
+          console.error("Error decoding token:", error);
+        }
       }
     }
   }, [searchParams]);
 
   useEffect(() => {
-    const handleRoleSelection = async () => {
-      try {
-        const response: UniqueData = await getUniqueData();
-        console.log(response);
+    if (email && token && userId) {
+      const handleRoleSelection = async () => {
+        try {
+          const response: UniqueData = await getUniqueData();
+          console.log(response);
 
-        const userToCheck = response.userInfo.find(
-          (user) =>
-            user.email === email &&
-            user.email.toLowerCase().includes("gmail") &&
-            user.dni.length === 0
-        );
+          const userToCheck = response.userInfo.find(
+            (user) =>
+              user.email === email &&
+              user.email.toLowerCase().includes("gmail") &&
+              user.dni.length === 0
+          );
 
-        console.log(userToCheck);
+          console.log(userToCheck);
 
-        if (userToCheck) {
-          console.log("Usuario encontrado:", userToCheck);
-          setOpenChooseRole(true);
-        } else {
-          console.log("No se encontró un usuario que cumpla las condiciones.");
+          if (userToCheck) {
+            console.log("Usuario encontrado:", userToCheck);
+            setOpenChooseRole(true);
+          } else {
+            console.log("No se encontró un usuario que cumpla las condiciones.");
+          }
+        } catch (error) {
+          console.error("Error verificando la relación:", error);
+          router.push("/dashboard");
         }
-      } catch (error) {
-        console.error("Error verificando la relación:", error);
-        router.push("/dashboard");
-      }
-    };
+      };
 
-    handleRoleSelection();
+      handleRoleSelection();
+    }
   }, [email, token, userId, router]);
 
   return (
