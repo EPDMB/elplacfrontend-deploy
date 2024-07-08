@@ -17,8 +17,8 @@ const AuthSuccess = () => {
 
   useEffect(() => {
     const importLdrs = async () => {
-      const module = await import("ldrs");
-      module.ring.register();
+      const ldrsModule = await import("ldrs");
+      ldrsModule.ring.register();
     };
 
     importLdrs();
