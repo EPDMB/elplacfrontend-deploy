@@ -1,11 +1,12 @@
 "use client";
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import ChooseRole from "@/components/ChooseRole";
 import { decodeJWT } from "@/helpers/decoder";
 import { UniqueData } from "@/types";
 import { getUniqueData } from "@/helpers/services";
 import { useRouter } from "next/navigation";
+// import "ldrs/ring";
 
 const AuthSuccess = () => {
   const searchParams = useSearchParams();
@@ -17,9 +18,9 @@ const AuthSuccess = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      import("ldrs").then((module) => {
-        module.ring.register();
-      });
+      // import("ldrs").then((module) => {
+      //   module.ring.register();
+      // });
 
       const token = searchParams.get("token");
 
@@ -43,46 +44,46 @@ const AuthSuccess = () => {
   }, [searchParams]);
 
   useEffect(() => {
-    if (email && token && userId) {
-      const handleRoleSelection = async () => {
-        try {
-          const response: UniqueData = await getUniqueData();
-          console.log(response);
+    const handleRoleSelection = async () => {
+      try {
+        const response: UniqueData = await getUniqueData();
+        console.log(response);
 
-          const userToCheck = response.userInfo.find(
-            (user) =>
-              user.email === email &&
-              user.email.toLowerCase().includes("gmail") &&
-              user.dni.length === 0
-          );
+        const userToCheck = response.userInfo.find(
+          (user) =>
+            user.email === email &&
+            user.email.toLowerCase().includes("gmail") &&
+            user.dni.length === 0
+        );
 
-          console.log(userToCheck);
+        console.log(userToCheck);
 
-          if (userToCheck) {
-            console.log("Usuario encontrado:", userToCheck);
-            setOpenChooseRole(true);
-          } else {
-            console.log("No se encontró un usuario que cumpla las condiciones.");
-          }
-        } catch (error) {
-          console.error("Error verificando la relación:", error);
-          router.push("/dashboard");
+        if (userToCheck) {
+          console.log("Usuario encontrado:", userToCheck);
+          setOpenChooseRole(true);
+        } else {
+          console.log("No se encontró un usuario que cumpla las condiciones.");
         }
-      };
+      } catch (error) {
+        console.error("Error verificando la relación:", error);
+        router.push("/dashboard");
+      }
+    };
 
-      handleRoleSelection();
-    }
+    handleRoleSelection();
   }, [email, token, userId, router]);
 
   return (
     <div>
       <div className="relative flex items-center justify-center h-full w-full bg-secondary-light">
         <div>
-          {openChooseRole ? (
-            <ChooseRole email={email} userId={userId} />
-          ) : (
+          {openChooseRole && <ChooseRole email={email} userId={userId} />}
+
+          {!openChooseRole && (
             <div className="h-full w-full">
-              <l-ring size="80" color="white"></l-ring>
+              {/* {typeof window !== "undefined" && (
+                // <l-ring size="80" color="white"></l-ring>
+              )} */}
             </div>
           )}
         </div>
@@ -91,12 +92,4 @@ const AuthSuccess = () => {
   );
 };
 
-const AuthSuccessWrapper = () => {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <AuthSuccess />
-    </Suspense>
-  );
-};
-
-export default AuthSuccessWrapper;
+export default AuthSuccess;
