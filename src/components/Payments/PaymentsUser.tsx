@@ -41,7 +41,7 @@ export default function PaymentsUser({
           transactionType,
         })
       );
-      const response = await fetch(`${URL}payments/createPreferenceBuyer`, {
+      const response = await fetch(`https://myapp-backend-latest.onrender.com/payments/createPreferenceBuyer`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
