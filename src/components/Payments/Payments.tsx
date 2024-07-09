@@ -19,7 +19,7 @@ export default function Payments() {
   }, []);
 
   const handlePayment = async () => {
-    const response = await fetch(`${URL}/payments/createPreference`, {
+    const response = await fetch(`${URL}payments/createPreference`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

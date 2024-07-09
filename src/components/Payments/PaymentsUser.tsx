@@ -41,7 +41,7 @@ export default function PaymentsUser({
           transactionType,
         })
       );
-      const response = await fetch(`${URL}/payments/createPreferenceBuyer`, {
+      const response = await fetch(`${URL}payments/createPreferenceBuyer`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
