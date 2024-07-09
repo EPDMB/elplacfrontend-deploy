@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import dynamic from "next/dynamic";
 import ChooseRole from "@/components/ChooseRole";
 import { decodeJWT } from "@/helpers/decoder";
 import { UniqueData } from "@/types";
@@ -8,7 +9,7 @@ import { getUniqueData } from "@/helpers/services";
 import { useRouter } from "next/navigation";
 // import "ldrs/ring";
 
-const AuthSuccess = () => {
+const AuthSuccessClient = () => {
   const searchParams = useSearchParams();
   const [email, setEmail] = useState<string>("");
   const [token, setToken] = useState<string>("");
@@ -18,10 +19,6 @@ const AuthSuccess = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // import("ldrs").then((module) => {
-      //   module.ring.register();
-      // });
-
       const token = searchParams.get("token");
 
       if (token) {
@@ -77,9 +74,7 @@ const AuthSuccess = () => {
     <div>
       <div className="relative flex items-center justify-center h-full w-full bg-secondary-light">
         <div>
-          <Suspense fallback={<div>Cargando...</div>}>
-            {openChooseRole && <ChooseRole email={email} userId={userId} />}
-          </Suspense>
+          {openChooseRole && <ChooseRole email={email} userId={userId} />}
 
           {!openChooseRole && (
             <div className="h-full w-full">
@@ -91,6 +86,14 @@ const AuthSuccess = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const AuthSuccess = () => {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <AuthSuccessClient />
+    </Suspense>
   );
 };
 
