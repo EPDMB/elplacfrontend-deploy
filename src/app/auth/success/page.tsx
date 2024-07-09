@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import ChooseRole from "@/components/ChooseRole";
 import { decodeJWT } from "@/helpers/decoder";
@@ -77,7 +77,9 @@ const AuthSuccess = () => {
     <div>
       <div className="relative flex items-center justify-center h-full w-full bg-secondary-light">
         <div>
-          {openChooseRole && <ChooseRole email={email} userId={userId} />}
+          <Suspense fallback={<div>Cargando...</div>}>
+            {openChooseRole && <ChooseRole email={email} userId={userId} />}
+          </Suspense>
 
           {!openChooseRole && (
             <div className="h-full w-full">
