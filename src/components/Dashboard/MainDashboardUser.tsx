@@ -1,6 +1,5 @@
-// components/MainDashboardUser.tsx
-
-import React, { useState } from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import Welcome from "./Profile";
 import SidebarDashboard from "./SidebarDashboard";
 import { FaBars } from "react-icons/fa";
@@ -11,9 +10,26 @@ import clouds from "@/assets/Cloud2.svg";
 import { useProfile } from "@/context/ProfileProvider";
 import DashboardCard from "./DashboardCard";
 import { dashboardEnum } from "@/types";
+import { checkIsGmailfirstTime } from "@/helpers/services";
+import { verifyUserDetails } from "@/helpers/verifyUserDetails";
 
 const MainDashboardUser: React.FC = () => {
   const { userDtos } = useProfile();
+  const [verificationMsg, setVerificationMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    const checkingMail = async () => {
+      if (userDtos) {
+        const verificationMessage = verifyUserDetails(userDtos);
+        if (verificationMessage) {
+          setVerificationMsg(verificationMessage);
+          console.log(verificationMessage);
+        }
+      }
+    };
+
+    checkingMail();
+  }, [userDtos]);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -23,7 +39,7 @@ const MainDashboardUser: React.FC = () => {
 
   return (
     <div className="grid grid-cols-8 gap-0 relative place-content-center">
-      <div className="hidden sm:flex  sm:col-span-1 bg-secondary-lighter">
+      <div className="hidden sm:flex sm:col-span-1 bg-secondary-lighter">
         <SidebarDashboard userRole={userDtos?.role} />
       </div>
       <div className="bg-secondary-lighter p-16 flex flex-col h-[100vh] sm:col-span-7">
@@ -35,6 +51,7 @@ const MainDashboardUser: React.FC = () => {
             title="Mi perfil"
             description="Configura tus datos de contacto y medios de pago y claves"
             typeEnum={dashboardEnum.profile}
+            message={verificationMsg}
           />
           <DashboardCard
             title="Vendé tus productos"

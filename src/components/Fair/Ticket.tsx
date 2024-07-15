@@ -7,11 +7,9 @@ import { TicketProps } from "@/types";
 import Modal from "../Modal";
 import { postInscription, postTicket } from "@/helpers/services";
 import { useAuth } from "@/context/AuthProvider";
-import PaymentsSeller from "../Payments/PaymentsSeller";
-import Payments from "../Payments/PaymentsSeller";
 import PaymentsUser from "../Payments/PaymentsUser";
+import PaymentsSeller from "../Payments/PaymentsSeller";
 
-// Función para formatear la fecha a "YYYY-MM-DD"
 const formatDateToYYYYMMDD = (date: Date): string => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -31,6 +29,22 @@ const Ticket: React.FC<TicketProps> = ({
   const { token } = useAuth();
   const { userDtos } = useProfile();
   const [openModal, setOpenModal] = useState(false);
+  const [liquidation, setLiquidation] = useState(false);
+
+
+  
+useEffect(() => {
+  if (salesChecked === "Si") {
+    setLiquidation(true);
+  } else {
+    setLiquidation(false);
+  }
+}
+, [salesChecked]);
+
+  console.log(userDtos?.registrations);
+
+  console.log(salesChecked)
 
   console.log(category);
 
@@ -73,22 +87,29 @@ const Ticket: React.FC<TicketProps> = ({
     }
   }, [fairSelectedPerUser, userDtos?.role]);
 
-  console.log(userDtos)
+  console.log(userDtos);
 
-        console.log(fairSelectedPerUser?.id);
-        console.log(userDtos?.seller?.id);
-        console.log(categorySelected?.id);
+  console.log(fairSelectedPerUser?.id);
+  console.log(userDtos?.seller?.id);
+  console.log(categorySelected?.id);
 
   const handleBuy = () => {
     if (userDtos?.role === "seller") {
       postInscription(
         fairSelectedPerUser?.id,
         userDtos?.seller?.id,
-        categorySelected?.id
+        categorySelected?.id,
+        liquidation,
       );
-      setOpenModal(true);
     }
     if (userDtos?.role === "user") {
+      console.log(
+        fairSelectedPerUser?.id,
+        userDtos?.id,
+        token,
+        formattedDate,
+        timeSelect
+      );
       postTicket(
         fairSelectedPerUser?.id,
         userDtos?.id,
@@ -108,10 +129,10 @@ const Ticket: React.FC<TicketProps> = ({
             <p className="font-bold"></p>
             {fairSelectedPerUser &&
             fairSelectedPerUser.entryPriceBuyer === 0 ? (
-              <div>
+              <div className="flex flex-col">
                 <input
                   type="text"
-                  value="Sin costo"
+                  value="¡Sin costo!"
                   readOnly
                   className="text-primary-darker bg-transparent"
                 />
@@ -138,7 +159,7 @@ const Ticket: React.FC<TicketProps> = ({
                     userId={userDtos.id}
                     fairId={fairSelectedPerUser?.id}
                     registrationHour={timeSelect}
-                    registratonDay={formattedDate}
+                    registrationDay={formattedDate}
                     handleBuy={handleBuy}
                     className="mt-4 px-4 py-2 text-white rounded-md hover:bg-primary-dark focus:outline-none bg-primary-darker disabled:cursor-not-allowed disabled:bg-primary-light"
                     disabled={
@@ -146,13 +167,6 @@ const Ticket: React.FC<TicketProps> = ({
                     }
                   />
                 </div>
-                {/* <button
-                  onClick={handleBuy}
-                  className="mt-4 px-4 py-2 text-white rounded-md hover:bg-primary-dark focus:outline-none bg-primary-darker disabled:cursor-not-allowed disabled:bg-primary-light"
-                  disabled={!fairSelectedPerUser || !dateSelect || !timeSelect}
-                >
-                  Inscribirse como usuario
-                </button> */}
               </div>
             )}
           </>
@@ -162,7 +176,7 @@ const Ticket: React.FC<TicketProps> = ({
               <p>Inscripción:</p>
               <p>${amount}</p>
             </div>
-            {/* <div>
+            <div>
               <PaymentsSeller
                 userId={userDtos?.id}
                 fairId={fairSelectedPerUser?.id}
@@ -176,20 +190,6 @@ const Ticket: React.FC<TicketProps> = ({
                   !termsChecked
                 }
               />
-            </div> */}
-            <div>
-              <button
-                onClick={handleBuy}
-                className="mt-4 px-4 py-2 text-white rounded-md hover:bg-primary-dark focus:outline-none bg-primary-darker disabled:cursor-not-allowed disabled:bg-primary-light"
-                disabled={
-                  !fairSelectedPerUser ||
-                  !salesChecked ||
-                  !categorySelected ||
-                  !termsChecked
-                }
-              >
-                Inscribirse como vendedor
-              </button>
             </div>
           </div>
         )}

@@ -34,7 +34,7 @@ const Navbar: React.FC = () => {
 
   const handleToggleMobile = () => {
     setIsMobile(!isMobile);
-  }
+  };
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
@@ -59,8 +59,13 @@ const Navbar: React.FC = () => {
   }, []);
 
   return (
-    <div className={`flex w-full lg:mr-16 h-full items-center justify-end `}>
-      <ul className="flex text-xl lg:gap-6 font-semibold text-primary-darker items-center  gap-24 md:gap-1 xl:gap-5">
+    <div className={`flex w-full lg:pr-16 h-full items-center justify-end `}>
+      <ul
+        className={`flex text-xl lg:gap-6 font-semibold 
+          
+            
+             text-primary-darker
+         items-center  gap-24 md:gap-1 xl:gap-5`}>
         <li>
           <div className="w-40 sm:mr-5 self-start ">
             <Link href="/">
@@ -97,13 +102,11 @@ const Navbar: React.FC = () => {
               {token && dropdownVisible && (
                 <div
                   ref={dropdownRef}
-                  className="absolute top-full  -translate-x-[30%] mt-2 py-2  bg-secondary-lighter rounded-md shadow-md z-10"
-                >
+                  className="absolute top-full  -translate-x-[30%] mt-2 py-2  bg-secondary-lighter rounded-md shadow-md z-10">
                   <Link
                     href="/dashboard"
                     onClick={() => setDropdownVisible(false)}
-                    className="block px-4 py-2 font-semibold text-nowrap text-primary-darker hover:bg-secondary-light"
-                  >
+                    className="block px-4 py-2 font-semibold text-nowrap text-primary-darker hover:bg-secondary-light">
                     Mi Cuenta
                   </Link>
                   <Link
@@ -112,8 +115,7 @@ const Navbar: React.FC = () => {
                       handleLogout();
                       setDropdownVisible(false);
                     }}
-                    className="block px-4 py-2 font-semibold text-nowrap text-primary-darker hover:bg-secondary-light"
-                  >
+                    className="block px-4 py-2 font-semibold text-nowrap text-primary-darker hover:bg-secondary-light">
                     Cerrar sesión
                   </Link>
                 </div>
@@ -127,20 +129,17 @@ const Navbar: React.FC = () => {
           {!token && dropdownVisible && (
             <div
               ref={dropdownRef}
-              className="absolute top-full -translate-x-1/2 mt-2 py-2 w-fit bg-secondary-lighter rounded-md shadow-md z-10"
-            >
+              className="absolute top-full -translate-x-1/2 mt-2 py-2 w-fit bg-secondary-lighter rounded-md shadow-md z-10">
               <Link
                 href="/login"
                 onClick={() => setDropdownVisible(false)}
-                className="block px-4 py-2 font-semibold text-nowrap text-primary-darker hover:bg-secondary-light"
-              >
+                className="block px-4 py-2 font-semibold text-nowrap text-primary-darker hover:bg-secondary-light">
                 Inicia sesión
               </Link>
               <Link
                 href="/register/buyer"
                 onClick={() => setDropdownVisible(false)}
-                className="block px-4 py-2 font-semibold text-primary-darker hover:bg-secondary-light"
-              >
+                className="block px-4 py-2 font-semibold text-primary-darker hover:bg-secondary-light">
                 Registrate
               </Link>
             </div>
@@ -160,8 +159,7 @@ const Navbar: React.FC = () => {
                   borderRight: "10px solid transparent",
                   borderBottom: "25px solid var(--secondary-light)",
                 }}
-                className="absolute top-4 right-5 z-20"
-              ></div>
+                className="absolute top-4 right-5 z-20"></div>
             )}
           </li>
           {isMobile && (

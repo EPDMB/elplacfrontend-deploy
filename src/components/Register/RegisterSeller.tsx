@@ -24,14 +24,20 @@ const RegisterSeller: React.FC = () => {
       ...seller,
     };
     try {
-      await postSellerRegister(completeParsedSeller);
-      formikSeller.resetForm();
-      router.push("/login");
-            notify(
-              "ToastRedirect",
-              "Revisa tu casilla de correo para confirmar tu cuenta"
-            );
+      const res = await postSellerRegister(completeParsedSeller);
+      console.log(res);
+      if (res?.ok) {
+        formikSeller.resetForm();
+        router.push("/login");
+        notify(
+          "ToastRedirect",
+          "Revisa tu casilla de correo para confirmar tu cuenta"
+        );
+      } else {
+        throw new Error("Error en el registro");
+      }
     } catch (error: any) {
+      notify("ToastError", error.message);
       throw new Error(error);
     }
   };
@@ -184,7 +190,8 @@ const RegisterSeller: React.FC = () => {
       }
     `}
           type="submit"
-          disabled={!isChecked || !formikSeller.isValid}>
+          disabled={!isChecked || !formikSeller.isValid}
+        >
           Registrarse
         </button>
       </div>

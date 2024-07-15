@@ -4,15 +4,14 @@ import {
   IDashboardUserErrors,
   ILoginFormErrors,
   IPasswordChangeErrors,
+  IPasswordChangeForgotErrors,
   IRegisterFormErrors,
-  UniqueData,
+  
 } from "@/types";
-import { getAllUsers, getUniqueData } from "./services";
 
 export async function registerSellerValidations(
   values: any
 ): Promise<IRegisterFormErrors> {
-  const uniqueData: UniqueData[] = await getUniqueData();
   const errors: IRegisterFormErrors = {};
   const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const regexName = /^[a-zA-ZÀ-ÿ\s]+$/;
@@ -49,9 +48,7 @@ export async function registerSellerValidations(
     } else if ("") {
       errors.email =
         "El email solo puede contener letras, números, puntos y guiones";
-    } else if (uniqueData.find((unique) => unique.email === values.email)) {
-      errors.email = "Ya existe una cuenta con ese Email";
-    }
+    } 
 
     // Address Validations
     if (!values.address) {
@@ -80,9 +77,8 @@ export async function registerSellerValidations(
       errors.dni = "Tiene que ser un número de DNI valido";
     } else if (Number(values.dni) > 99999999) {
       errors.dni = "Tiene que ser un número de DNI valido";
-    } else if (uniqueData.find((unique) => unique.dni === values.dni)) {
-      errors.dni = "Ya existe una cuenta con ese DNI";
-    }
+    } 
+
     // Bank Account Validations
     if (!values.bank_account) {
       errors.bank_account = "Ingresa tu CBU/CVU/Alias";
@@ -123,7 +119,6 @@ export async function registerSellerValidations(
 export async function registerUserValidations(
   values: any
 ): Promise<IRegisterFormErrors> {
-  const uniqueData: UniqueData[] = await getUniqueData();
 
   const errors: IRegisterFormErrors = {};
   const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -160,9 +155,7 @@ export async function registerUserValidations(
     } else if ("") {
       errors.email =
         "El email solo puede contener letras, números, puntos y guiones";
-    } else if (uniqueData.find((unique) => unique.email === values.email)) {
-      errors.email = "Ya existe una cuenta con ese Email";
-    }
+    } 
 
     // DNI Validations
     if (!values.dni) {
@@ -173,9 +166,7 @@ export async function registerUserValidations(
       errors.dni = "Tiene que ser un número de DNI valido";
     } else if (Number(values.dni) > 99999999) {
       errors.dni = "Tiene que ser un número de DNI valido";
-    } else if (uniqueData.find((unique) => unique.dni === values.dni)) {
-      errors.dni = "Ya existe una cuenta con ese DNI";
-    }
+    } 
 
     // Password Validations
     if (!values.password) {
@@ -217,6 +208,41 @@ export const loginValidations = (values: any) => {
   } catch (error: any) {
     console.error(error.message);
   }
+};
+
+export const forgotPassValidations = (values: any) => {
+  try {
+    const errors: ILoginFormErrors = {};
+    if (!values.email) {
+      errors.email = "Ingresa el email";
+    }
+
+    return errors;
+  } catch (error: any) {
+    console.error(error.message);
+  }
+};
+
+export const resetPasswordValidations = (values: any) => {
+  const errors: IPasswordChangeForgotErrors = {};
+  const regexPassword = /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&_\-])/;
+
+  // New Password Validations
+  if (values.newPassword !== values.confirmNewPassword) {
+    errors.newPassword = "Las contraseñas deben ser iguales";
+  } else if (!regexPassword.test(values.newPassword)) {
+    errors.newPassword =
+      "Debe contener al menos una mayúscula, una minúscula, un número y un carácter especial";
+  }
+
+  // Confirm New Password Validations
+  if (!values.confirmNewPassword) {
+    errors.confirmNewPassword = "Ingresa la contraseña otra vez";
+  } else if (values.confirmNewPassword !== values.newPassword) {
+    errors.confirmNewPassword = "Las contraseñas deben ser iguales";
+  }
+
+  return errors;
 };
 
 export const passwordValidations = (values: any) => {
@@ -265,7 +291,6 @@ export const passwordValidations = (values: any) => {
 export async function dashboardUserValidations(
   values: any
 ): Promise<IDashboardUserErrors> {
-  const uniqueData: UniqueData[] = await getUniqueData();
 
   const errors: IDashboardUserErrors = {};
   const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -298,7 +323,7 @@ export async function dashboardUserValidations(
     } else if (!regexEmail.test(values.email)) {
       errors.email =
         "El email solo puede contener letras, números, puntos y guiones";
-    }
+    } 
 
     // DNI Validations
     if (!values.dni) {
@@ -309,7 +334,7 @@ export async function dashboardUserValidations(
       errors.dni = "Tiene que ser un número de DNI valido";
     } else if (Number(values.dni) > 99999999) {
       errors.dni = "Tiene que ser un número de DNI valido";
-    }
+    } 
     return errors;
   } catch (error: any) {
     console.error(error.message);
@@ -320,7 +345,6 @@ export async function dashboardUserValidations(
 export async function dashboardSellerValidations(
   values: any
 ): Promise<IDashboardSellerErrors> {
-  const uniqueData: UniqueData[] = await getUniqueData();
   const errors: IRegisterFormErrors = {};
   const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const regexName = /^[a-zA-ZÀ-ÿ\s]+$/;
@@ -357,7 +381,7 @@ export async function dashboardSellerValidations(
     } else if ("") {
       errors.email =
         "El email solo puede contener letras, números, puntos y guiones";
-    }
+    } 
     // Address Validations
     if (!values.address) {
       errors.address = "Ingresa tu dirección";
@@ -385,7 +409,7 @@ export async function dashboardSellerValidations(
       errors.dni = "Tiene que ser un número de DNI valido";
     } else if (Number(values.dni) > 99999999) {
       errors.dni = "Tiene que ser un número de DNI valido";
-    }
+    } 
     // Bank Account Validations
     if (!values.bank_account) {
       errors.bank_account = "Ingresa tu CBU/CVU/Alias";

@@ -11,6 +11,7 @@ const DashboardCard: React.FC<IDashboardCardProps> = ({
   title,
   description,
   typeEnum,
+  message,
 }) => {
   return (
     <Link href={`/dashboard/${typeEnum}`}>
@@ -38,6 +39,9 @@ const DashboardCard: React.FC<IDashboardCardProps> = ({
         </div>
         <p className="font-base text-primary-darker mt-2 text-md">
           {description}
+        </p>
+        <p className="font-base text-red-600 mt-2 text-md">
+          {message}
         </p>
         <IoIosArrowForward
           className="absolute right-0 bottom-0 -translate-x-5 -translate-y-5"

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { initMercadoPago, Wallet } from "@mercadopago/sdk-react";
 
 import { MERCADOPAGO_PUBLIC_KEY, URL } from "../../../envs";
-import { PaymentsSellerProps } from "@/types";
+import { PaymentsSellerProps } from "@/types"; 
 
 export default function PaymentsSeller({
   userId,
@@ -13,7 +13,6 @@ export default function PaymentsSeller({
   disabled,
   className,
 }: PaymentsSellerProps) {
-  const [transactionType, setTransactionType] = useState("sale");
   const [preferenceId, setPreferenceId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -28,15 +27,13 @@ export default function PaymentsSeller({
     userId: string | undefined,
     fairId: string | undefined,
     categoryId: string | undefined,
-    transactionType: string
   ) => {
     try {
-      if (!userId || !fairId || !categoryId || !transactionType) {
+      if (!userId || !fairId || !categoryId) {
         console.error("Missing parameters:", {
           userId,
           fairId,
           categoryId,
-          transactionType,
         });
         throw new Error("Missing parameters");
       }
@@ -45,10 +42,9 @@ export default function PaymentsSeller({
         userId,
         fairId,
         categoryId,
-        transactionType,
       });
 
-      const response = await fetch(`https://myapp-backend-latest.onrender.com/payments/createPreferenceSeller`, {
+      const response = await fetch(`${URL}/payments/createPreferenceSeller`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -56,7 +52,6 @@ export default function PaymentsSeller({
         body: JSON.stringify({
           userId,
           fairId,
-          transactionType,
           categoryId,
         }),
       });
@@ -90,14 +85,8 @@ export default function PaymentsSeller({
         userId,
         fairId,
         categoryId,
-        transactionType,
       });
-      const preference = await handlePayment(
-        userId,
-        fairId,
-        categoryId,
-        transactionType
-      );
+      const preference = await handlePayment(userId, fairId, categoryId);
       console.log("Preference:", preference);
       if (preference && preference.preferenceId) {
         setPreferenceId(preference.preferenceId);

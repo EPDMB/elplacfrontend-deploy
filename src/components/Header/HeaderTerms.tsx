@@ -24,9 +24,6 @@ function HeaderTerms() {
         <h1 className="innerShadowTitleTerms flex justify-end items-end w-full md:w-[30vh] text-secondary-darker text-2xl sm:text-4xl md:text-[6vh] lg:text-[9vh]  font-bold text-wrap md:text-nowrap text-end md:pb-1 lg:pb-6 xl:pb-10 ">
           Términos y Condiciones
         </h1>
-        <h3 className="innerShadowSubTitleTerms flex justify-end items-end w-full md:w-[30vh] text-secondary-darker text-md sm:text-xl md:text-[3vh] lg:text-[4vh]  font-bold text-wrap md:text-nowrap text-end lg:pb-3 xl:pb-6 ">
-          Leé el contenido, completa el formulario, y sacá turno
-        </h3>
         <h3 className="innerShadowDescriptionTerms flex justify-end items-end w-full md:w-[18vh] text-secondary-darker text-sm sm:text-lg md:text-[3vh] lg:text-[3vh]  font-bold text-wrap md:text-nowrap text-end xl:pb-6 ">
           Sumate a nuestra comunidad!
         </h3>

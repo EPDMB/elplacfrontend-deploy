@@ -14,20 +14,20 @@ import { useAuth } from "./AuthProvider";
 const FairContext = createContext<IFairContext | undefined>(undefined);
 
 export const FairProvider: React.FC<IFairProviderProps> = ({ children }) => {
-const [fairs, setFairs] = useState<IFair[]>([]);
+  const [fairs, setFairs] = useState<IFair[]>([]);
   const [fairSelected, setFairSelected] = useState<any>(null);
   const [dateSelect, setDateSelect] = useState<Date | null>(null);
   const [timeSelect, setTimeSelect] = useState<string>("");
-  console.log(fairs);
-  console.log(timeSelect);
-  console.log(dateSelect);
-  console.log(fairSelected);
+  const [activeFair, setActiveFair] = useState<IFair | undefined>(undefined);
+
+  console.log("activeFair", activeFair);
+  console.log("fairs", fairs);
 
   useEffect(() => {
     const fetchFair = async () => {
-      const res = await getFair();
+      const res: IFair[] = await getFair();
       setFairs(res);
-     
+      setActiveFair(res.find((fair: IFair) => fair.isActive === true));
     };
     fetchFair();
   }, []);
@@ -36,14 +36,14 @@ const [fairs, setFairs] = useState<IFair[]>([]);
     <FairContext.Provider
       value={{
         fairs,
+        activeFair,
         setDateSelect,
         setTimeSelect,
         timeSelect,
         dateSelect,
         fairSelected,
-        setFairSelected
-      }}
-    >
+        setFairSelected,
+      }}>
       {children}
     </FairContext.Provider>
   );

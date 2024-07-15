@@ -3,6 +3,7 @@ import React from "react";
 import { usePathname } from "next/navigation";
 import Header from "./Header";
 import HeaderTerms from "./HeaderTerms";
+import path from "path";
 
 function HeaderClient() {
   const pathname = usePathname();
@@ -13,7 +14,10 @@ function HeaderClient() {
     pathname === "/about_us" ||
     pathname === "/dashboard" ||
     pathname === "/dashboard/profile" ||
-    pathname === "/help"
+    pathname === "/help" ||
+    pathname === "/dashboard/changeType" ||
+    pathname === "/dashboard/fairs" ||
+    pathname === "/dashboard/products"
   ) {
     return null;
   }

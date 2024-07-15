@@ -1,15 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import React, { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { notify } from "./Notifications/Notifications";
-import { useAuth } from "@/context/AuthProvider";
+import React, { useEffect, useRef, useState } from "react";
+
 import Image from "next/image";
 import gmailLogo from "@/assets/gmailLogo.svg";
+import { URL } from "../../envs";
 
 const GoogleLoginButton = () => {
   const handleLoginSuccess = () => {
-    window.location.href = "https://myapp-backend-latest.onrender.com/auth/googleLogin";
+    window.location.href = `${URL}/auth/googleLogin`;
   };
 
   return (

@@ -4,6 +4,7 @@ import { FaPencilAlt } from "react-icons/fa";
 import {
   DashboardProps,
   IDashboardSeller,
+  IDashboardSellerPayments,
   IDashboardUser,
   IFair,
   IPasswordChange,
@@ -18,7 +19,12 @@ import profile from "../../assets/profile.png";
 import { useFormik } from "formik";
 import Input from "../Input";
 import { decodeJWT } from "@/helpers/decoder";
-import { getUser, putChangePassword, putUser } from "@/helpers/services";
+import {
+  getUser,
+  putChangePassword,
+  putSeller,
+  putUser,
+} from "@/helpers/services";
 import { notify } from "../Notifications/Notifications";
 import { useAuth } from "@/context/AuthProvider";
 import {
@@ -40,6 +46,7 @@ import ProfileSettings from "./ProfileFilters/ProfileSettings";
 import ProfilePayments from "./ProfileFilters/ProfilePayments";
 import ProfileImage from "./ProfileFilters/ProfileImage";
 import ProfileLeftFilters from "./ProfileFilters/ProfileLeftFilters";
+import { URL } from "../../../envs";
 
 function Welcome() {
   const [dashBoardFilter, setDashBoardFilter] = useState<string>(
@@ -48,6 +55,7 @@ function Welcome() {
   const { token } = useAuth();
   const { userDtos, setUserDtos, setProfileImageChanged } = useProfile();
   const [edit, setEdit] = useState(false);
+  const [editSeller, setEditSeller] = useState(false);
   const [triggerReload, setTriggerReload] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { fairs, setFairSelected } = useFair();
@@ -81,10 +89,6 @@ function Welcome() {
       lastname: userDtos?.lastname || "",
       email: userDtos?.email || "",
       dni: userDtos?.dni || "",
-      phone: userDtos?.phone || "",
-      address: userDtos?.address || "",
-      bank_account: userDtos?.bank_account || "",
-      social_media: userDtos?.social_media || "",
     },
     onSubmit: (values) => {
       handleUpdateUser(values as IDashboardUser);
@@ -92,8 +96,21 @@ function Welcome() {
     validate: dashboardSellerValidations,
   });
 
+  const formikSellerPayments = useFormik({
+    enableReinitialize: true,
+    initialValues: {
+      phone: userDtos?.seller?.phone || "",
+      address: userDtos?.seller?.address || "",
+      bank_account: userDtos?.seller?.bank_account || "",
+      social_media: userDtos?.seller?.social_media || "",
+    },
+    onSubmit: (values) => {
+      handleUpdateSellerPayments(values as IDashboardSeller);
+    },
+    // validate: dashboardSellerValidations,
+  });
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    //Pendiente de modularizar
     if (!e.target.files) return;
 
     const file = e.target.files[0];
@@ -104,13 +121,10 @@ function Welcome() {
       const decoded = decodeJWT(token);
       if (decoded && decoded.id) {
         try {
-          const res = await fetch(
-            `https://myapp-backend-latest.onrender.com/files/uploadImage/${decoded.id}`,
-            {
-              method: "POST",
-              body: formData,
-            }
-          );
+          const res = await fetch(`${URL}/files/uploadImage/${decoded.id}`, {
+            method: "POST",
+            body: formData,
+          });
           if (!res.ok) {
             throw new Error("Error al subir la imagen");
           }
@@ -175,6 +189,31 @@ function Welcome() {
     }
   };
 
+  const handleUpdateSellerPayments = async (user: IDashboardUser) => {
+    try {
+      console.log("Entre al submit");
+      console.log("user", user);
+
+      if (token) {
+        const decoded = decodeJWT(token);
+        if (decoded && userDtos?.seller?.id && user) {
+          await putSeller(token, userDtos?.seller?.id, user);
+          setEdit(false);
+          formikUser.resetForm();
+          notify("ToastSuccess", "Datos actualizados correctamente");
+        } else {
+          console.error("Datos insuficientes para actualizar el usuario");
+        }
+      } else {
+        console.error("Token no disponible");
+      }
+    } catch (error) {
+      notify("ToastError", "Error al actualizar los datos");
+      console.error("Error en handleUpdateUser:", error);
+    }
+  };
+
+
   const changePassword = async (pass: IPasswordChange) => {
     try {
       const decoded = decodeJWT(token);
@@ -231,10 +270,28 @@ function Welcome() {
       onChange: handleInputChange,
       disabled: !edit,
       onBlur: formikSeller.handleBlur,
-      value: formikSeller.values[name as keyof IDashboardSeller],
-      touched: formikSeller.touched[name as keyof IDashboardSeller],
-      errors: formikSeller.errors[name as keyof IDashboardSeller],
+      value: formikSeller.values[name as keyof IDashboardUser],
+      touched: formikSeller.touched[name as keyof IDashboardUser],
+      errors: formikSeller.errors[name as keyof IDashboardUser],
       edit: edit,
+      label: name,
+    };
+  };
+
+  const getPropsSellerPayments = (name: string) => {
+    return {
+      name: name,
+      formType: formTypeEnum.dashboard_user,
+      onChange: handleInputChange,
+      disabled: !editSeller,
+      onBlur: formikSellerPayments.handleBlur,
+      value:
+        formikSellerPayments.values[name as keyof IDashboardSellerPayments],
+      touched:
+        formikSellerPayments.touched[name as keyof IDashboardSellerPayments],
+      errors:
+        formikSellerPayments.errors[name as keyof IDashboardSellerPayments],
+      edit: editSeller,
       label: name,
     };
   };
@@ -245,7 +302,7 @@ function Welcome() {
         <Navbar />
       </div>
 
-      <main className=" grid grid-cols-8  gap-3 ">
+      <main className="grid grid-cols-8 gap-0 relative place-content-center">
         <div className="bg-secondary-lighter h-full col-span-1 hidden sm:flex">
           <SidebarDashboard userRole={userDtos?.role} />
         </div>
@@ -278,8 +335,8 @@ function Welcome() {
                 dashBoardFilter === "Ferias" &&
                 "Ferias"}
               {userDtos?.role === "seller" &&
-                dashBoardFilter === "Mis medios de pago" &&
-                "Mis medios de pago"}
+                dashBoardFilter === "Datos de vendedor" &&
+                "Datos de vendedor"}
               {dashBoardFilter === "Ajustes de cuenta" && "Ajustes de cuenta"}
             </h1>
             {dashBoardFilter === "Mis datos de contacto" && (
@@ -288,6 +345,19 @@ function Welcome() {
                   onClick={() => setEdit(!edit)}
                   className={`flex gap-1 items-center hover:underline ${
                     edit ? "hidden" : "inline"
+                  }`}
+                >
+                  <h4 className="text-xs xl:text-lg">Editar</h4>
+                  <FaPencilAlt size={8} />
+                </button>
+              </div>
+            )}
+            {dashBoardFilter === "Datos de vendedor" && (
+              <div className="absolute right-0 text-primary-dark  w-fit h-fit ">
+                <button
+                  onClick={() => setEditSeller(!editSeller)}
+                  className={`flex gap-1 items-center hover:underline ${
+                    editSeller ? "hidden" : "inline"
                   }`}
                 >
                   <h4 className="text-xs xl:text-lg">Editar</h4>
@@ -308,7 +378,13 @@ function Welcome() {
               />
             )}
 
-            {dashBoardFilter === "Mis medios de pago" && <ProfilePayments />}
+            {dashBoardFilter === "Datos de vendedor" && (
+              <ProfilePayments
+                formikSellerPayments={formikSellerPayments}
+                getPropsSellerPayments={getPropsSellerPayments}
+                editSeller={editSeller}
+              />
+            )}
 
             {dashBoardFilter === "Ferias" && (
               <ProfileFairs

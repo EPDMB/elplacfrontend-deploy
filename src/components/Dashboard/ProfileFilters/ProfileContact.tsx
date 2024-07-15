@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { useProfile } from "@/context/ProfileProvider";
 import Input from "@/components/Input";
 import { IProfileContact } from "@/types";
@@ -21,16 +21,32 @@ const ProfileContact: React.FC<IProfileContact> = ({
     };
   };
 
+  useEffect(() => {
+    const formik = userDtos?.role === "user" ? formikUser : formikSeller;
+
+    const fieldsToCheck = [
+      "name",
+      "lastname",
+      "email",
+      "dni",
+     ];
+
+    fieldsToCheck.forEach((field) => {
+      if (formik.values[field] === "" && !formik.touched[field]) {
+        formik.setFieldTouched(field, true);
+        formik.setFieldError(field, "Este campo es requerido");
+      }
+    });
+  }, [userDtos?.role, formikUser, formikSeller]);
+
   return (
     <div className="mt-2 sm:mt-0 ml-1 sm:ml-0 sm:gap-3 sm:p-4 xl:pt-10 text-primary-dark">
       {userDtos?.role === "user" ? (
         <form onSubmit={formikUser.handleSubmit}>
           <Input type="text" {...getPropsWithLabel("name", "Nombre")} />
-
           <Input type="text" {...getPropsWithLabel("lastname", "Apellido")} />
 
           <Input type="email" {...getPropsWithLabel("email", "Email")} />
-
           <Input type="text" {...getPropsWithLabel("dni", "DNI")} />
 
           {edit && (
@@ -46,18 +62,15 @@ const ProfileContact: React.FC<IProfileContact> = ({
         <form onSubmit={formikSeller.handleSubmit}>
           <Input type="text" {...getPropsWithLabel("name", "Nombre")} />
           <Input type="text" {...getPropsWithLabel("lastname", "Apellido")} />
-          <Input type="email" {...getPropsWithLabel("email", "Email")} />
-          <Input type="text" {...getPropsWithLabel("dni", "DNI")} />
-          <Input type="text" {...getPropsWithLabel("phone", "Teléfono")} />
-          <Input type="text" {...getPropsWithLabel("address", "Dirección")} />
           <Input
-            type="text"
-            {...getPropsWithLabel("bank_account", "CVU / CBU / Alias")}
+            type="email"
+            {...getPropsWithLabel("email", "Email")}
           />
           <Input
             type="text"
-            {...getPropsWithLabel("social_media", "Instagram")}
+            {...getPropsWithLabel("dni", "DNI")}
           />
+         
 
           {edit && (
             <button

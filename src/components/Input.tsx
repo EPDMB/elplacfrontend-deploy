@@ -10,6 +10,8 @@ const Input: React.FC<IInputProps> = ({
   formType,
   value,
   touched,
+  disabled,
+  disabledUnique,
   errors,
   edit,
   ...inputProps
@@ -45,7 +47,7 @@ const Input: React.FC<IInputProps> = ({
                 ? `${
                     userType ? "text-primary-dark" : "text-secondary-darker"
                   } text-base font-medium`
-                : "text-xs font-semibold sm:text-sm lg:text-base xl:text-xl"
+                : "text-xs font-bold sm:text-sm lg:text-base xl:text-xl"
             }>
             {label}
           </label>
@@ -85,6 +87,7 @@ const Input: React.FC<IInputProps> = ({
         </div>
         <div className="relative w-fit ">
           <input
+            disabled={disabledUnique ?? disabled}
             className={
               formType === formTypeEnum.login
                 ? `border w-full ${

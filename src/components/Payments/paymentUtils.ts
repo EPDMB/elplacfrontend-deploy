@@ -1,22 +1,20 @@
 import { URL } from "../../../envs";
 
 export const handlePayment = async (
-  sellerId: string | undefined,
+  userId: string | undefined,
   fairId: string | undefined,
-  categoryId: string | undefined,
-  transactionType: string
+  categoryId: string | undefined
 ) => {
   try {
-    const response = await fetch(`https://myapp-backend-latest.onrender.com/payments/createPreferenceSeller`, {
+    const response = await fetch(`${URL}/payments/createPreferenceSeller`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        sellerId: sellerId,
+        userId: userId,
         fairId: fairId,
-        transactionType: transactionType,
-        categoryId: categoryId
+        categoryId: categoryId,
       }),
     });
 

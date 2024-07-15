@@ -27,15 +27,23 @@ const RegisterUser: React.FC = () => {
     );
 
     try {
-      await postUserRegister(filteredParsedUser);
+      const res = await postUserRegister(filteredParsedUser);
+      console.log(res);
+      if (res?.ok) {
+        formikUser.resetForm();
+        router.push("/login");
+        notify(
+          "ToastRedirect",
+          "Revisa tu casilla de correo para confirmar tu cuenta"
+        );
+      }
 
-      formikUser.resetForm();
-      router.push("/login");
-      notify(
-        "ToastRedirect",
-        "Revisa tu casilla de correo para confirmar tu cuenta"
-      );
+      else {
+        notify("ToastError", "Error en el registro");
+      }
     } catch (error: any) {
+      notify("ToastError", error.message);
+
       console.error(error.message);
     }
   };
@@ -146,7 +154,8 @@ const RegisterUser: React.FC = () => {
       }
     `}
           type="submit"
-          disabled={!isChecked || !formikUser.isValid}>
+          disabled={!isChecked || !formikUser.isValid}
+        >
           Registrarse
         </button>
       </div>

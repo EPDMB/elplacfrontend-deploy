@@ -7,6 +7,8 @@ import MainDashboardUser from "./MainDashboardUser";
 import { useProfile } from "@/context/ProfileProvider";
 import { getUser } from "@/helpers/services";
 import Navbar from "../Navbar";
+import MainDashboardAdmin from "./Admin/MainDashboardAdmin";
+import NavbarAdmin from "../NavbarAdmin";
 
 const MainDashboard: React.FC = () => {
   const { token } = useAuth();
@@ -49,6 +51,17 @@ const MainDashboard: React.FC = () => {
           <Navbar />
         </div>
         <MainDashboardUser />
+      </div>
+    );
+  }
+
+  if (userDtos.role === "admin") {
+    return (
+      <div>
+        <div className="w-full h-32 flex items-center ">
+          <NavbarAdmin />
+        </div>
+        <MainDashboardAdmin />
       </div>
     );
   }

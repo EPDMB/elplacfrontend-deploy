@@ -6,7 +6,6 @@ const AuthContext = createContext<IAuthContext | undefined>(undefined);
 
 export const AuthProvider: React.FC<IAuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string>("");
-  const [userData, setUserData] = useState<IUser | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -24,7 +23,7 @@ export const AuthProvider: React.FC<IAuthProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ token, setToken, logout, userData, setUserData }}>
+      value={{ token, setToken, logout, }}>
       {children}
     </AuthContext.Provider>
   );

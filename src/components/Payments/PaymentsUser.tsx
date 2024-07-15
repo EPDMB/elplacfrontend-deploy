@@ -2,14 +2,14 @@
 import React, { useEffect, useState } from "react";
 import { initMercadoPago, Wallet } from "@mercadopago/sdk-react";
 
-import { MERCADOPAGO_PUBLIC_KEY, URL } from "../../../envs";
-import { PaymentsSellerProps, PaymentsUserProps } from "@/types";
+import { URL } from "../../../envs"; 
+import { PaymentsUserProps } from "@/types";
 
 export default function PaymentsUser({
   userId,
   fairId,
   registrationHour,
-  registratonDay,
+  registrationDay,
   handleBuy,
   className,
   disabled,
@@ -27,8 +27,7 @@ export default function PaymentsUser({
     userId: string | undefined,
     fairId: string | undefined,
     registrationHour: string | undefined | null,
-    registratonDay: string | undefined | null,
-    transactionType: string | undefined
+    registrationDay: string | undefined | null,
   ) => {
     try {
       console.log(
@@ -37,11 +36,10 @@ export default function PaymentsUser({
           userId,
           fairId,
           registrationHour,
-          registratonDay,
-          transactionType,
+          registrationDay,
         })
       );
-      const response = await fetch(`https://myapp-backend-latest.onrender.com/payments/createPreferenceBuyer`, {
+      const response = await fetch(`${URL}/payments/createPreferenceBuyer`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -50,7 +48,7 @@ export default function PaymentsUser({
           userId,
           fairId,
           registrationHour,
-          registratonDay,
+          registrationDay,
           transactionType,
         }),
       });
@@ -84,8 +82,8 @@ export default function PaymentsUser({
         userId,
         fairId,
         registrationHour,
-        registratonDay,
-        transactionType
+        registrationDay,
+        
       );
       setPreferenceId(preference.preferenceId);
       if (preferenceId) {

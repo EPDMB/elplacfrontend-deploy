@@ -3,7 +3,7 @@ import { useFormik } from "formik";
 import { postUserLogin } from "@/helpers/services";
 import { IUserLogin, formTypeEnum } from "@/types";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { loginValidations } from "@/helpers/validations";
 import Input from "./Input";
 import Image from "next/image";
@@ -11,11 +11,13 @@ import profile from "@/assets/profile.svg";
 import "react-toastify/dist/ReactToastify.css";
 import { notify } from "./Notifications/Notifications";
 import { useAuth } from "@/context/AuthProvider";
+import ForgotPass from "./ForgotPass";
 
 export const Login = () => {
   const router = useRouter();
-  const { setToken } = useAuth();
-  const [ isLoading, setIsLoading ] = React.useState(false);
+  const { setToken, logout } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
   const signIn = async (user: IUserLogin) => {
     try {
@@ -34,6 +36,7 @@ export const Login = () => {
       setIsLoading(false);
     }
   };
+
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -94,7 +97,6 @@ export const Login = () => {
               className="bg-secondary-darker w-32 h-9 my-6 rounded-3xl text-center text-white text-base font-bold"
               type="submit"
               disabled={!formik.isValid || isLoading}>
-              
               {isLoading ? (
                 <div className="flex items-center justify-center">
                   <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-6 w-6"></div>
@@ -104,11 +106,18 @@ export const Login = () => {
               )}
             </button>
           </div>
-          <p className="font-semibold text-secondary-darker text-center">
+          <button
+            onClick={() => setOpenModal(true)}
+            className="font-semibold text-secondary-darker text-center">
             Olvidé mi contraseña
-          </p>
+          </button>
         </form>
       </div>
+      {openModal && (
+        <div>
+          <ForgotPass onCloseModal={() => setOpenModal(false)} message="" />
+        </div>
+      )}
     </div>
   );
 };

@@ -1,15 +1,15 @@
 "use client";
 import { useFair } from "@/context/FairProvider";
 import React, { useEffect, useState } from "react";
-import Dropdown from "../Dropdown"; 
-import { IFair, FairDay, BuyerCapacity } from "@/types"; 
+import Dropdown from "../Dropdown";
+import { IFair, FairDay, BuyerCapacity } from "@/types";
 
 function TimeRange() {
   const { fairs, setTimeSelect, dateSelect } = useFair();
 
   const [schedulesTurns, setSchedulesTurns] = useState<BuyerCapacity[]>([]);
-  console.log(schedulesTurns)
-  console.log(dateSelect)
+  console.log(schedulesTurns);
+  console.log(dateSelect);
 
   useEffect(() => {
     if (fairs && dateSelect) {
@@ -34,14 +34,14 @@ function TimeRange() {
 
   const [horarioSeleccionado, setHorarioSeleccionado] = useState<string>("");
 
-  const options = schedulesTurns.map((hc) => ({
+  const options = [...schedulesTurns].reverse().map((hc) => ({
     id: hc.hour,
     name: `${
       hc.capacity === 0 ? "Agotado" : `Turnos disponibles (${hc.capacity})`
     }`,
   }));
 
-  console.log(options)
+  console.log(options);
 
   const handleHorarioSelect = (option: { id: string; name: string }) => {
     const selectedHorario = schedulesTurns.find((hc) => hc.hour === option.id);
@@ -57,7 +57,7 @@ function TimeRange() {
       <Dropdown
         options={options}
         onSelect={handleHorarioSelect}
-        label={horarioSeleccionado || "Selecciona Horario"}
+        value={horarioSeleccionado || "Selecciona Horario"}
         className="w-48"
       />
     </div>

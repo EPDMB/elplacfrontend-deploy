@@ -1,18 +1,35 @@
 "use client";
 import { DashboardProps, UserDto, dashboardEnum } from "@/types";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Welcome from "./Profile";
 import SidebarDashboard from "./SidebarDashboard";
 import { FaBars } from "react-icons/fa";
 import { useProfile } from "@/context/ProfileProvider";
 import DashboardCard from "./DashboardCard";
+import { verifyUserDetails } from "@/helpers/verifyUserDetails";
 
 const MainDashboardSeller: React.FC = () => {
   const { userDtos } = useProfile();
   const [isOpen, setIsOpen] = useState(false);
+  const [verificationMsg, setVerificationMsg] = useState<string | null>(null);
+
   const handleClick = () => {
     setIsOpen(!isOpen);
   };
+
+    useEffect(() => {
+      const checkingMail = async () => {
+        if (userDtos) {
+          const verificationMessage = verifyUserDetails(userDtos);
+          if (verificationMessage) {
+            setVerificationMsg(verificationMessage);
+            console.log(verificationMessage);
+          }
+        }
+      };
+
+      checkingMail();
+    }, [userDtos]);
 
   return (
     <div className="grid grid-cols-8 gap-0 relative place-content-center">
@@ -36,6 +53,7 @@ const MainDashboardSeller: React.FC = () => {
             title="Mi perfil"
             description="Configura tus datos de contacto y medios de pago y claves"
             typeEnum={dashboardEnum.profile}
+            message={verificationMsg}
           />
           <DashboardCard
             title="Mis ferias"

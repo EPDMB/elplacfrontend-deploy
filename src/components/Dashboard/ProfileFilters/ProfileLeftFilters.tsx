@@ -99,7 +99,7 @@ const ProfileLeftFilters: React.FC<IProfileLeftFilters> = ({
 
       {userRole === "seller" && (
         <div className="w-full flex flex-row items-center gap-1 xl:gap-3  sm:items-center mb-2 xl:mb-5">
-          {dashBoardFilter === "Mis medios de pago" ? (
+          {dashBoardFilter === "Datos de vendedor" ? (
             <MdCreditCard
               className="w-8 h-8 md:w-12 md:h-12 p-2 rounded-md shadow-lg bg-secondary-light"
               style={{
@@ -118,11 +118,11 @@ const ProfileLeftFilters: React.FC<IProfileLeftFilters> = ({
 
           <button
             className={`text-[10px] text-start sm:text-base lg:text-lg xl:text-2xl hover:text-secondary-dark w-fit hover:cursor-pointer ${
-              dashBoardFilter === "Mis medios de pago" && "font-semibold"
+              dashBoardFilter === "Datos de vendedor" && "font-semibold"
             }`}
-            onClick={() => setDashBoardFilter("Mis medios de pago")}
+            onClick={() => setDashBoardFilter("Datos de vendedor")}
           >
-            Mis Medios de pago
+            Datos de vendedor
           </button>
         </div>
       )}

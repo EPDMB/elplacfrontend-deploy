@@ -13,10 +13,9 @@ import Input from "./Input";
 import { FaStar } from "react-icons/fa";
 import { useProfile } from "@/context/ProfileProvider";
 import { useAuth } from "@/context/AuthProvider";
-// import { lineSpinner } from "ldrs";
+import { lineSpinner } from "ldrs";
 
-
-// lineSpinner.register();
+lineSpinner.register();
 
 export const Reviews = () => {
   const [reviews, setReviews] = useState<PlaceReview[]>([]);
@@ -28,7 +27,7 @@ export const Reviews = () => {
   const [hover, setHover] = useState<number | null>(null);
   const { userDtos } = useProfile();
   const { token } = useAuth();
-  const [ isLoading, setIsLoading ] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   function onCloseModal() {
     setOpenModal(false);
@@ -39,36 +38,35 @@ export const Reviews = () => {
 
   useEffect(() => {
     setTimeout(() => {
-    setReviews([
-      {
-        author_name: "Lucia Martínez",
-        profile_photo_url: profilephoto,
-        rating: 5,
-        text: "Increíble selección de ropa para niños. Calidad excepcional y diseños únicos. ¡Muy recomendado!",
-      },
-      {
-        author_name: "Carlos Hernández",
-        profile_photo_url: profilephoto,
-        rating: 5,
-        text: "El personal fue muy amable y paciente al ayudarme a elegir los mejores atuendos para mi sobrino. Excelente servicio.",
-      },
-      {
-        author_name: "Sofía Giraldo",
-        profile_photo_url: profilephoto,
-        rating: 4,
-        text: "Buena calidad de ropa y precios razonables. La tienda es un poco pequeña, pero la selección es variada.",
-      },
-      {
-        author_name: "Eduardo López",
-        profile_photo_url: profilephoto,
-        rating: 4,
-        text: "Encontré el regalo perfecto para la fiesta de cumpleaños de mi hijo. Gran variedad de opciones para niños de todas las edades.",
-      },
-    ]);
+      setReviews([
+        {
+          author_name: "Lucia Martínez",
+          profile_photo_url: profilephoto,
+          rating: 5,
+          text: "Increíble selección de ropa para niños. Calidad excepcional y diseños únicos. ¡Muy recomendado!",
+        },
+        {
+          author_name: "Carlos Hernández",
+          profile_photo_url: profilephoto,
+          rating: 5,
+          text: "El personal fue muy amable y paciente al ayudarme a elegir los mejores atuendos para mi sobrino. Excelente servicio.",
+        },
+        {
+          author_name: "Sofía Giraldo",
+          profile_photo_url: profilephoto,
+          rating: 4,
+          text: "Buena calidad de ropa y precios razonables. La tienda es un poco pequeña, pero la selección es variada.",
+        },
+        {
+          author_name: "Eduardo López",
+          profile_photo_url: profilephoto,
+          rating: 4,
+          text: "Encontré el regalo perfecto para la fiesta de cumpleaños de mi hijo. Gran variedad de opciones para niños de todas las edades.",
+        },
+      ]);
 
-    setIsLoading(false);
-  }, 2000)
-
+      setIsLoading(false);
+    }, 2000);
   }, [userDtos]);
 
   useEffect(() => {
@@ -103,7 +101,7 @@ export const Reviews = () => {
   const items = reviews.map((review, index) => (
     <div
       key={index}
-      className="bg-primary-default mx-5 rounded-xl h-56 flex flex-col items-start justify-center text-center">
+      className="bg-[#f2e8dad7] mx-5 rounded-xl h-56 flex flex-col items-start justify-center text-center">
       <div className="w-full h-12 flex items-center justify-start pl-3 mb-5">
         <div className=" lg:h-20 lg:w-20 flex items-center">
           <Image
@@ -143,37 +141,36 @@ export const Reviews = () => {
         <div className="w-full sm:w-[70%] h-1/2">
           {isLoading ? (
             <div className="flex justify-center items-center h-full">
-              {/* <l-line-spinner
+              <l-line-spinner
                 size="40"
                 stroke="3"
                 speed="1"
-                color="black"
-              ></l-line-spinner> */}
+                color="black"></l-line-spinner>
             </div>
           ) : (
-          <AliceCarousel
-            mouseTracking
-            items={items}
-            responsive={responsive}
-            controlsStrategy="alternate"
-            autoPlay
-            autoPlayInterval={3000}
-            infinite
-            disableDotsControls
-            renderPrevButton={() => (
-              <button
-                className={`hidden md:inline-block md:-left-16 absolute top-28 transform -translate-y-1/2 bg-gray-500 text-white w-8 h-8 rounded-full z-10 shadow-xl`}>
-                &lt;
-              </button>
-            )}
-            renderNextButton={() => (
-              <button className="hidden md:inline-block md:-right-16 absolute top-28 transform -translate-y-1/2 bg-gray-500 text-white w-8 h-8 rounded-full z-10 shadow-xl">
-                &gt;
-              </button>
-            )}
-            paddingLeft={50}
-            paddingRight={50}
-          />
+            <AliceCarousel
+              mouseTracking
+              items={items}
+              responsive={responsive}
+              controlsStrategy="alternate"
+              autoPlay
+              autoPlayInterval={3000}
+              infinite
+              disableDotsControls
+              renderPrevButton={() => (
+                <button
+                  className={`hidden md:inline-block md:-left-16 absolute top-28 transform -translate-y-1/2 bg-gray-500 text-white w-8 h-8 rounded-full z-10 shadow-xl`}>
+                  &lt;
+                </button>
+              )}
+              renderNextButton={() => (
+                <button className="hidden md:inline-block md:-right-16 absolute top-28 transform -translate-y-1/2 bg-gray-500 text-white w-8 h-8 rounded-full z-10 shadow-xl">
+                  &gt;
+                </button>
+              )}
+              paddingLeft={50}
+              paddingRight={50}
+            />
           )}
         </div>
         {token && (

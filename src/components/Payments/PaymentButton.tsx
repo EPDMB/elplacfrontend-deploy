@@ -2,27 +2,25 @@ import React from "react";
 import { handlePayment } from "./paymentUtils";
 
 interface PaymentButtonProps {
-  sellerId: string | undefined;
+  userId: string | undefined;
   fairId: string | undefined;
   categoryId: string | undefined;
-  transactionType: string;
   setPreferenceId: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 const PaymentButton: React.FC<PaymentButtonProps> = ({
-  sellerId,
+  userId,
   fairId,
   categoryId,
-  transactionType,
+  
   setPreferenceId,
 }) => {
   const handleClick = async () => {
     try {
       const preference = await handlePayment(
-        sellerId,
+        userId,
         fairId,
         categoryId,
-        transactionType
       );
       setPreferenceId(preference.preferenceId);
     } catch (error: any) {
