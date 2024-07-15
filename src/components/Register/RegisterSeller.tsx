@@ -1,7 +1,7 @@
 "use client";
 
 import { postSellerRegister } from "@/helpers/services";
-import { formTypeEnum, IRegisterProps, ISeller } from "@/types";
+import { formTypeEnum, ISeller } from "@/types";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFormik } from "formik";
@@ -42,7 +42,7 @@ const RegisterSeller: React.FC = () => {
     }
   };
 
-  const formikSeller = useFormik({
+  const formikSeller = useFormik<ISeller>({
     initialValues: {
       name: "",
       lastname: "",
@@ -60,18 +60,19 @@ const RegisterSeller: React.FC = () => {
     validate: registerSellerValidations,
   });
 
-  const getProps = (name: string) => {
+  const getProps = (name: keyof ISeller) => {
     return {
       name: name,
       userType: true,
       formType: formTypeEnum.login,
       onChange: formikSeller.handleChange,
       onBlur: formikSeller.handleBlur,
-      value: formikSeller.values[name as keyof ISeller],
-      touched: formikSeller.touched[name as keyof ISeller],
-      errors: formikSeller.errors[name as keyof ISeller],
+      value: formikSeller.values[name],
+      touched: formikSeller.touched[name],
+      errors: formikSeller.errors[name],
     };
   };
+
   return (
     <form onSubmit={formikSeller.handleSubmit}>
       <div className="flex gap-4">

@@ -181,13 +181,15 @@ export interface ISeller {
   dni: string;
   email: string;
   phone: string;
-  sku: string;
   address: string;
   password: string;
   confirmPassword: string;
   bank_account: string;
   social_media: string;
   id: string;
+  sku?: string;
+  registrations?: SellerRegistrations[];
+  liquidation?: boolean;
 }
 
 export interface IInputProps {
@@ -273,6 +275,7 @@ export interface FairDay {
 }
 
 export interface SellerRegistrations {
+  fair: IFair;
   categoryFair: Category;
   entryfee: number;
   id: string;
@@ -600,6 +603,17 @@ export interface WebSocketNotification {
     status: productsStatusColorEnum;
   };
   message: string;
+}
+
+export interface NotificationsFromAdmin {
+  sellerId: string;
+  forAll: boolean;
+  message: string;
+  product: {
+    pRequestId: string;
+    sellerId: string;
+    status: productsStatusColorEnum;
+  };
 }
 
 export interface NotificationFromBack {

@@ -36,7 +36,11 @@ const ProductsTable: React.FC<IProductRequestTableProps> = ({
 
   const currentColumns = details ? detailColumns : columns;
 
-  const liquidation = 0; // Acá tendría que tener el calculo de liquidacion
+  const applyLiquidation = (price: number) => {
+    const discount = price * 0.25;
+    const finalPrice = price - discount;
+    return finalPrice;
+  };
 
   return (
     <table className="w-full mb-20 text-sm text-left rtl:text-right bg-[#F9FAFB]">
@@ -115,10 +119,12 @@ const ProductsTable: React.FC<IProductRequestTableProps> = ({
                   {product.description}
                 </td>
                 <td className="px-6 py-4 text-primary-darker font-medium">
-                  {product.price}
+                  ${product.price}
                 </td>
                 <td className="px-6 py-4 text-primary-darker font-medium">
-                  {product.liquidation && liquidation}
+                  {product.liquidation
+                    ? `$${applyLiquidation(product.price)}`
+                    : "No aplica"}
                 </td>
                 <td className="px-6 py-4 text-primary-darker font-medium">
                   {product.status}

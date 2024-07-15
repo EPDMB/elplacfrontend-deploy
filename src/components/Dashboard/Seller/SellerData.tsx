@@ -46,7 +46,7 @@ const SellerData = () => {
           <div className="flex justify-between border-t border-primary-lighter">
             <p>Participa de la liquidación:</p>
             <p className="text-gray-400 font-normal cursor-default">
-              {sellerDtos?.acceptSales ? "Sí" : "No"}
+              {sellerDtos?.liquidation ? "Sí" : "No"}
             </p>
           </div>
         </div>

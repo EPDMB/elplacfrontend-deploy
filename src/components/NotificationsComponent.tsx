@@ -7,7 +7,7 @@ interface Notification {
   message: string;
 }
 
-const socket: Socket = io("https://myapp-backend-latest.onrender.com", { withCredentials: true });
+const socket: Socket = io("http://localhost:3000", { withCredentials: true });
 
 const NotificationsComponent: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -25,7 +25,7 @@ const NotificationsComponent: React.FC = () => {
   useEffect(() => {
     const checkFairDates = () => {
       const now = new Date();
-      const fairStartDate = new Date("YYYY-MM-DD");
+      const fairStartDate = new Date("YYYY-MM-DD"); 
       const dayBeforeFairStart = new Date(fairStartDate);
       dayBeforeFairStart.setDate(fairStartDate.getDate() - 1);
 

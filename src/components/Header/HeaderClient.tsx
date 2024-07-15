@@ -3,7 +3,7 @@ import React from "react";
 import { usePathname } from "next/navigation";
 import Header from "./Header";
 import HeaderTerms from "./HeaderTerms";
-import path from "path";
+import HeaderNotFound from "./HeaderNotFound";
 
 function HeaderClient() {
   const pathname = usePathname();
@@ -20,6 +20,8 @@ function HeaderClient() {
     pathname === "/dashboard/products"
   ) {
     return null;
+  } else if (pathname === "/not-found") {
+    return <HeaderNotFound />;
   }
   return <Header />;
 }

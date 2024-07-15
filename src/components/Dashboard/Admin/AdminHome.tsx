@@ -21,7 +21,7 @@ import Loader from "@/components/Loader";
 import { useFair } from "@/context/FairProvider";
 import { io, Socket } from "socket.io-client";
 
-const socket: Socket = io("https://myapp-backend-latest.onrender.com", {
+const socket: Socket = io("http://localhost:3000", {
   withCredentials: true,
   extraHeaders: {
     "Content-Type": "application/json",

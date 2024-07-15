@@ -16,7 +16,7 @@ function Methodology() {
 
   return (
     <div className="flex h-screen  bg-secondary-lighter">
-      <div className="w-2/3 p-6 overflow-y-auto">
+      <div className="w-full p-6 overflow-y-auto">
         <div>
           <h2 className="text-lg font-bold text-primary-darker">Ventas</h2>
           

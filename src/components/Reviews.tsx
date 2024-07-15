@@ -1,5 +1,4 @@
 /* eslint-disable react/no-unescaped-entities */
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -13,9 +12,6 @@ import Input from "./Input";
 import { FaStar } from "react-icons/fa";
 import { useProfile } from "@/context/ProfileProvider";
 import { useAuth } from "@/context/AuthProvider";
-import { lineSpinner } from "ldrs";
-
-lineSpinner.register();
 
 export const Reviews = () => {
   const [reviews, setReviews] = useState<PlaceReview[]>([]);
@@ -29,44 +25,39 @@ export const Reviews = () => {
   const { token } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
 
-  function onCloseModal() {
-    setOpenModal(false);
-    setAuthorName("");
-    setReviewText("");
-    setRating(0);
-  }
-
   useEffect(() => {
-    setTimeout(() => {
-      setReviews([
-        {
-          author_name: "Lucia Martínez",
-          profile_photo_url: profilephoto,
-          rating: 5,
-          text: "Increíble selección de ropa para niños. Calidad excepcional y diseños únicos. ¡Muy recomendado!",
-        },
-        {
-          author_name: "Carlos Hernández",
-          profile_photo_url: profilephoto,
-          rating: 5,
-          text: "El personal fue muy amable y paciente al ayudarme a elegir los mejores atuendos para mi sobrino. Excelente servicio.",
-        },
-        {
-          author_name: "Sofía Giraldo",
-          profile_photo_url: profilephoto,
-          rating: 4,
-          text: "Buena calidad de ropa y precios razonables. La tienda es un poco pequeña, pero la selección es variada.",
-        },
-        {
-          author_name: "Eduardo López",
-          profile_photo_url: profilephoto,
-          rating: 4,
-          text: "Encontré el regalo perfecto para la fiesta de cumpleaños de mi hijo. Gran variedad de opciones para niños de todas las edades.",
-        },
-      ]);
+    if (typeof window !== "undefined") {
+      setTimeout(() => {
+        setReviews([
+          {
+            author_name: "Lucia Martínez",
+            profile_photo_url: profilephoto,
+            rating: 5,
+            text: "Increíble selección de ropa para niños. Calidad excepcional y diseños únicos. ¡Muy recomendado!",
+          },
+          {
+            author_name: "Carlos Hernández",
+            profile_photo_url: profilephoto,
+            rating: 5,
+            text: "El personal fue muy amable y paciente al ayudarme a elegir los mejores atuendos para mi sobrino. Excelente servicio.",
+          },
+          {
+            author_name: "Sofía Giraldo",
+            profile_photo_url: profilephoto,
+            rating: 4,
+            text: "Buena calidad de ropa y precios razonables. La tienda es un poco pequeña, pero la selección es variada.",
+          },
+          {
+            author_name: "Eduardo López",
+            profile_photo_url: profilephoto,
+            rating: 4,
+            text: "Encontré el regalo perfecto para la fiesta de cumpleaños de mi hijo. Gran variedad de opciones para niños de todas las edades.",
+          },
+        ]);
 
-      setIsLoading(false);
-    }, 2000);
+        setIsLoading(false);
+      }, 2000);
+    }
   }, [userDtos]);
 
   useEffect(() => {
@@ -91,6 +82,14 @@ export const Reviews = () => {
     onCloseModal();
   };
 
+  const handleRatingChange = (value: number) => {
+    setRating(value);
+  };
+
+  const onCloseModal = () => {
+    setOpenModal(false);
+  };
+
   const responsive = {
     0: { items: 1 },
     560: { items: 2 },
@@ -101,7 +100,8 @@ export const Reviews = () => {
   const items = reviews.map((review, index) => (
     <div
       key={index}
-      className="bg-[#f2e8dad7] mx-5 rounded-xl h-56 flex flex-col items-start justify-center text-center">
+      className="bg-[#f2e8dad7] mx-5 rounded-xl h-56 flex flex-col items-start justify-center text-center"
+    >
       <div className="w-full h-12 flex items-center justify-start pl-3 mb-5">
         <div className=" lg:h-20 lg:w-20 flex items-center">
           <Image
@@ -125,10 +125,6 @@ export const Reviews = () => {
     </div>
   ));
 
-  const handleRatingChange = (value: number) => {
-    setRating(value);
-  };
-
   return (
     <div className="flex flex-col">
       <div className="flex justify-center m-auto"></div>
@@ -141,11 +137,24 @@ export const Reviews = () => {
         <div className="w-full sm:w-[70%] h-1/2">
           {isLoading ? (
             <div className="flex justify-center items-center h-full">
-              <l-line-spinner
-                size="40"
-                stroke="3"
-                speed="1"
-                color="black"></l-line-spinner>
+                <svg
+                  version="1.1"
+                  id="loader-1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlnsXlink="http://www.w3.org/1999/xlink"
+                  x="0px"
+                  y="0px"
+                  width="120px"
+                  height="120px"
+                  viewBox="0 0 50 50"
+                  xmlSpace="preserve"
+                  className="animate-spin"
+                >
+                  <path
+                    fill="#FFD47B"
+                    d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z"
+                  />
+                </svg>
             </div>
           ) : (
             <AliceCarousel
@@ -159,7 +168,8 @@ export const Reviews = () => {
               disableDotsControls
               renderPrevButton={() => (
                 <button
-                  className={`hidden md:inline-block md:-left-16 absolute top-28 transform -translate-y-1/2 bg-gray-500 text-white w-8 h-8 rounded-full z-10 shadow-xl`}>
+                  className={`hidden md:inline-block md:-left-16 absolute top-28 transform -translate-y-1/2 bg-gray-500 text-white w-8 h-8 rounded-full z-10 shadow-xl`}
+                >
                   &lt;
                 </button>
               )}
@@ -176,7 +186,8 @@ export const Reviews = () => {
         {token && (
           <button
             className="bg-primary-default w-fit m-auto my-5 rounded-md p-2 text-secondary-light shadow"
-            onClick={() => setOpenModal(true)}>
+            onClick={() => setOpenModal(true)}
+          >
             Dejar reseña
           </button>
         )}
@@ -184,26 +195,28 @@ export const Reviews = () => {
 
       {openModal && (
         <div
-          className="fixed z-20  inset-0 flex items-center justify-center bg-black bg-opacity-50"
-          onClick={onCloseModal}>
+          className="fixed z-20 inset-0 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={onCloseModal}
+        >
           <div
             className="bg-secondary-default p-8 m-3 md:m-0 rounded-md relative"
-            onClick={(e) => e.stopPropagation()}>
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
-              className="absolute top-2 right-2 text-2xl font-bold text-primary-darker rounded-full "
-              onClick={onCloseModal}>
+              className="absolute top-2 right-2 text-2xl font-bold text-primary-darker rounded-full"
+              onClick={onCloseModal}
+            >
               ✖
             </button>
-            <form
-              onSubmit={handleSubmit}
-              className="z-10 flex flex-col items-start">
+            <form className="flex flex-col" onSubmit={handleSubmit}>
               <Input
-                label="Nombre del autor"
+                type="text"
+                label="Nombre"
+                placeholder="Nombre"
                 value={authorName}
-                placeholder="Juan Perez"
-                required={true}
                 onChange={(e) => setAuthorName(e.target.value)}
-                formType={formTypeEnum.login}></Input>
+                formType={formTypeEnum.login}
+              ></Input>
               <div className="flex flex-col">
                 <label className="mt-2 text-base font-medium text-secondary-darker sm:text-base">
                   Texto de la reseña
@@ -257,7 +270,8 @@ export const Reviews = () => {
                 disabled={disabled}
                 className={` $ bg-primary-default w-fit m-auto my-5 rounded-md p-2 text-secondary-light shadow ${
                   disabled ? " opacity-30 cursor-not-allowed" : " "
-                } `}>
+                } `}
+              >
                 Agregar Reseña
               </button>
             </form>
