@@ -181,6 +181,7 @@ export interface ISeller {
   dni: string;
   email: string;
   phone: string;
+  sku: string;
   address: string;
   password: string;
   confirmPassword: string;
