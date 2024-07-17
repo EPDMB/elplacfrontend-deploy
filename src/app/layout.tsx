@@ -9,6 +9,7 @@ import HeaderClient from "@/components/Header/HeaderClient";
 import { ToastContainer } from "react-toastify";
 import { ProfileImageProvider } from "@/context/ProfileProvider";
 import { FairProvider } from "@/context/FairProvider";
+import FooterClient from "@/components/Footer/FooterClient";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
@@ -30,7 +31,7 @@ export default function RootLayout({
             <ProfileImageProvider>
               <HeaderClient />
               {children}
-              <Footer />
+              <FooterClient />
             </ProfileImageProvider>
           </FairProvider>
           <ToastContainer />

@@ -43,7 +43,7 @@ const ToastWithHeader: React.FC<ToastWithButtonsProps> = ({ message }) => (
 
 const ToastSuccess: React.FC<ToastWithButtonsProps> = ({ message }) => (
   <div className="flex flex-col gap-10 p-0 m-0 relative ">
-    {/* <div className="absolute translate-x-[30px] -translate-y-5 h-[45px] w-[45px] p-0 m-0">
+    <div className="absolute translate-x-[2px] -translate-y-5 h-[40px] w-[40px] p-0 m-0">
       <Image
         src={sunglasses}
         alt="loginbanner"
@@ -51,8 +51,8 @@ const ToastSuccess: React.FC<ToastWithButtonsProps> = ({ message }) => (
         objectFit="cover"
         objectPosition="0px 0px"
       />
-    </div> */}
-    <div className=" text-primary-darker font-bold flex flex-col items-center justify-center h-3 w-full p-0 m-0">
+    </div>
+    <div className="absolute translate-x-[30px] -translate-y-2 text-center text-primary-darker font-bold flex flex-col items-center justify-center h-3 w-full p-0 m-0">
       {message}
     </div>
   </div>
@@ -60,7 +60,7 @@ const ToastSuccess: React.FC<ToastWithButtonsProps> = ({ message }) => (
 
 const ToastError: React.FC<ToastWithButtonsProps> = ({ message }) => (
   <div className="flex flex-col gap-10 p-0 m-0 relative">
-    {/* <div className="absolute translate-x-[30px] -translate-y-4 h-[40px] w-[40px] p-0 m-0">
+    <div className="absolute translate-x-[2px] -translate-y-5 h-[40px] w-[40px] p-0 m-0">
       <Image
         src={shoes}
         alt="loginbanner"
@@ -68,8 +68,8 @@ const ToastError: React.FC<ToastWithButtonsProps> = ({ message }) => (
         objectFit="cover"
         objectPosition="0px 0px"
       />
-    </div> */}
-    <div className=" text-red-800 font-bold flex flex-col items-center justify-center h-3 w-full p-0 m-0">
+    </div>
+    <div className="absolute translate-x-[30px] -translate-y-2 text-center text-red-800 font-bold flex flex-col items-center justify-center h-3 w-full p-0 m-0">
       {message}
     </div>
   </div>
@@ -167,7 +167,7 @@ export const notify = (
           onCancel={() => toast.dismiss()}
         />,
         {
-          position: "bottom-right",
+          position: "top-right",
           className: "custom-toast-error",
           style: {
             color: "#FFFFFF",
@@ -188,7 +188,7 @@ export const notify = (
           onCancel={() => toast.dismiss()}
         />,
         {
-          position: "bottom-right",
+          position: "top-right",
           style: {
             backgroundColor: "#171717",
             color: "#FFFFFF",
@@ -209,7 +209,7 @@ export const notify = (
           onCancel={() => toast.dismiss()}
         />,
         {
-          position: "bottom-right",
+          position: "top-right",
           className: "custom-toast-success",
           style: {
             color: "#FFFFFF",
@@ -230,7 +230,7 @@ export const notify = (
           onCancel={() => toast.dismiss()}
         />,
         {
-          position: "bottom-right",
+          position: "top-right",
           className: "custom-toast-with-header",
           style: {
             color: "#FFFFFF",
@@ -251,7 +251,7 @@ export const notify = (
           onCancel={() => toast.dismiss()}
         />,
         {
-          position: "bottom-right",
+          position: "top-right",
           style: {
             color: "#FFFFFF",
             fontSize: "15px",
@@ -276,7 +276,7 @@ export const notify = (
           onCancel={() => toast.dismiss()}
         />,
         {
-          position: "bottom-right",
+          position: "top-right",
           style: {
             backgroundColor: "#171717",
             color: "#FFFFFF",
@@ -295,12 +295,15 @@ export const notify = (
           message={message}
           onAccept={() => {
             toast.dismiss();
-            notify("ToastSuccess", "Turno confirmado - Revisa tu casilla de correo");
+            notify(
+              "ToastSuccess",
+              "Turno confirmado - Revisa tu casilla de correo"
+            );
           }}
           onCancel={() => toast.dismiss()}
         />,
         {
-          position: "bottom-right",
+          position: "top-right",
           style: {
             color: "#FFFFFF",
             fontSize: "15px",
@@ -314,7 +317,7 @@ export const notify = (
 
     default:
       toast(message, {
-        position: "top-center",
+        position: "top-right",
         style: {
           backgroundColor: "#9E9E9E",
           color: "#FFFFFF",

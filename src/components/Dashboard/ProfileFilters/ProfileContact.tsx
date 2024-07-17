@@ -5,7 +5,6 @@ import { IProfileContact } from "@/types";
 
 const ProfileContact: React.FC<IProfileContact> = ({
   formikUser,
-  getPropsSeller,
   getPropsUser,
   formikSeller,
   edit,
@@ -13,8 +12,7 @@ const ProfileContact: React.FC<IProfileContact> = ({
   const { userDtos } = useProfile();
 
   const getPropsWithLabel = (name: string, label: string) => {
-    const props =
-      userDtos?.role === "user" ? getPropsUser(name) : getPropsSeller(name);
+    const props = userDtos?.role === "user" && getPropsUser(name);
     return {
       ...props,
       label,
@@ -24,12 +22,7 @@ const ProfileContact: React.FC<IProfileContact> = ({
   useEffect(() => {
     const formik = userDtos?.role === "user" ? formikUser : formikSeller;
 
-    const fieldsToCheck = [
-      "name",
-      "lastname",
-      "email",
-      "dni",
-     ];
+    const fieldsToCheck = ["name", "lastname", "email", "dni"];
 
     fieldsToCheck.forEach((field) => {
       if (formik.values[field] === "" && !formik.touched[field]) {
@@ -41,51 +34,23 @@ const ProfileContact: React.FC<IProfileContact> = ({
 
   return (
     <div className="mt-2 sm:mt-0 ml-1 sm:ml-0 sm:gap-3 sm:p-4 xl:pt-10 text-primary-dark">
-      {userDtos?.role === "user" ? (
-        <form onSubmit={formikUser.handleSubmit}>
-          <Input type="text" {...getPropsWithLabel("name", "Nombre")} />
-          <Input type="text" {...getPropsWithLabel("lastname", "Apellido")} />
+      <form onSubmit={formikUser.handleSubmit}>
+        <Input type="text" {...getPropsWithLabel("name", "Nombre")} />
+        <Input type="text" {...getPropsWithLabel("lastname", "Apellido")} />
 
-          <Input type="email" {...getPropsWithLabel("email", "Email")} />
-          <Input type="text" {...getPropsWithLabel("dni", "DNI")} />
+        <Input type="email" {...getPropsWithLabel("email", "Email")} />
+        <Input type="text" {...getPropsWithLabel("dni", "DNI")} />
 
-          {edit && (
-            <button
-              type="submit"
-              disabled={!formikUser.isValid}
-              className="bg-primary-darker absolute text-white p-2 rounded">
-              Guardar Cambios
-            </button>
-          )}
-        </form>
-      ) : (
-        <form onSubmit={formikSeller.handleSubmit}>
-          <Input type="text" {...getPropsWithLabel("name", "Nombre")} />
-          <Input type="text" {...getPropsWithLabel("lastname", "Apellido")} />
-          <Input
-            type="email"
-            {...getPropsWithLabel("email", "Email")}
-          />
-          <Input
-            type="text"
-            {...getPropsWithLabel("dni", "DNI")}
-          />
-         
-
-          {edit && (
-            <button
-              type="submit"
-              disabled={
-                userDtos?.role === "seller"
-                  ? !formikSeller.isValid
-                  : !formikUser.isValid
-              }
-              className="bg-primary-darker absolute text-white p-2 rounded">
-              Guardar Cambios
-            </button>
-          )}
-        </form>
-      )}
+        {edit && (
+          <button
+            type="submit"
+            disabled={!formikUser.isValid}
+            className="bg-primary-darker absolute text-white p-2 rounded"
+          >
+            Guardar Cambios
+          </button>
+        )}
+      </form>
     </div>
   );
 };

@@ -29,31 +29,29 @@ export const ProfileImageProvider: React.FC<ProfileImageProviderProps> = ({
   const [sellerDtos, setSellerDtos] = useState<ISeller | null>(null);
 
   useEffect(() => {
-    if (token) {
-      const decoded = decodeJWT(token);
-      if (decoded && decoded.id) {
-        const userProfile = async () => {
+    const fetchUserProfile = async () => {
+      if (token) {
+        const decoded = decodeJWT(token);
+        if (decoded && decoded.id) {
           const res = await getUser(token, decoded.id);
           setUserDtos(res);
-        };
-        userProfile();
+        }
       }
-    }
-  }, [token, setUserDtos]);
+    };
+
+    fetchUserProfile();
+  }, [token]);
 
   useEffect(() => {
-    if (token) {
-      const decoded = decodeJWT(token);
-      const sellerId = userDtos?.seller?.id;
-      if (decoded && sellerId) {
-        const userProfile = async () => {
-          const res = await getSeller(token, sellerId);
-          setSellerDtos(res);
-        };
-        userProfile();
+    const fetchSellerProfile = async () => {
+      if (token && userDtos?.seller?.id) {
+        const res = await getSeller(token, userDtos.seller.id);
+        setSellerDtos(res);
       }
-    }
-  }, [userDtos?.seller?.id, token, setSellerDtos]);
+    };
+
+    fetchSellerProfile();
+  }, [userDtos?.seller?.id, token]);
 
   const updateUserDtos = (updatedUser: UserDto) => {
     setUserDtos(updatedUser);

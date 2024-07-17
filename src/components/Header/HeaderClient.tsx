@@ -3,7 +3,6 @@ import React from "react";
 import { usePathname } from "next/navigation";
 import Header from "./Header";
 import HeaderTerms from "./HeaderTerms";
-import HeaderNotFound from "./HeaderNotFound";
 
 function HeaderClient() {
   const pathname = usePathname();
@@ -17,11 +16,14 @@ function HeaderClient() {
     pathname === "/help" ||
     pathname === "/dashboard/changeType" ||
     pathname === "/dashboard/fairs" ||
-    pathname === "/dashboard/products"
+    pathname === "/dashboard/products" ||
+    pathname === "/admin" ||
+    pathname === "/admin/products" ||
+    pathname === "/admin/fairs" ||
+    pathname === "/admin/postFair" ||
+    pathname === "/admin/profiles"
   ) {
     return null;
-  } else if (pathname === "/not-found") {
-    return <HeaderNotFound />;
   }
   return <Header />;
 }

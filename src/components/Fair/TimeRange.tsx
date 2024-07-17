@@ -8,8 +8,7 @@ function TimeRange() {
   const { fairs, setTimeSelect, dateSelect } = useFair();
 
   const [schedulesTurns, setSchedulesTurns] = useState<BuyerCapacity[]>([]);
-  console.log(schedulesTurns);
-  console.log(dateSelect);
+
 
   useEffect(() => {
     if (fairs && dateSelect) {
@@ -19,7 +18,7 @@ function TimeRange() {
             new Date(day.day).toDateString() === dateSelect.toDateString()
         )
       );
-      console.log(selectedFair);
+
       if (selectedFair) {
         const fairDay = selectedFair.fairDays.find(
           (day: FairDay) =>
@@ -36,12 +35,10 @@ function TimeRange() {
 
   const options = [...schedulesTurns].reverse().map((hc) => ({
     id: hc.hour,
-    name: `${
-      hc.capacity === 0 ? "Agotado" : `Turnos disponibles (${hc.capacity})`
-    }`,
+    name: `${hc.capacity === 0 ? "Agotado" : `Turnos disponibles (${hc.capacity})`
+      }`,
   }));
 
-  console.log(options);
 
   const handleHorarioSelect = (option: { id: string; name: string }) => {
     const selectedHorario = schedulesTurns.find((hc) => hc.hour === option.id);

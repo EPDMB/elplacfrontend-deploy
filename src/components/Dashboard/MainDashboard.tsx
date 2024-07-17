@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useAuth } from "@/context/AuthProvider";
 import { decodeJWT } from "@/helpers/decoder";
 import MainDashboardSeller from "./MainDashboardSeller";
@@ -7,11 +7,11 @@ import MainDashboardUser from "./MainDashboardUser";
 import { useProfile } from "@/context/ProfileProvider";
 import { getUser } from "@/helpers/services";
 import Navbar from "../Navbar";
-import MainDashboardAdmin from "./Admin/MainDashboardAdmin";
-import NavbarAdmin from "../NavbarAdmin";
+
+import WithAuthProtect from "@/helpers/WithAuth";
 
 const MainDashboard: React.FC = () => {
-  const { token } = useAuth();
+  const { token, roleAuth } = useAuth();
   const { userDtos, setUserDtos } = useProfile();
 
   useEffect(() => {
@@ -27,13 +27,7 @@ const MainDashboard: React.FC = () => {
     }
   }, [token, setUserDtos]);
 
-  if (!userDtos) {
-    return;
-  }
-
-  console.log(userDtos);
-
-  if (userDtos.role === "seller") {
+  if (userDtos?.role === "seller") {
     return (
       <div>
         <div className="w-full h-32 flex items-center">
@@ -44,7 +38,7 @@ const MainDashboard: React.FC = () => {
     );
   }
 
-  if (userDtos.role === "user") {
+  if (userDtos?.role === "user") {
     return (
       <div>
         <div className="w-full h-32 flex items-center ">
@@ -54,17 +48,9 @@ const MainDashboard: React.FC = () => {
       </div>
     );
   }
-
-  if (userDtos.role === "admin") {
-    return (
-      <div>
-        <div className="w-full h-32 flex items-center ">
-          <NavbarAdmin />
-        </div>
-        <MainDashboardAdmin />
-      </div>
-    );
-  }
+  return null;
 };
 
-export default MainDashboard;
+export default WithAuthProtect({
+  Component: MainDashboard,
+});

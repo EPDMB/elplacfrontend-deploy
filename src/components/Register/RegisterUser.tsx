@@ -14,6 +14,7 @@ const RegisterUser: React.FC = () => {
   const router = useRouter();
 
   const [isChecked, setIsChecked] = useState(false);
+  const [isLoading, setLoading] = useState(false);
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsChecked(event.target.checked);
@@ -27,23 +28,23 @@ const RegisterUser: React.FC = () => {
     );
 
     try {
+      setLoading(true);
       const res = await postUserRegister(filteredParsedUser);
-      console.log(res);
       if (res?.ok) {
         formikUser.resetForm();
         router.push("/login");
         notify(
-          "ToastRedirect",
+          "ToastSuccess",
           "Revisa tu casilla de correo para confirmar tu cuenta"
         );
-      }
-
-      else {
-        notify("ToastError", "Error en el registro");
+        setLoading(false);
+      } else {
+        setLoading(false);
+        throw new Error("Error en el registro");
       }
     } catch (error: any) {
+      setLoading(false);
       notify("ToastError", error.message);
-
       console.error(error.message);
     }
   };
@@ -149,15 +150,34 @@ const RegisterUser: React.FC = () => {
           className={`
       bg-secondary-darker
       w-32 h-9 my-6 rounded-3xl text-center text-white text-base font-bold
-      ${
-        !isChecked || !formikUser.isValid ? "opacity-50 cursor-not-allowed" : ""
-      }
+      ${!isChecked || !formikUser.isValid ? "opacity-50 cursor-not-allowed" : ""
+            }
     `}
           type="submit"
           disabled={!isChecked || !formikUser.isValid}
         >
           Registrarse
         </button>
+        {isLoading && (
+          <svg
+            version="1.1"
+            id="loader-1"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlnsXlink="http://www.w3.org/1999/xlink"
+            x="0px"
+            y="0px"
+            width="40px"
+            height="40px"
+            viewBox="0 0 50 50"
+            xmlSpace="preserve"
+            className="animate-spin"
+          >
+            <path
+              fill="#FFD47B"
+              d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z"
+            />
+          </svg>
+        )}
       </div>
     </form>
   );

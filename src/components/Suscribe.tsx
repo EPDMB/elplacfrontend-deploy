@@ -15,7 +15,7 @@ export const Suscribe = () => {
   const handleSubmit = (e: any) => {
     e.preventDefault()
     if (validateEmail(email)) {
-      notify("ToastRedirect", "Gracias por suscribirte a nuestro Newsletter!")
+      notify("ToastSuccess", "Gracias por suscribirte a nuestro Newsletter!")
     } else {
       notify("ToastError", "Por favor, introduce un correo electrónico válido")
     }

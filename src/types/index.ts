@@ -40,19 +40,9 @@ export enum productsStatusEnum {
 }
 
 export enum ProductStatus {
-  Pending = "PENDING",
-  Approved = "APPROVED",
-  Rejected = "REJECTED",
-}
+  Pending = "pending",
 
-export enum productsStatusColorEnum {
-  GRIS = "GRIS",
-  ROJO = "ROJO",
-  AMARILLO = "AMARILLO",
-  AZUL = "AZUL",
-  CELESTE = "CELESTE",
-  BLANCO = "BLANCO",
-  VERDE = "VERDE",
+  Checked = "checked",
 }
 
 export interface IProfileContact {
@@ -68,13 +58,14 @@ export interface IProduct {
   description: string;
   price: number;
   size: string;
-  photoUrl: string;
+  id?: string;
 }
 
 export interface IProfilePayments {
   getPropsSellerPayments: (name: string) => IInputProps;
   formikSellerPayments: any;
   editSeller?: boolean;
+  formikSeller: any;
 }
 
 export interface IProfileSettings {
@@ -129,6 +120,11 @@ export interface IDashboardSellerErrors extends IDashboardUserErrors {
   address?: string;
   bank_account?: string;
   social_media?: string;
+}
+
+export interface IHandleSelectProductStatus {
+  id: string;
+  status: string;
 }
 
 export interface ILoginFormErrors {
@@ -221,9 +217,9 @@ export interface ProductProps {
   description: string;
   price: number;
   size: string;
-  photoUrl: string;
   liquidation: boolean;
   category: string;
+  status?: productsStatusEnum;
 }
 
 export interface IForgot {
@@ -233,7 +229,10 @@ export interface IForgot {
 export interface IAuthContext {
   token: string;
   setToken: (token: string) => void;
+  roleAuth: string;
+  setRoleAuth: (roleAuth: string) => void;
   logout: () => void;
+  loading: boolean;
 }
 
 export interface IAuthProviderProps {
@@ -248,16 +247,14 @@ export interface IOption {
 export interface FairCategories {
   category: Category;
   maxSellers: number;
+  maxProducts: number;
+  products: IProduct[];
   id: string;
   maxProductsSeller: number;
   minProductsSeller: number;
 }
 
 export interface Category {
-  category: {
-    name: string;
-    id?: string;
-  };
   id: string;
   name: string;
 }
@@ -274,13 +271,23 @@ export interface FairDay {
   buyerCapacities: BuyerCapacity[];
 }
 
+export interface CategoryFair {
+  id: string;
+  maxProductsSeller: number;
+  minProductsSeller: number;
+  maxSellers: number;
+  maxProducts: number;
+  category: Category;
+}
+
 export interface SellerRegistrations {
   fair: IFair;
-  categoryFair: Category;
+  categoryFair: CategoryFair;
   entryfee: number;
   id: string;
   registrationDate: string;
   seller: ISeller;
+  liquidation?: boolean;
 }
 
 export interface UserRegistrations {
@@ -295,8 +302,8 @@ export interface IFair {
   id: string;
   name: string;
   address: string;
-  isActive: boolean;
   entryPriceSeller: number;
+  isActive: boolean;
   entryPriceBuyer: number;
   entryDescription: string;
   fairCategories: FairCategories[];
@@ -358,6 +365,7 @@ export interface PaymentsSellerProps {
   disabled: boolean;
   fair?: IFair;
   categoryFair?: Category;
+  liquidation?: string;
 }
 
 export interface PaymentsUserProps {
@@ -476,6 +484,10 @@ export type DropdownOption = {
   name: string;
 };
 
+export interface SellerGettingActiveFairProps {
+  sellerId: string | undefined;
+}
+
 export type DropdownProps = {
   label?: string | [];
   options?: DropdownOption[];
@@ -484,6 +496,7 @@ export type DropdownProps = {
   value?: string | [];
   placeholder?: string;
   bg?: string;
+  noId?: boolean;
 };
 
 export interface ISidebarProps {
@@ -491,10 +504,11 @@ export interface ISidebarProps {
 }
 
 export interface IDashboardCardProps {
-  title: string;
-  typeEnum: dashboardEnum;
-  description: string;
+  title: string | React.ReactNode;
+  typeEnum: dashboardEnum | "";
+  description: string | React.ReactNode;
   message?: string | null;
+  classname: string;
 }
 
 export interface UniqueData {
@@ -526,9 +540,26 @@ export interface IProductRequestTableProps {
   setTrigger: (newValue: boolean) => void;
 }
 
-export interface RowProps {
-  column: Column;
-  data?: any;
+export interface ISellerProductRequestTableProps {
+  columns?: Column[];
+  detailColumns?: Column[];
+  state?: DropdownOption;
+  profiles?: DropdownOption;
+  activeFair?: IFair;
+  sellerId: string | undefined;
+}
+
+export interface ProductsGettedBySellerId {
+  id: string;
+  brand: string;
+  description: string;
+  price: number;
+  size: string;
+  photoUrl: string;
+  liquidation: boolean;
+  code: string;
+  status: productsStatusEnum;
+  category: string;
 }
 
 export interface BadgeProps {
@@ -576,7 +607,7 @@ export interface IProductNotification {
   photoUrl: string;
   liquidation: boolean;
   code: string;
-  status: productsStatusColorEnum;
+  status: productsStatusEnum;
   category: string;
 }
 
@@ -588,7 +619,6 @@ export interface Notification {
   fair: IFairNotification;
   products: IProductNotification[];
   message: string;
-
 }
 
 export interface WebSocketNotification {
@@ -597,23 +627,26 @@ export interface WebSocketNotification {
   status: ProductStatus;
   seller: ISellerNotification;
   fair: IFairNotification;
-  product: {
-    pRequestId: string;
-    sellerId: string;
-    status: productsStatusColorEnum;
-  };
+  date: string;
   message: string;
+  actions: string;
 }
 
 export interface NotificationsFromAdmin {
   sellerId: string;
   forAll: boolean;
   message: string;
+  callToAction: string;
+
   product: {
     pRequestId: string;
     sellerId: string;
-    status: productsStatusColorEnum;
+    status: productsStatusEnum;
   };
+}
+
+export interface IMainDashboardAdmin {
+  children: ReactNode;
 }
 
 export interface NotificationFromBack {
@@ -622,7 +655,7 @@ export interface NotificationFromBack {
   category: string;
   sellerId: string;
   pRequestId: string;
-  status: productsStatusColorEnum;
+  status: productsStatusEnum;
 }
 
 export interface handleSelectProps {
@@ -637,4 +670,39 @@ export interface LoadingContextProps {
 
 export interface SelectedOption {
   name: string;
+}
+
+export interface WithAuthProtectProps {
+  Component: React.FC<any>;
+  role?: string;
+}
+export interface FairDto {
+  name: string;
+  address: string;
+  entryPriceSeller: number;
+  entryPriceBuyer: number;
+  entryDescription: string;
+  startDate: string;
+  endDate: string;
+  startTime: string;
+  endTime: string;
+  timeSlotInterval: number;
+  capacityPerTimeSlot: number;
+  fairCategories: {
+    maxProductsSeller: number;
+    minProductsSeller: number;
+    maxSellers: number;
+    maxProducts: number;
+    category: { name: string }[];
+  }[];
+}
+
+export type HandleSelectType = (selectedOption: string) => void;
+
+export interface StepProps {
+  setVisibleStep: (step: string) => void;
+}
+
+export interface PrintLabelProps {
+  sellerId: string | undefined;
 }

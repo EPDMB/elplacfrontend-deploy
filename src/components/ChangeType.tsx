@@ -10,11 +10,12 @@ import { FaChevronLeft } from "react-icons/fa";
 import Link from "next/link";
 import Navbar from "./Navbar";
 import { useAuth } from "@/context/AuthProvider";
+import WithAuthProtect from "@/helpers/WithAuth";
 
 const ChangeType = () => {
   const [isChecked, setIsChecked] = useState(false);
   const { userDtos } = useProfile();
-  const { token } = useAuth();
+  const { token, setRoleAuth } = useAuth();
   const userId = userDtos?.id;
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsChecked(event.target.checked);
@@ -32,13 +33,14 @@ const ChangeType = () => {
   const handleRoleChange = async (userId: string, role: string) => {
     try {
       const response = await changeRole(userId, role, token);
-      console.log(response);
-
-      router.push("/dashboard");
+      setRoleAuth("seller");
+      localStorage.setItem("role", "seller");
+      router.push("/");
     } catch (error) {
       console.error("Error al actualizar el rol:", error);
     }
   };
+
   return (
     <div>
       <div className="w-full h-32 flex items-center">
@@ -54,8 +56,7 @@ const ChangeType = () => {
             </button>
             <h1
               className=" text-primary-darker text-xl  lg:text-4xl font-bold"
-              ref={titleRef}
-            >
+              ref={titleRef}>
               ¡Formá parte de nuestras ferias y vendé tus productos!
             </h1>
           </div>
@@ -74,8 +75,7 @@ const ChangeType = () => {
               <span className={`${"text-primary-darker"} `}>Acepto los </span>
               <a
                 href="#"
-                className={`${"text-secondary-darker"} hover:underline `}
-              >
+                className={`${"text-secondary-darker"} hover:underline `}>
                 Términos y Condiciones
               </a>
             </Label>
@@ -92,13 +92,12 @@ const ChangeType = () => {
                   handleRoleChange(userId, "seller");
                   notify(
                     "ToastSuccess",
-                    "Ya podés ir a la sección de productos y comenzar a cargarlos"
+                    "Ya sos vendedor, ¡Bienvenido a la comunidad!"
                   );
                 } else {
                   console.error("User ID is undefined");
                 }
-              }}
-            >
+              }}>
               ¡Comienza a vender!
             </button>
           </div>
@@ -108,4 +107,4 @@ const ChangeType = () => {
   );
 };
 
-export default ChangeType;
+export default WithAuthProtect({ Component: ChangeType, role: "user" });

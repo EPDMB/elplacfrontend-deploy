@@ -13,18 +13,22 @@ const useFairSelection = () => {
     string | null
   >(null);
   const [openModal, setOpenModal] = useState(false);
+  const [fairDescription, setFairDescription] = useState<string | null>(null);
   const { fairs } = useFair();
+  
 
   useEffect(() => {
     if (selectedOption) {
       const fairSelectedPerUser = fairs.find((f) => f.name === selectedOption);
-      console.log(fairSelectedPerUser)
+      
       if (fairSelectedPerUser) {
         setCategoriesArray(fairSelectedPerUser?.fairCategories);
-        console.log(fairSelectedPerUser?.fairCategories)
+        setFairDescription(fairSelectedPerUser?.entryDescription);
+        
       }
     } else {
       setCategoriesArray(null);
+      setFairDescription(null);
     }
   }, [selectedOption, fairs]);
 
@@ -33,12 +37,11 @@ const useFairSelection = () => {
   };
 
   const handleSelectCategory = (option: { id: string; name: string }) => {
-    console.log(option)
+
     setSelectedOptionCategory(option.name);
   };
 
-  console.log(categoriesArray)
-  console.log(selectedOptionCategory)
+
 
   return {
     selectedOption,
@@ -50,6 +53,7 @@ const useFairSelection = () => {
     setOpenModal,
     handleSelect,
     handleSelectCategory,
+    fairDescription,
   };
 };
 

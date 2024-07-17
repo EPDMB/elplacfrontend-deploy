@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
+import { URL } from "../../envs";
 
 interface Notification {
   message: string;
 }
 
-const socket: Socket = io("http://localhost:3000", { withCredentials: true });
+const socket: Socket = io(`${URL}`, { withCredentials: true });
 
 const NotificationsComponent: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);

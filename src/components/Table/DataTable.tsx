@@ -182,6 +182,7 @@ const DataTable: React.FC<IDataTableProps> = ({
                   }
                   className="w-20 "
                   bg="bg-[#F9FAFB]"
+                  noId={true}
                 />
               )}
             </td>

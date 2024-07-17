@@ -2,7 +2,7 @@ import { BadgeProps, statusGeneralEnum, productsStatusEnum } from "@/types";
 
 const Accepted = () => {
   return (
-    <div className="flex items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-[#D0D5DD] text-[#344054]">
+    <div className="flex px-2  items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-[#D0D5DD] text-[#344054]">
       <div className="w-2 h-2 bg-[#667085] rounded-full"></div>
       Aceptado
     </div>
@@ -11,7 +11,7 @@ const Accepted = () => {
 
 const NotAccepted = () => {
   return (
-    <div className="flex items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-[#F5CECE] text-[#FF0303]">
+    <div className="flex px-2  items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-[#F5CECE] text-[#FF0303]">
       <div className="w-2 h-2 bg-[#FD0E0E] rounded-full"></div>
       No aceptado
     </div>
@@ -20,7 +20,7 @@ const NotAccepted = () => {
 
 const NotAvailable = () => {
   return (
-    <div className="flex items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-[#FCFE99] text-[#000000]">
+    <div className="flex px-2  items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-[#FCFE99] text-[#000000]">
       <div className="w-2 h-2 bg-[#B3AC14] rounded-full"></div>
       No disponible
     </div>
@@ -29,7 +29,7 @@ const NotAvailable = () => {
 
 const CategoryNotApply = () => {
   return (
-    <div className="flex items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-[#0D08FF] text-[#FFFFFF]">
+    <div className="flex px-2  items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-[#0D08FF] text-[#FFFFFF]">
       <div className="w-2 h-2 bg-[#FFFFFF] rounded-full"></div>
       No corresponde categoría
     </div>
@@ -38,7 +38,7 @@ const CategoryNotApply = () => {
 
 const SecondMark = () => {
   return (
-    <div className="flex items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-[#BDE7FF] text-[#0D08FC]">
+    <div className="flex px-2  items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-[#BDE7FF] text-[#0D08FC]">
       <div className="w-2 h-2 bg-[#0D08FC] rounded-full"></div>
       No aceptado (2da marca)
     </div>
@@ -47,16 +47,16 @@ const SecondMark = () => {
 
 const PendingVerification = () => {
   return (
-    <div className="flex items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-[#FFFFFF] text-[#000000]">
+    <div className="flex px-2  shadow  items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-[#FFFFFF] text-[#000000]">
       <div className="w-2 h-2 bg-[#000000] rounded-full"></div>
-      Pendiente verificación
+      Pendiente
     </div>
   );
 };
 
 const Sold = () => {
   return (
-    <div className="flex items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-[#ECFDF3] text-[#027A48]">
+    <div className="flex px-2  items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-[#ECFDF3] text-[#027A48]">
       <div className="w-2 h-2 bg-[#12B76A] rounded-full"></div>
       Vendido
     </div>
@@ -65,7 +65,7 @@ const Sold = () => {
 
 const SoldOnClearance = () => {
   return (
-    <div className="flex items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-primary-light text-[#027A48]">
+    <div className="flex px-2  items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-primary-light text-[#027A48]">
       <div className="w-2 h-2 bg-[#12B76A] rounded-full"></div>
       Vendido en liquidación
     </div>
@@ -74,7 +74,7 @@ const SoldOnClearance = () => {
 
 const Unsold = () => {
   return (
-    <div className="flex items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-[#F5CECE] text-[#FF0303]">
+    <div className="flex px-2 items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-[#F5CECE] text-[#FF0303]">
       <div className="w-2 h-2 bg-[#FD0E0E] rounded-full"></div>
       No vendido
     </div>
@@ -83,16 +83,16 @@ const Unsold = () => {
 
 const Active = () => {
   return (
-    <div className="flex items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-[#ECFDF3] text-[#027A48]">
+    <div className="flex px-2 items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-[#ECFDF3] text-[#027A48]">
       <div className="w-2 h-2 bg-[#12B76A] rounded-full"></div>
       Activo
     </div>
   );
 };
 
-const Bloqued = () => {
+const Blocked = () => {
   return (
-    <div className="flex items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-[#F5CECE] text-[#FF0303]">
+    <div className="flex px-2 items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-[#F5CECE] text-[#FF0303]">
       <div className="w-2 h-2 bg-[#FD0E0E] rounded-full"></div>
       Bloqueado
     </div>
@@ -101,7 +101,7 @@ const Bloqued = () => {
 
 const Inactive = () => {
   return (
-    <div className="flex items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-[#D0D5DD] text-[#344054]">
+    <div className="flex px-2 items-center gap-2 font-medium rounded-2xl p-1 w-fit bg-[#D0D5DD] text-[#344054]">
       <div className="w-2 h-2 bg-[#667085] rounded-full"></div>
       Inactivo
     </div>
@@ -131,7 +131,7 @@ export const Badge: React.FC<BadgeProps> = ({ type }) => {
     case statusGeneralEnum.active:
       return <Active />;
     case statusGeneralEnum.blocked:
-      return <Bloqued />;
+      return <Blocked />;
     case statusGeneralEnum.inactive:
       return <Inactive />;
     default:

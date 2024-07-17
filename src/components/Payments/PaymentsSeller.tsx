@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { initMercadoPago, Wallet } from "@mercadopago/sdk-react";
 
 import { MERCADOPAGO_PUBLIC_KEY, URL } from "../../../envs";
-import { PaymentsSellerProps } from "@/types"; 
+import { PaymentsSellerProps } from "@/types";
 
 export default function PaymentsSeller({
   userId,
@@ -12,6 +12,7 @@ export default function PaymentsSeller({
   handleBuy,
   disabled,
   className,
+  liquidation,
 }: PaymentsSellerProps) {
   const [preferenceId, setPreferenceId] = useState<string | null>(null);
 
@@ -21,12 +22,13 @@ export default function PaymentsSeller({
     });
   }, []);
 
-  console.log(categoryId);
+
 
   const handlePayment = async (
     userId: string | undefined,
     fairId: string | undefined,
     categoryId: string | undefined,
+    liquidation: string | undefined
   ) => {
     try {
       if (!userId || !fairId || !categoryId) {
@@ -38,11 +40,6 @@ export default function PaymentsSeller({
         throw new Error("Missing parameters");
       }
 
-      console.log("Parameters:", {
-        userId,
-        fairId,
-        categoryId,
-      });
 
       const response = await fetch(`${URL}/payments/createPreferenceSeller`, {
         method: "POST",
@@ -53,11 +50,12 @@ export default function PaymentsSeller({
           userId,
           fairId,
           categoryId,
+          liquidation,
         }),
       });
 
       const text = await response.text();
-      console.log("Response text:", text);
+
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -81,13 +79,9 @@ export default function PaymentsSeller({
 
   const handleClick = async () => {
     try {
-      console.log("Calling handlePayment with parameters:", {
-        userId,
-        fairId,
-        categoryId,
-      });
-      const preference = await handlePayment(userId, fairId, categoryId);
-      console.log("Preference:", preference);
+
+      const preference = await handlePayment(userId, fairId, categoryId, liquidation);
+
       if (preference && preference.preferenceId) {
         setPreferenceId(preference.preferenceId);
         if (preferenceId) {

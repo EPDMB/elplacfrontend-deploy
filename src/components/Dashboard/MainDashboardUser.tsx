@@ -12,6 +12,7 @@ import DashboardCard from "./DashboardCard";
 import { dashboardEnum } from "@/types";
 import { checkIsGmailfirstTime } from "@/helpers/services";
 import { verifyUserDetails } from "@/helpers/verifyUserDetails";
+import WithAuthProtect from "@/helpers/WithAuth";
 
 const MainDashboardUser: React.FC = () => {
   const { userDtos } = useProfile();
@@ -23,7 +24,6 @@ const MainDashboardUser: React.FC = () => {
         const verificationMessage = verifyUserDetails(userDtos);
         if (verificationMessage) {
           setVerificationMsg(verificationMessage);
-          console.log(verificationMessage);
         }
       }
     };
@@ -52,11 +52,13 @@ const MainDashboardUser: React.FC = () => {
             description="Configura tus datos de contacto y medios de pago y claves"
             typeEnum={dashboardEnum.profile}
             message={verificationMsg}
+            classname="p-5 relative bg-secondary-light text-wrap w-80 rounded-[2.5rem] h-48 shadow-xl"
           />
           <DashboardCard
             title="Vendé tus productos"
             description="Forma parte de nuestra ferias, y vendé tus productos de una manera muy fácil"
             typeEnum={dashboardEnum.changeType}
+            classname="p-5 relative bg-secondary-light text-wrap w-80 rounded-[2.5rem] h-48 shadow-xl"
           />
         </div>
       </div>
@@ -64,4 +66,4 @@ const MainDashboardUser: React.FC = () => {
   );
 };
 
-export default MainDashboardUser;
+export default WithAuthProtect({ Component: MainDashboardUser, role: "user" });

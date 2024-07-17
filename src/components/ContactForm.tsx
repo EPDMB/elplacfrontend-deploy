@@ -23,7 +23,7 @@ const ContactForm = () => {
       return;
     }
     notify(
-      "ToastRedirect",
+      "ToastSuccess",
       "Gracias por contactarnos. Hemos recibido tu mensaje."
     );
 

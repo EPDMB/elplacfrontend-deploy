@@ -23,40 +23,34 @@ const Ticket: React.FC<TicketProps> = ({
   category,
   termsChecked,
 }) => {
+
   const [amount, setAmount] = useState<number | string>("");
   const [charitableEntity, setCharitableEntity] = useState("");
   const { fairs, fairSelected, timeSelect, dateSelect } = useFair();
   const { token } = useAuth();
   const { userDtos } = useProfile();
   const [openModal, setOpenModal] = useState(false);
-  const [liquidation, setLiquidation] = useState(false);
+  const [liquidation, setLiquidation] = useState<string>("");
 
 
-  
-useEffect(() => {
-  if (salesChecked === "Si") {
-    setLiquidation(true);
-  } else {
-    setLiquidation(false);
+
+  useEffect(() => {
+    if (salesChecked === "Si") {
+      setLiquidation("si");
+    } else {
+      setLiquidation("no");
+    }
   }
-}
-, [salesChecked]);
+    , [salesChecked]);
 
-  console.log(userDtos?.registrations);
-
-  console.log(salesChecked)
-
-  console.log(category);
 
   const fairSelectedPerUser = fairs.find((f) => f.name === name);
 
-  console.log(fairSelectedPerUser);
 
   const categorySelected = fairSelectedPerUser?.fairCategories.find(
     (c) => c.category.name === category
   );
 
-  console.log(categorySelected);
 
   const formattedDate = dateSelect
     ? formatDateToYYYYMMDD(new Date(dateSelect))
@@ -87,11 +81,7 @@ useEffect(() => {
     }
   }, [fairSelectedPerUser, userDtos?.role]);
 
-  console.log(userDtos);
 
-  console.log(fairSelectedPerUser?.id);
-  console.log(userDtos?.seller?.id);
-  console.log(categorySelected?.id);
 
   const handleBuy = () => {
     if (userDtos?.role === "seller") {
@@ -100,16 +90,11 @@ useEffect(() => {
         userDtos?.seller?.id,
         categorySelected?.id,
         liquidation,
+        token
       );
     }
     if (userDtos?.role === "user") {
-      console.log(
-        fairSelectedPerUser?.id,
-        userDtos?.id,
-        token,
-        formattedDate,
-        timeSelect
-      );
+
       postTicket(
         fairSelectedPerUser?.id,
         userDtos?.id,
@@ -122,13 +107,13 @@ useEffect(() => {
   };
 
   return (
-    <div className="mt-5">
+    <div className="text-primary-darker">
       <div className="flex items-center">
         {userDtos?.role === "user" ? (
           <>
             <p className="font-bold"></p>
             {fairSelectedPerUser &&
-            fairSelectedPerUser.entryPriceBuyer === 0 ? (
+              fairSelectedPerUser.entryPriceBuyer === 0 ? (
               <div className="flex flex-col">
                 <input
                   type="text"
@@ -181,6 +166,7 @@ useEffect(() => {
                 userId={userDtos?.id}
                 fairId={fairSelectedPerUser?.id}
                 categoryId={categorySelected?.id}
+                liquidation={liquidation}
                 handleBuy={handleBuy}
                 className="mt-4 px-4 py-2 text-white rounded-md hover:bg-primary-dark focus:outline-none bg-primary-darker disabled:cursor-not-allowed disabled:bg-primary-light"
                 disabled={

@@ -12,23 +12,42 @@ import "react-toastify/dist/ReactToastify.css";
 import { notify } from "./Notifications/Notifications";
 import { useAuth } from "@/context/AuthProvider";
 import ForgotPass from "./ForgotPass";
+import { decodeJWT } from "@/helpers/decoder";
+import { useProfile } from "@/context/ProfileProvider";
 
 export const Login = () => {
+  const { userDtos } = useProfile();
   const router = useRouter();
-  const { setToken, logout } = useAuth();
+  const { setToken, token, roleAuth, setRoleAuth } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
-  const signIn = async (user: IUserLogin) => {
+  const signIn = async (user: IUserLogin & { rememberMe: boolean }) => {
+    setIsLoading(true);
     try {
       const res = await postUserLogin(user);
 
+      if (user.rememberMe) {
+        localStorage.setItem("token", res.token);
+        setToken(res.token);
+      }
+
       localStorage.setItem("token", res.token);
       setToken(res.token);
+      localStorage.setItem("role", res.role);
+      setRoleAuth(res.role);
+      const decoded = decodeJWT(res.token);
 
       formik.resetForm();
       notify("ToastSuccess", "¡Sesión iniciada!");
-      router.push("/dashboard");
+
+      if (decoded && decoded.role === "admin") {
+        router.push("/admin");
+      }
+
+      if (decoded && (decoded.role === "user" || decoded.role === "seller")) {
+        router.push("/dashboard");
+      }
     } catch (error: any) {
       notify("ToastError", "Datos Incorrectos");
       console.error(error);
@@ -41,6 +60,7 @@ export const Login = () => {
     initialValues: {
       email: "",
       password: "",
+      rememberMe: false,
     },
     onSubmit: signIn,
     validate: loginValidations,
@@ -58,6 +78,19 @@ export const Login = () => {
     };
   };
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && token) {
+      const decoded = decodeJWT(token);
+      if (decoded) {
+        if (decoded.role === "admin") {
+          router.push("/admin");
+        } else if (decoded.role === "user" || decoded.role === "seller") {
+          router.push("/dashboard");
+        }
+      }
+    }
+  }, [token, router]);
+
   return (
     <div className="grow-down">
       <div className="relative h-max -translate-y-20 p-10  bg-white  rounded-[30px] shadow-lg mt-6">
@@ -69,7 +102,8 @@ export const Login = () => {
         </div>
         <button
           type="button"
-          className="hidden lg:inline-block px-6 py-20 z-0 cursor-default bg-white rounded-tr-3xl rounded-br-3xl absolute right-0 translate-x-[99%] shadow-customRight">
+          className="hidden lg:inline-block px-6 py-20 z-0 cursor-default bg-white rounded-tr-3xl rounded-br-3xl absolute right-0 translate-x-[99%] shadow-customRight"
+        >
           <p className="absolute font-medium left-[120%] text-secondary-darker">
             #Ingresá
           </p>
@@ -92,11 +126,22 @@ export const Login = () => {
               {...getProps("password")}
             />
           </div>
+          <div className="mb-0 relative flex gap-2 items-center text-secondary-darker text-base font-medium">
+            <input
+              type="checkbox"
+              name="rememberMe"
+              checked={formik.values.rememberMe}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+            />
+            <label>Mantener sesión iniciada</label>
+          </div>
           <div className="flex justify-center">
             <button
-              className="bg-secondary-darker w-32 h-9 my-6 rounded-3xl text-center text-white text-base font-bold"
+              className="bg-secondary-darker w-32 h-9 my-6 rounded-3xl text-center text-white text-base font-bold cursor-pointer"
               type="submit"
-              disabled={!formik.isValid || isLoading}>
+              disabled={!formik.isValid || isLoading}
+            >
               {isLoading ? (
                 <div className="flex items-center justify-center">
                   <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-6 w-6"></div>
@@ -108,7 +153,8 @@ export const Login = () => {
           </div>
           <button
             onClick={() => setOpenModal(true)}
-            className="font-semibold text-secondary-darker text-center">
+            className="font-semibold text-secondary-darker text-center"
+          >
             Olvidé mi contraseña
           </button>
         </form>

@@ -28,6 +28,7 @@ import {
 import { notify } from "../Notifications/Notifications";
 import { useAuth } from "@/context/AuthProvider";
 import {
+  dashboardSellerPaymentsValidations,
   dashboardSellerValidations,
   dashboardUserValidations,
   passwordValidations,
@@ -47,11 +48,15 @@ import ProfilePayments from "./ProfileFilters/ProfilePayments";
 import ProfileImage from "./ProfileFilters/ProfileImage";
 import ProfileLeftFilters from "./ProfileFilters/ProfileLeftFilters";
 import { URL } from "../../../envs";
+import { useRouter } from "next/navigation";
+import WithAuthProtect from "@/helpers/WithAuth";
+import ProfileContactSeller from "./ProfileFilters/ProfileContactSeller";
 
 function Welcome() {
   const [dashBoardFilter, setDashBoardFilter] = useState<string>(
     "Mis datos de contacto"
   );
+  const router = useRouter();
   const { token } = useAuth();
   const { userDtos, setUserDtos, setProfileImageChanged } = useProfile();
   const [edit, setEdit] = useState(false);
@@ -61,6 +66,7 @@ function Welcome() {
   const { fairs, setFairSelected } = useFair();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [fairFilter, setFairFilter] = useState<IFair>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleSelect = (option: { id: string; name: string }) => {
     setSelectedOption(option.name);
@@ -99,15 +105,15 @@ function Welcome() {
   const formikSellerPayments = useFormik({
     enableReinitialize: true,
     initialValues: {
-      phone: userDtos?.seller?.phone || "",
-      address: userDtos?.seller?.address || "",
-      bank_account: userDtos?.seller?.bank_account || "",
-      social_media: userDtos?.seller?.social_media || "",
+      phone: userDtos?.seller?.phone || null,
+      address: userDtos?.seller?.address || null,
+      bank_account: userDtos?.seller?.bank_account || null,
+      social_media: userDtos?.seller?.social_media || null,
     },
     onSubmit: (values) => {
       handleUpdateSellerPayments(values as IDashboardSeller);
     },
-    // validate: dashboardSellerValidations,
+    validate: dashboardSellerPaymentsValidations,
   });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -123,6 +129,9 @@ function Welcome() {
         try {
           const res = await fetch(`${URL}/files/uploadImage/${decoded.id}`, {
             method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
             body: formData,
           });
           if (!res.ok) {
@@ -169,7 +178,6 @@ function Welcome() {
 
   const handleUpdateUser = async (user: IDashboardUser) => {
     try {
-      console.log("Entre al submit");
       if (token) {
         const decoded = decodeJWT(token);
         if (decoded && decoded.id && user) {
@@ -191,8 +199,6 @@ function Welcome() {
 
   const handleUpdateSellerPayments = async (user: IDashboardUser) => {
     try {
-      console.log("Entre al submit");
-      console.log("user", user);
 
       if (token) {
         const decoded = decodeJWT(token);
@@ -212,7 +218,6 @@ function Welcome() {
       console.error("Error en handleUpdateUser:", error);
     }
   };
-
 
   const changePassword = async (pass: IPasswordChange) => {
     try {
@@ -343,9 +348,8 @@ function Welcome() {
               <div className="absolute right-0 text-primary-dark  w-fit h-fit ">
                 <button
                   onClick={() => setEdit(!edit)}
-                  className={`flex gap-1 items-center hover:underline ${
-                    edit ? "hidden" : "inline"
-                  }`}
+                  className={`flex gap-1 items-center hover:underline ${edit ? "hidden" : "inline"
+                    }`}
                 >
                   <h4 className="text-xs xl:text-lg">Editar</h4>
                   <FaPencilAlt size={8} />
@@ -356,9 +360,8 @@ function Welcome() {
               <div className="absolute right-0 text-primary-dark  w-fit h-fit ">
                 <button
                   onClick={() => setEditSeller(!editSeller)}
-                  className={`flex gap-1 items-center hover:underline ${
-                    editSeller ? "hidden" : "inline"
-                  }`}
+                  className={`flex gap-1 items-center hover:underline ${editSeller ? "hidden" : "inline"
+                    }`}
                 >
                   <h4 className="text-xs xl:text-lg">Editar</h4>
                   <FaPencilAlt size={8} />
@@ -368,21 +371,34 @@ function Welcome() {
           </div>
 
           <div>
-            {dashBoardFilter === "Mis datos de contacto" && (
-              <ProfileContact
-                formikSeller={formikSeller}
-                getPropsSeller={getPropsSeller}
-                formikUser={formikUser}
-                getPropsUser={getPropsUser}
-                edit={edit}
-              />
-            )}
+            {dashBoardFilter === "Mis datos de contacto" &&
+              userDtos?.role === "user" && (
+                <ProfileContact
+                  formikSeller={formikSeller}
+                  getPropsSeller={getPropsSeller}
+                  formikUser={formikUser}
+                  getPropsUser={getPropsUser}
+                  edit={edit}
+                />
+              )}
+
+            {dashBoardFilter === "Mis datos de contacto" &&
+              userDtos?.role === "seller" && (
+                <ProfileContactSeller
+                  formikSeller={formikSeller}
+                  getPropsSeller={getPropsSeller}
+                  formikUser={formikUser}
+                  getPropsUser={getPropsUser}
+                  edit={edit}
+                />
+              )}
 
             {dashBoardFilter === "Datos de vendedor" && (
               <ProfilePayments
                 formikSellerPayments={formikSellerPayments}
                 getPropsSellerPayments={getPropsSellerPayments}
                 editSeller={editSeller}
+                formikSeller={formikSeller}
               />
             )}
 
@@ -405,4 +421,6 @@ function Welcome() {
   );
 }
 
-export default Welcome;
+export default WithAuthProtect({
+  Component: Welcome,
+});

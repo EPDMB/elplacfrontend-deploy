@@ -1,22 +1,22 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SidebarDashboard from "./SidebarDashboard";
 import { FaBars } from "react-icons/fa";
 import { useProfile } from "@/context/ProfileProvider";
 import Dropdown from "../Dropdown";
 import { Checkbox } from "flowbite-react";
 import Ticket from "../Fair/Ticket";
-import { Category, FairCategories, IFair, SelectedOption } from "@/types";
-
+import { IFair } from "@/types";
 import { useFair } from "@/context/FairProvider";
 import useFairSelection from "@/helpers/useFairSelection";
 import { formatDate } from "@/helpers/formatDate";
 import Link from "next/link";
 import Navbar from "../Navbar";
+import WithAuthProtect from "@/helpers/WithAuth";
 
 const Fairs = () => {
   const [termsChecked, setTermsChecked] = useState(false);
-  const [salesChecked, setSalesChecked] = useState("Elige una opción"); 
+  const [salesChecked, setSalesChecked] = useState("Elige una opción");
   const { userDtos } = useProfile();
   const { fairs } = useFair();
   const {
@@ -27,7 +27,9 @@ const Fairs = () => {
     setOpenModal,
     handleSelect,
     handleSelectCategory,
+    fairDescription,
   } = useFairSelection();
+
 
   const handleCheckboxChangeTerms = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -68,28 +70,30 @@ const Fairs = () => {
                 <h2 className="text-primary-darker font-semibold mb-3 text-3xl">
                   Inscripción
                 </h2>
-                <div className="gap-5 flex flex-col lg:ml-32 h-full">
-                  <Dropdown
-                    value={selectedOption || "Ferias disponibles"}
-                    options={fairs.map((f: IFair) => ({
-                      id: "",
-                      name: f.name,
-                    }))}
-                    onSelect={handleSelect}
-                    className="lg:w-[40%] z-20"
-                  />
-                  <Dropdown
-                    value={selectedOptionCategory || "Categorías disponibles"}
-                    options={categoriesArray?.map((c) => ({
-                      id: c.maxSellers.toString(),
-                      name: c.category.name,
-                    }))}
-                    onSelect={handleSelectCategory}
-                    className="lg:w-[40%]"
-                  />
+                <div className="gap-4 flex flex-col lg:flex-row  w-full lg:ml-32 h-full">
+                  <div className="flex flex-col w-1/2 gap-5 items-center">
+                    <Dropdown
+                      value={selectedOption || "Ferias disponibles"}
+                      options={fairs.map((f: IFair) => ({
+                        id: "",
+                        name: f.name,
+                      }))}
+                      onSelect={handleSelect}
+                      className="lg:w-[60%] z-20"
+                    />
+                    <Dropdown
+                      value={selectedOptionCategory || "Categorías disponibles"}
+                      options={categoriesArray?.map((c) => ({
+                        id: c.maxSellers.toString(),
+                        name: c.category.name,
+                      }))}
+                      onSelect={handleSelectCategory}
+                      className="lg:w-[60%]"
+                    />
 
-                  <div className="flex justify-center gap-2 flex-col">
-                    <p>Participas de la liquidación</p>
+                    <p className="text-primary-darker mt-5 font-semibold">
+                      ¿Participas de la liquidación?
+                    </p>
                     <Dropdown
                       value={salesChecked || ""}
                       options={[
@@ -97,24 +101,35 @@ const Fairs = () => {
                         { id: "", name: "No" },
                       ]}
                       onSelect={handleDropdownChange}
-                      className="lg:w-[40%]"
+                      className="lg:w-[60%]"
                     />
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id="acceptTerms"
-                      checked={termsChecked}
-                      onChange={handleCheckboxChangeTerms}
-                    />
-                    <p>Acepto Términos y Condiciones</p>
-                  </div>
-                  <div className="flex justify-center w-full mt-5">
-                    <Ticket
-                      name={selectedOption || ""}
-                      salesChecked={salesChecked}
-                      category={selectedOptionCategory}
-                      termsChecked={termsChecked}
-                    />
+
+                  <div className="flex flex-col w-1/2 gap-6">
+                    <div className="w-96 h-32">
+                      <h2 className="font-semibold text-primary-darker mb-2">
+                        Términos y Condiciones
+                      </h2>
+                      <p className="text-primary-darker p-5 shadow-md rounded-lg overflow-auto w-full h-full">
+                        {fairDescription || "Selecciona una feria"}
+                      </p>
+                    </div>
+                    <div className="text-primary-darker flex items-center gap-2 mt-5">
+                      <Checkbox
+                        id="acceptTerms"
+                        checked={termsChecked}
+                        onChange={handleCheckboxChangeTerms}
+                      />
+                      <p className="">Acepto Términos y Condiciones</p>
+                    </div>
+                    <div className="flex w-fit ">
+                      <Ticket
+                        name={selectedOption || ""}
+                        salesChecked={salesChecked}
+                        category={selectedOptionCategory}
+                        termsChecked={termsChecked}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -149,4 +164,4 @@ const Fairs = () => {
   );
 };
 
-export default Fairs;
+export default WithAuthProtect({ Component: Fairs, role: "seller" });

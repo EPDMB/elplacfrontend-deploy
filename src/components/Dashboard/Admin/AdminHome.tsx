@@ -20,23 +20,31 @@ import exportToExcel from "@/helpers/exportToExcel";
 import Loader from "@/components/Loader";
 import { useFair } from "@/context/FairProvider";
 import { io, Socket } from "socket.io-client";
+import { URL } from "../../../../envs";
+import Link from "next/link";
+import { FaBell } from "react-icons/fa";
+import { Button } from "flowbite-react";
+import { useProfile } from "@/context/ProfileProvider";
+import { useRouter } from "next/navigation";
+import { setTime } from "react-datepicker/dist/date_utils";
+import WithAuthProtect from "@/helpers/WithAuth";
 
-const socket: Socket = io("http://localhost:3000", {
+const socket: Socket = io(`${URL}`, {
   withCredentials: true,
   extraHeaders: {
     "Content-Type": "application/json",
   },
 });
 
-const AdminProfiles = () => {
+const AdminHome = () => {
   const { fairs, activeFair } = useFair();
   const [sellerCounter, setSellerCounter] = useState<SellerRegistrations[]>([]);
   const [userCounter, setUserCounter] = useState<UserRegistrations[]>([]);
   const [requests, setRequests] = useState<WebSocketNotification[]>([]);
 
-  console.log(requests);
-  console.log("fairs", fairs);
-  console.log("activeFair", activeFair);
+  const { userDtos } = useProfile();
+  const { token } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     socket.on("admin-notification", (notification: WebSocketNotification) => {
@@ -57,6 +65,13 @@ const AdminProfiles = () => {
       setUserCounter(users);
     }
   }, [activeFair]);
+
+  const sendNotification = () => {
+    const sellerId = "3d9e6145-d4d8-4ffc-9900-72e7919e36a8";
+    const message = "Nuevos productos aprobados";
+
+    socket.emit("notify-vendor", { message, sellerId });
+  };
 
   return (
     <div className="grid grid-rows-[auto_auto_1fr] grid-cols-3 mx-20 mt-8 gap-5">
@@ -94,29 +109,36 @@ const AdminProfiles = () => {
       <div className="col-span-1 row-span-3 mb-5">
         <div className="w-full h-full mt-5 flex p-6 flex-col rounded-lg bg-[#FFFFFF]">
           <div>
-            <h1 className="font-semibold text-primary-darker text-xl">
-              NOTIFICACIONES
+            <h1 className="font-semibold text-primary-darker text-xl flex justify-end">
+              <FaBell />
             </h1>
             <div className="mt-4">
               {requests.length > 0 ? (
                 requests.map((request, index) => (
                   <div
                     key={index}
-                    className="shadow-lg bg-[#F9FAFB] flex flex-col font-semibold rounded-xl p-4 mt-4"
-                  >
-                    <h3 className="text-[#5E5F60] text-lg border-b border-primary-default mb-2">
+                    className="shadow-xl bg-[#F9FAFB] text-primary-darker flex flex-col font-semibold rounded-3xl p-4 mt-4">
+                    <span className="text-sm font-normal">
+                      {new Date(request.date).toLocaleString("es", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                      })}
+                    </span>
+                    <h3 className="text-lg border-b border-primary-default mb-2">
                       {request.message}
                     </h3>
-                    <span className="text-[#5E5F60] text-lg font-normal">
-                      {request.product.pRequestId}
-                    </span>
-                    <span className="text-[#5E5F60] text-lg font-normal">
-                      {request.product.sellerId}
-                    </span>
-                    <span className="text-[#5E5F60] text-lg font-normal">
-                      {request.product.status}
-                    </span>
-                    <button>Ver detalles</button>
+
+                    <Link href={request.actions} className="text-sm">
+                      Ver detalles
+                    </Link>
+
+                    <button onClick={sendNotification} className="text-sm">
+                      Aprobar
+                    </button>
                   </div>
                 ))
               ) : (
@@ -136,8 +158,7 @@ const AdminProfiles = () => {
           {fairs.map((fair) => (
             <div
               key={fair.id}
-              className="shadow-lg flex flex-col font-semibold rounded-lg p-4 mt-4"
-            >
+              className="shadow-lg flex flex-col font-semibold rounded-lg p-4 mt-4">
               <h3 className="text-[#5E5F60] text-lg border-b border-primary-default mb-2">
                 {fair.name}
               </h3>
@@ -155,4 +176,4 @@ const AdminProfiles = () => {
   );
 };
 
-export default AdminProfiles;
+export default WithAuthProtect({ Component: AdminHome, role: "admin" });

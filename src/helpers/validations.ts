@@ -6,7 +6,6 @@ import {
   IPasswordChangeErrors,
   IPasswordChangeForgotErrors,
   IRegisterFormErrors,
-  
 } from "@/types";
 
 export async function registerSellerValidations(
@@ -48,7 +47,7 @@ export async function registerSellerValidations(
     } else if ("") {
       errors.email =
         "El email solo puede contener letras, números, puntos y guiones";
-    } 
+    }
 
     // Address Validations
     if (!values.address) {
@@ -77,7 +76,7 @@ export async function registerSellerValidations(
       errors.dni = "Tiene que ser un número de DNI valido";
     } else if (Number(values.dni) > 99999999) {
       errors.dni = "Tiene que ser un número de DNI valido";
-    } 
+    }
 
     // Bank Account Validations
     if (!values.bank_account) {
@@ -119,7 +118,6 @@ export async function registerSellerValidations(
 export async function registerUserValidations(
   values: any
 ): Promise<IRegisterFormErrors> {
-
   const errors: IRegisterFormErrors = {};
   const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const regexName = /^[a-zA-ZÀ-ÿ\s]+$/;
@@ -155,7 +153,7 @@ export async function registerUserValidations(
     } else if ("") {
       errors.email =
         "El email solo puede contener letras, números, puntos y guiones";
-    } 
+    }
 
     // DNI Validations
     if (!values.dni) {
@@ -166,7 +164,7 @@ export async function registerUserValidations(
       errors.dni = "Tiene que ser un número de DNI valido";
     } else if (Number(values.dni) > 99999999) {
       errors.dni = "Tiene que ser un número de DNI valido";
-    } 
+    }
 
     // Password Validations
     if (!values.password) {
@@ -291,7 +289,6 @@ export const passwordValidations = (values: any) => {
 export async function dashboardUserValidations(
   values: any
 ): Promise<IDashboardUserErrors> {
-
   const errors: IDashboardUserErrors = {};
   const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const regexName = /^[a-zA-ZÀ-ÿ\s]+$/;
@@ -323,7 +320,7 @@ export async function dashboardUserValidations(
     } else if (!regexEmail.test(values.email)) {
       errors.email =
         "El email solo puede contener letras, números, puntos y guiones";
-    } 
+    }
 
     // DNI Validations
     if (!values.dni) {
@@ -334,7 +331,7 @@ export async function dashboardUserValidations(
       errors.dni = "Tiene que ser un número de DNI valido";
     } else if (Number(values.dni) > 99999999) {
       errors.dni = "Tiene que ser un número de DNI valido";
-    } 
+    }
     return errors;
   } catch (error: any) {
     console.error(error.message);
@@ -381,7 +378,7 @@ export async function dashboardSellerValidations(
     } else if ("") {
       errors.email =
         "El email solo puede contener letras, números, puntos y guiones";
-    } 
+    }
     // Address Validations
     if (!values.address) {
       errors.address = "Ingresa tu dirección";
@@ -409,7 +406,7 @@ export async function dashboardSellerValidations(
       errors.dni = "Tiene que ser un número de DNI valido";
     } else if (Number(values.dni) > 99999999) {
       errors.dni = "Tiene que ser un número de DNI valido";
-    } 
+    }
     // Bank Account Validations
     if (!values.bank_account) {
       errors.bank_account = "Ingresa tu CBU/CVU/Alias";
@@ -427,4 +424,44 @@ export async function dashboardSellerValidations(
     console.error(error.message);
     return errors;
   }
+}
+
+export async function dashboardSellerPaymentsValidations(
+  values: any
+): Promise<IRegisterFormErrors> {
+  const errors: IRegisterFormErrors = {};
+
+  const regexBankAccount = /^[a-zA-Z0-9\s.]+$/;
+
+  // Address Validations
+  if (!values.address) {
+    errors.address = "Ingresa tu dirección";
+  } else if (typeof values.address !== "string") {
+    errors.address = "La dirección debe ser un texto";
+  } else if (values.address.trim().length < 3) {
+    errors.address = "La dirección debe tener al menos 3 caracteres";
+  } else if (values.address.trim().length > 40) {
+    errors.address = "La dirección no debe tener más de 40 caracteres";
+  }
+
+  // Phone Validations
+  if (!values.phone || !values.phone.trim()) {
+    errors.phone = "Ingresa tu teléfono";
+  } else if (isNaN(Number(values.phone))) {
+    errors.phone = "El teléfono solo puede contener números";
+  }
+
+  // Bank Account Validations
+  if (!values.bank_account || !values.bank_account.trim()) {
+    errors.bank_account = "Ingresa tu CBU/CVU/Alias";
+  } else if (!regexBankAccount.test(values.bank_account)) {
+    errors.bank_account = "No puede contener caracteres especiales";
+  }
+
+  // Instagram Validations
+  if (!values.social_media || !values.social_media.trim()) {
+    errors.social_media = "Ingresa tu instagram";
+  }
+
+  return errors;
 }

@@ -12,21 +12,20 @@ export const Calendar: React.FC<CalendarProps> = ({ fairDays = [] }) => {
   const { fairs, setDateSelect } = useFair();
   const [highlightedDates, setHighlightedDates] = useState<Date[]>([]);
 
-  console.log(fairDays);
 
-useEffect(() => {
-  if (fairDays.length > 0) {
-    const datesMapping = fairDays.map((day) => {
-      const date = new Date(day.day);
+  useEffect(() => {
+    if (fairDays.length > 0) {
+      const datesMapping = fairDays.map((day) => {
+        const date = new Date(day.day);
 
-      date.setHours(date.getHours() + 3);
+        date.setHours(date.getHours() + 3);
 
-      return date;
-    });
+        return date;
+      });
 
-    setHighlightedDates(datesMapping);
-  }
-}, [fairDays]);
+      setHighlightedDates(datesMapping);
+    }
+  }, [fairDays]);
 
 
   const onChange = (date: Date | null) => {

@@ -104,7 +104,9 @@ const Navbar: React.FC = () => {
                   ref={dropdownRef}
                   className="absolute top-full  -translate-x-[30%] mt-2 py-2  bg-secondary-lighter rounded-md shadow-md z-10">
                   <Link
-                    href="/dashboard"
+                    href={`${
+                      userDtos?.role === "admin" ? "/admin" : "/dashboard"
+                    }`}
                     onClick={() => setDropdownVisible(false)}
                     className="block px-4 py-2 font-semibold text-nowrap text-primary-darker hover:bg-secondary-light">
                     Mi Cuenta

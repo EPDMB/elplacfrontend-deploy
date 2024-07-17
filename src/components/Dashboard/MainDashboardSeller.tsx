@@ -7,29 +7,52 @@ import { FaBars } from "react-icons/fa";
 import { useProfile } from "@/context/ProfileProvider";
 import DashboardCard from "./DashboardCard";
 import { verifyUserDetails } from "@/helpers/verifyUserDetails";
+import WithAuthProtect from "@/helpers/WithAuth";
+import { useFair } from "@/context/FairProvider";
+import fairs from "@/assets/dashboard3.svg";
+import Image from "next/image";
+import { IoShirtOutline } from "react-icons/io5";
 
 const MainDashboardSeller: React.FC = () => {
-  const { userDtos } = useProfile();
+  const { userDtos, sellerDtos } = useProfile();
   const [isOpen, setIsOpen] = useState(false);
   const [verificationMsg, setVerificationMsg] = useState<string | null>(null);
+  const [isRegisteredAtFair, setIsRegisteredAtFair] = useState<boolean>(false);
+  const { activeFair } = useFair();
+
+
+
+  useEffect(() => {
+    const checkRegister = async () => {
+      if (sellerDtos?.registrations) {
+        const isRegistered = sellerDtos.registrations.some(
+          (registration) => registration.fair.name === activeFair?.name
+        );
+
+        setIsRegisteredAtFair(isRegistered);
+      }
+    };
+
+    checkRegister();
+  }, [sellerDtos, activeFair]);
 
   const handleClick = () => {
     setIsOpen(!isOpen);
   };
 
-    useEffect(() => {
-      const checkingMail = async () => {
-        if (userDtos) {
-          const verificationMessage = verifyUserDetails(userDtos);
-          if (verificationMessage) {
-            setVerificationMsg(verificationMessage);
-            console.log(verificationMessage);
-          }
-        }
-      };
+  useEffect(() => {
+    const checkingMail = async () => {
+      if (userDtos) {
+        const verificationMessage = verifyUserDetails(userDtos);
+        if (verificationMessage) {
+          setVerificationMsg(verificationMessage);
 
-      checkingMail();
-    }, [userDtos]);
+        }
+      }
+    };
+
+    checkingMail();
+  }, [userDtos]);
 
   return (
     <div className="grid grid-cols-8 gap-0 relative place-content-center">
@@ -41,9 +64,8 @@ const MainDashboardSeller: React.FC = () => {
         <SidebarDashboard userRole={userDtos?.role} />
       </div>
       <div
-        className={`bg-secondary-lighter p-16 flex flex-col h-[100vh]  ${
-          isOpen ? "col-span-7" : "col-span-8"
-        } sm:col-span-7`}
+        className={`bg-secondary-lighter p-16 flex flex-col h-[100vh]  ${isOpen ? "col-span-7" : "col-span-8"
+          } sm:col-span-7`}
       >
         <h1 className="pb-10 text-primary-darker text-4xl">
           Bienvenid@ <span className="font-bold">{userDtos?.name}!</span>
@@ -54,16 +76,67 @@ const MainDashboardSeller: React.FC = () => {
             description="Configura tus datos de contacto y medios de pago y claves"
             typeEnum={dashboardEnum.profile}
             message={verificationMsg}
+            classname="p-5 relative bg-secondary-light text-wrap w-80 rounded-[2.5rem] h-48 shadow-xl"
           />
           <DashboardCard
-            title="Mis ferias"
-            description="Entérate de las próximas ferias, inscribite y se parte de nuestra comunidad"
-            typeEnum={dashboardEnum.fairs}
+            title={
+              verificationMsg ? (
+                <span className="flex gap-2">
+                  {verificationMsg && (
+                    <Image
+                      src={fairs}
+                      alt="Icono de ferias"
+                      style={{ color: "#2f8083" }}
+                      width={30}
+                      height={30}
+                    />
+                  )}
+                  Mis Ferias
+                </span>
+              ) : (
+                "Mis Ferias"
+              )
+            }
+            description={
+              verificationMsg ? (
+                "Completá los datos faltantes y recarga la página para poder inscribirte a las ferias "
+              ) : isRegisteredAtFair ? (
+                "Enterate de las próximas ferias, inscribite y sé parte de nuestra comunidad"
+              ) : (
+                <>
+                  Entérate de las próximas ferias, <strong>inscribite</strong> y{" "}
+                  <strong>sé parte de nuestra comunidad</strong>
+                </>
+              )
+            }
+            typeEnum={!verificationMsg ? dashboardEnum.fairs : ""}
+            classname={`p-5 relative bg-secondary-light text-wrap w-80 rounded-[2.5rem] h-48 shadow-xl ${verificationMsg ? "cursor-not-allowed" : ""
+              }`}
           />
           <DashboardCard
-            title="Mis productos"
-            description="Vende tus productos, participa de las liquidaciones"
-            typeEnum={dashboardEnum.products}
+            title={
+              verificationMsg || !isRegisteredAtFair ? (
+                <span className="flex gap-2">
+                  {verificationMsg ||
+                    (!isRegisteredAtFair && (
+                      <IoShirtOutline style={{ color: "#2f8083" }} size={30} />
+                    ))}
+                  Mis Productos
+                </span>
+              ) : (
+                "Mis Productos"
+              )
+            }
+            description={
+              verificationMsg || !isRegisteredAtFair ? (
+                <span className="flex gap-2">¡Inscribite para empezar a vender!</span>
+              ) : (
+                "Vende tus productos, participa de las liquidaciones"
+              )
+            }
+            typeEnum={isRegisteredAtFair ? dashboardEnum.products : ""}
+            classname={`p-5 relative bg-secondary-light text-wrap w-80 rounded-[2.5rem] h-48 shadow-xl ${!isRegisteredAtFair ? "cursor-not-allowed bg-slate-200" : ""
+              }`}
           />
         </div>
       </div>
@@ -71,4 +144,7 @@ const MainDashboardSeller: React.FC = () => {
   );
 };
 
-export default MainDashboardSeller;
+export default WithAuthProtect({
+  Component: MainDashboardSeller,
+  role: "seller",
+});

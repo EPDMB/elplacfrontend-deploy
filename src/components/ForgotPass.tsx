@@ -1,5 +1,7 @@
+"use client";
+
 import { formTypeEnum, IForgot, IUserLogin, ModalProps } from "@/types";
-import React from "react";
+import React, { useState } from "react";
 import Input from "./Input";
 import { useFormik } from "formik";
 import { forgotPassValidations, loginValidations } from "@/helpers/validations";
@@ -8,14 +10,18 @@ import "react-toastify/dist/ReactToastify.css";
 import { postForgotPassword } from "@/helpers/services";
 
 const ForgotPass: React.FC<ModalProps> = ({ onCloseModal, message }) => {
+  const [isLoading, setLoading] = useState(false);
+
   const forgotPassword = async (mail: IForgot) => {
-    console.log(mail.email);
     try {
+      setLoading(true);
       await postForgotPassword(mail.email);
-      notify("ToastSuccess", "¡Contraseña enviada!");
+      notify("ToastSuccess", "¡Revisa tu casilla de correo!");
       onCloseModal();
     } catch (error: any) {
-      notify("ToastError", "Datos Incorrectos");
+      notify("ToastError", error.message);
+      setLoading(false);
+
       console.error(error);
     }
   };
@@ -66,13 +72,35 @@ const ForgotPass: React.FC<ModalProps> = ({ onCloseModal, message }) => {
               placeholder="juan@mail.com"
               {...getProps("email")}
             />
-            <button
-              type="submit"
-              disabled={!formik.isValid || !formik.dirty}
-              className="mt-4 px-4 py-2 text-white rounded-md hover:bg-primary-dark focus:outline-none bg-primary-darker disabled:cursor-not-allowed disabled:bg-primary-light"
-            >
-              Enviar
-            </button>
+            <div className="flex items-center mt-4">
+              <button
+                type="submit"
+                disabled={!formik.isValid || !formik.dirty}
+                className="flex  px-4 py-2 text-white rounded-md hover:bg-primary-dark focus:outline-none bg-primary-darker disabled:cursor-not-allowed disabled:bg-primary-light"
+              >
+                Enviar
+              </button>
+              {isLoading && (
+                <svg
+                  version="1.1"
+                  id="loader-1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlnsXlink="http://www.w3.org/1999/xlink"
+                  x="0px"
+                  y="0px"
+                  width="40px"
+                  height="40px"
+                  viewBox="0 0 50 50"
+                  xmlSpace="preserve"
+                  className="animate-spin"
+                >
+                  <path
+                    fill="#FFD47B"
+                    d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z"
+                  />
+                </svg>
+              )}
+            </div>
           </form>
         </div>
       </div>

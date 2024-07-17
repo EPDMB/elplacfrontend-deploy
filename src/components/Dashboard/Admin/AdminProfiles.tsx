@@ -10,25 +10,26 @@ import Searchbar from "@/components/Searchbar";
 import { formatDate } from "@/helpers/formatDate";
 import exportToExcel from "@/helpers/exportToExcel";
 import Loader from "@/components/Loader";
+import { useRouter } from "next/navigation";
+import { useProfile } from "@/context/ProfileProvider";
+import WithAuthProtect from "@/helpers/WithAuth";
 
 const AdminProfiles = () => {
   const { token } = useAuth();
-  const [loading, setLoading] = useState<boolean>(false);
+  const { userDtos } = useProfile();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [users, setUsers] = useState<UserDto[]>([]);
   const [usersFiltered, setUsersFiltered] = useState<UserDto[]>([]);
   const [trigger, setTrigger] = useState<boolean>(false);
+  const router = useRouter();
 
   useEffect(() => {
-    setLoading(true);
     getAllUsers(token)
       .then((res) => {
         setUsers(res);
         setUsersFiltered(res);
       })
-      .catch((error) => console.error(error))
-      .finally(() => {
-        setLoading(false);
-      });
+      .catch((error) => console.error(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, trigger]);
 
@@ -181,4 +182,4 @@ const AdminProfiles = () => {
   );
 };
 
-export default AdminProfiles;
+export default WithAuthProtect({ Component: AdminProfiles, role: "admin" });

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { initMercadoPago, Wallet } from "@mercadopago/sdk-react";
 
-import { URL } from "../../../envs"; 
+import { URL } from "../../../envs";
 import { PaymentsUserProps } from "@/types";
 
 export default function PaymentsUser({
@@ -30,15 +30,7 @@ export default function PaymentsUser({
     registrationDay: string | undefined | null,
   ) => {
     try {
-      console.log(
-        "Body:",
-        JSON.stringify({
-          userId,
-          fairId,
-          registrationHour,
-          registrationDay,
-        })
-      );
+
       const response = await fetch(`${URL}/payments/createPreferenceBuyer`, {
         method: "POST",
         headers: {
@@ -54,7 +46,6 @@ export default function PaymentsUser({
       });
 
       const text = await response.text();
-      console.log("Response text:", text);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -83,7 +74,7 @@ export default function PaymentsUser({
         fairId,
         registrationHour,
         registrationDay,
-        
+
       );
       setPreferenceId(preference.preferenceId);
       if (preferenceId) {

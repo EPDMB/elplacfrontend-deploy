@@ -1,11 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Notification } from "@/types"; // Asegúrate de que la importación es correcta
+import { Notification } from "@/types";
 import { getAllProductRequest } from "@/helpers/services";
 import { useAuth } from "@/context/AuthProvider";
-
 import ProductsTable from "@/components/Table/ProductsTable";
 import { useFair } from "@/context/FairProvider";
+
+import WithAuthProtect from "@/helpers/WithAuth";
 
 const AdminProducts = () => {
   const { token } = useAuth();
@@ -14,22 +15,25 @@ const AdminProducts = () => {
   const [trigger, setTrigger] = useState<boolean>(false);
 
   useEffect(() => {
-    getAllProductRequest()
-      .then((res) => {
-        console.log(res);
+    const fetchData = async () => {
+      const productRequests = await getAllProductRequest(token);
+      setProductRequest(productRequests);
+    };
 
-        setProductRequest(res);
-      })
-      .catch((error) => console.error(error));
+    fetchData();
+  }, [token, trigger, setTrigger]);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, trigger]);
-
-  const fairProducts = productRequest.filter(
-    (product) => product.fair.id === activeFair?.id
-  );
-
-  console.log(fairProducts.length);
+  const allProducts = productRequest.flatMap((product) => product.products);
+  const totalProducts = allProducts.length;
+  const acceptedProducts = allProducts.filter(
+    (product) => product.status === "accepted"
+  ).length;
+  const rejectedProducts = allProducts.filter(
+    (product) => product.status === "notAccepted"
+  ).length;
+  const pendingProducts = allProducts.filter(
+    (product) => product.status === "pendingVerification"
+  ).length;
 
   const sellersColumns = [
     { id: "sku", label: "SKU", sortable: true },
@@ -37,6 +41,7 @@ const AdminProducts = () => {
     { id: "status", label: "Estado", sortable: true },
     { id: "details", label: "Detalles", sortable: true },
   ];
+
   const detailsColumns = [
     { id: "code", label: "Codigo", sortable: true },
     { id: "category", label: "Categoria", sortable: true },
@@ -46,6 +51,7 @@ const AdminProducts = () => {
     { id: "price", label: "Precio", sortable: true },
     { id: "liquidation", label: "Liquidación", sortable: true },
     { id: "states", label: "Estados", sortable: true },
+    { id: "actions", label: "Acciones", sortable: true },
   ];
 
   return (
@@ -70,36 +76,46 @@ const AdminProducts = () => {
         </div>
         <div className="w-full mt-5 flex p-6 flex-col rounded-lg bg-[#FFFFFF]">
           <div>
-            <h1 className="font-semibold text-primary-darker text-xl">
+            <h1 className="font-semibold text-primary-darker text-3xl">
               {activeFair?.name}
             </h1>
             <div className="flex gap-6">
               <div>
                 <h3 className="text-[#5E5F60] text-lg">Productos</h3>
-                <span className="text-[#5E5F60] text-3xl font-bold">{1}</span>
+                <span className="text-[#5E5F60] text-3xl font-bold">
+                  {totalProducts}
+                </span>
               </div>
               <div className="border border-[#E5E9EB]"></div>
               <div>
                 <h3 className="text-[#5E5F60] text-lg">Aceptados</h3>
-                <span className="text-[#5E5F60] text-3xl font-bold">{1}</span>
+                <span className="text-[#5E5F60] text-3xl font-bold">
+                  {acceptedProducts}
+                </span>
               </div>
               <div className="border border-[#E5E9EB]"></div>
               <div>
                 <h3 className="text-[#5E5F60] text-lg">No aceptados</h3>
-                <span className="text-[#5E5F60] text-3xl font-bold">{1}</span>
+                <span className="text-[#5E5F60] text-3xl font-bold">
+                  {rejectedProducts}
+                </span>
               </div>
               <div>
                 <h3 className="text-[#5E5F60] text-lg">
                   Pendiente verificación
                 </h3>
-                <span className="text-[#5E5F60] text-3xl font-bold">{1}</span>
+                <span className="text-[#5E5F60] text-3xl font-bold">
+                  {pendingProducts}
+                </span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="row-span-3 col-span-2">
+      <div
+        className="row-span-3 col-span-2 h-[30rem] bg-[#F9FAFB] w-full 
+       overflow-y-auto">
         <ProductsTable
           columns={sellersColumns}
           productRequest={productRequest}
@@ -113,4 +129,4 @@ const AdminProducts = () => {
   );
 };
 
-export default AdminProducts;
+export default WithAuthProtect({ Component: AdminProducts, role: "admin" });

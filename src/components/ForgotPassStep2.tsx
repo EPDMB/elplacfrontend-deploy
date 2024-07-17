@@ -15,7 +15,6 @@ const ForgotPassStep2: React.FC<IForgotPasswordProps> = ({ token }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  console.log(token)
 
   useEffect(() => {
     if (token) {

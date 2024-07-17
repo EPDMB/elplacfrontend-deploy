@@ -7,6 +7,7 @@ import {
   ProductProps,
   UniqueData,
   UserDto,
+  FairDto,
 } from "@/types";
 import { URL } from "../../envs";
 import { time } from "console";
@@ -18,19 +19,20 @@ export const postUserRegister = async (user: Partial<UserDto>) => {
   try {
     const checkUnique = await getUniqueData();
 
-    const existUserInfo = checkUnique.userInfo.some(
-      (unique: Partial<IUser>) =>
-        unique.dni === user.dni || unique.email === user.email
+    const existUserDni = checkUnique.userInfo.some(
+      (unique: Partial<IUser>) => unique.dni === user.dni
     );
 
-    const existSellerInfo = checkUnique.sellerInfo.some(
-      (unique: Partial<ISeller>) => unique.bank_account === user.bank_account
+    const existUserEmail = checkUnique.userInfo.some(
+      (unique: Partial<IUser>) => unique.email === user.email
     );
 
-    if (existUserInfo || existSellerInfo) {
-      throw new Error(
-        "Este formulario contiene información que ya está registrada en nuestra base de datos. Dirígete a la sección de Inicio de Sesión e ingresa a tu cuenta"
-      );
+    if (existUserDni) {
+      throw new Error("Este dni ya está registrada en nuestra base de datos");
+    }
+
+    if (existUserEmail) {
+      throw new Error("Este email ya está registrado en nuestra base de datos");
     } else {
       const res = await fetch(`${URL}/auth/register/user`, {
         method: "POST",
@@ -48,10 +50,9 @@ export const postUserRegister = async (user: Partial<UserDto>) => {
     }
   } catch (error: any) {
     console.error(error);
-    throw error;
+    throw new Error(error.message || "Error en el registro");
   }
 };
-
 
 //REGISTRO DE VENDEDOR
 export const postSellerRegister = async (
@@ -60,18 +61,29 @@ export const postSellerRegister = async (
   try {
     const checkUnique = await getUniqueData();
 
-    const existUserInfo = checkUnique.userInfo.some(
-      (unique: Partial<IUser>) =>
-        unique.dni === seller.dni || unique.email === seller.email
+    const existUserDni = checkUnique.userInfo.some(
+      (unique: Partial<IUser>) => unique.dni === seller.dni
+    );
+
+    const existUserEmail = checkUnique.userInfo.some(
+      (unique: Partial<IUser>) => unique.email === seller.email
     );
 
     const existSellerInfo = checkUnique.sellerInfo.some(
       (unique: Partial<ISeller>) => unique.bank_account === seller.bank_account
     );
 
-    if (existUserInfo || existSellerInfo) {
+    if (existUserDni) {
+      throw new Error("Este dni ya está registrada en nuestra base de datos");
+    }
+
+    if (existUserEmail) {
+      throw new Error("Este email ya está registrado en nuestra base de datos");
+    }
+
+    if (existSellerInfo) {
       throw new Error(
-        "Este formulario contiene información que ya está registrada en nuestra base de datos. Dirígete a la sección de Inicio de Sesión e ingresa a tu cuenta"
+        "Este CBU/CBU/Alias ya está registrado en nuestra base de datos"
       );
     }
 
@@ -83,6 +95,8 @@ export const postSellerRegister = async (
       body: JSON.stringify(seller),
     });
 
+    
+
     if (!res.ok) {
       throw new Error("Error en el registro");
     }
@@ -90,12 +104,14 @@ export const postSellerRegister = async (
     return res;
   } catch (error: any) {
     console.error(error);
-    throw new Error("Error al registrar el vendedor");
+    throw new Error(error.message || "Error en el registro");
   }
 };
 
 //LOGIN
-export const postUserLogin = async (user: IUserLogin) => {
+export const postUserLogin = async (
+  user: IUserLogin & { rememberMe: boolean }
+) => {
   try {
     const res = await fetch(`${URL}/auth/login`, {
       method: "POST",
@@ -113,7 +129,6 @@ export const postUserLogin = async (user: IUserLogin) => {
 
     return data;
   } catch (error: any) {
-    console.error(error);
     throw error;
   }
 };
@@ -141,13 +156,15 @@ export const getUser = async (token: string, id: string) => {
 //OBTENER SELLER POR ID
 export const getSeller = async (token: string, id: string) => {
   try {
-    const res = await fetch(`${URL}/seller/${id}`, {
+    const res = await fetch(`${URL}/sellers/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
+
+    
     if (!res.ok) {
       throw new Error("Error en la petición");
     }
@@ -188,9 +205,7 @@ export const putSeller = async (
   id: string,
   user: Partial<UserDto>
 ) => {
-  console.log(token);
-  console.log(id);
-  console.log(user);
+ 
   try {
     const res = await fetch(`${URL}/sellers/update/${id}`, {
       method: "PUT",
@@ -226,7 +241,7 @@ export const changeRole = async (
       },
       body: JSON.stringify({ role: role }),
     });
-    console.log(res);
+    
 
     if (!res.ok) {
       const errorText = await res.text();
@@ -269,6 +284,16 @@ export const putChangePassword = async (
 // DEBE REDIRIGIR AL FORMULARIO - FUNCIONA (SE SUPONE)
 export const postForgotPassword = async (email: string) => {
   try {
+    const checkUnique = await getUniqueData();
+
+    const existUserEmail = checkUnique.userInfo.some(
+      (unique: Partial<IUser>) => unique.email === email
+    );
+
+    if (!existUserEmail) {
+      throw new Error("Este email no está registrado en nuestra base de datos");
+    }
+
     const res = await fetch(`${URL}/auth/forgot-password`, {
       method: "POST",
       headers: {
@@ -288,12 +313,12 @@ export const postForgotPassword = async (email: string) => {
     } else {
       return {};
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error(
       "Error al enviar la solicitud de restablecimiento de contraseña:",
       error
     );
-    throw error;
+    throw new Error(error.message || "Error en el registro");
   }
 };
 
@@ -339,7 +364,6 @@ export const resetPassword = async (
 };
 
 //OBTENER TODOS LOS USUARIOS
-// NO PUDE PROBARLA!!!!
 export const getAllUsers = async (token: string) => {
   try {
     const res = await fetch(`${URL}/users`, {
@@ -359,8 +383,6 @@ export const getAllUsers = async (token: string) => {
   }
 };
 
-// ADMIN DA DE BAJA UN USER
-// NO PUDE PROBARLA!!!!
 export const updateStatusUser = async (id: string, accessToken: string) => {
   try {
     const res = await fetch(`${URL}/users/${id}`, {
@@ -414,7 +436,8 @@ export const postInscription = async (
   fairId: string | undefined,
   userId: string | undefined,
   categoryId: string | undefined,
-  liquidation: boolean
+  liquidation: string,
+  token: string
 ) => {
   try {
     const res = await fetch(
@@ -423,7 +446,9 @@ export const postInscription = async (
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
+        body: JSON.stringify(liquidation),
       }
     );
     if (!res.ok) {
@@ -443,11 +468,7 @@ export const postTicket = async (
   dateSelect: string | null,
   timeSelect: string
 ) => {
-  console.log(dateSelect);
-  console.log(timeSelect);
-  console.log(fairId);
-  console.log(userId);
-  console.log(token);
+ 
 
   try {
     const res = await fetch(`${URL}/users/${userId}/register/fair/${fairId}`, {
@@ -481,17 +502,16 @@ export const getUniqueData = async (): Promise<UniqueData> => {
     });
 
     if (!res.ok) {
-      throw new Error("Error en la petición");
+      throw new Error("Error en unique data");
     }
 
     const data: UniqueData = await res.json();
     return data;
   } catch (error) {
     console.error(error);
-    throw new Error("Error al obtener datos únicos");
+    throw new Error("Error en el unique data");
   }
 };
-
 
 export const checkIsGmailfirstTime = async (email: string) => {
   try {
@@ -508,7 +528,7 @@ export const checkIsGmailfirstTime = async (email: string) => {
 
     const data = await res.json();
 
-    console.log(data);
+    
 
     if (data.dni === "" && data.bankAccount === "") {
       return "Por favor, completa tu DNI y tu cuenta bancaria.";
@@ -527,12 +547,13 @@ export const checkIsGmailfirstTime = async (email: string) => {
 
 //PRODUCTOS
 
-export const getProducts = async () => {
+export const getProducts = async (token: string) => {
   try {
     const res = await fetch(`${URL}/products`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
     });
     if (!res.ok) {
@@ -553,11 +574,7 @@ export const createProductRequest = async (
   fairId: string,
   category: string
 ) => {
-  console.log(products);
-  console.log(fairId);
-  console.log(category);
-  console.log(sellerId);
-  console.log(token);
+
   try {
     const res = await fetch(`${URL}/product-request`, {
       method: "POST",
@@ -585,17 +602,45 @@ export const createProductRequest = async (
 };
 
 export const updateProductStatus = async (
-  productid: string,
+  productId: string,
   status: string,
-  productReqId: string
+  productReqId: string,
+  token: string
 ) => {
   try {
     const res = await fetch(`${URL}/product-request/${productReqId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, //ADMIN TOKEN
       },
-      body: JSON.stringify({ productId: productid, status: status }),
+
+      body: JSON.stringify({ productId: productId, status: status }),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      console.error("Error en la petición", errorData);
+      throw new Error(
+        `Error ${res.status}: ${errorData.message || res.statusText}`
+      );
+    }
+    const data = await res.json();
+
+    return data;
+  } catch (error) {
+    console.error("Error en la función updateProductStatus:", error);
+  }
+};
+
+export const putProductStatus = async (id: string, status: string) => {
+  try {
+    const res = await fetch(`${URL}/products/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status: status }),
     });
     if (!res.ok) {
       throw new Error("Error en la petición");
@@ -608,19 +653,60 @@ export const updateProductStatus = async (
   }
 };
 
-export const getAllProductRequest = async () => {
+export const checkedProductRequest = async (id: string, token: string) => {
   try {
-    const res = await fetch(`${URL}/product-request`, {
-      method: "GET",
+    const res = await fetch(`${URL}/product-request/check/${id}`, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
     });
     if (!res.ok) {
       throw new Error("Error en la petición");
     }
     const data = await res.json();
-    console.log(data);
+
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const getAllProductRequest = async (token: string) => {
+  try {
+    const res = await fetch(`${URL}/product-request`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, //ADMIN TOKEN
+      },
+    });
+    if (!res.ok) {
+      throw new Error("Error en la petición");
+    }
+    const data = await res.json();
+
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const getAllProducts = async (token: string) => {
+  try {
+    const res = await fetch(`${URL}/products`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, //ADMIN TOKEN
+      },
+    });
+    if (!res.ok) {
+      throw new Error("Error en la petición");
+    }
+    const data = await res.json();
+    
 
     return data;
   } catch (error) {
@@ -630,7 +716,7 @@ export const getAllProductRequest = async () => {
 
 export const blockUser = async (token: string, id: string) => {
   try {
-    console.log("id: ", id, "token: ", token);
+    
 
     const res = await fetch(`${URL}/users/block/${id}`, {
       method: "PUT",
@@ -649,7 +735,7 @@ export const blockUser = async (token: string, id: string) => {
 
 export const unblockUser = async (token: string, id: string) => {
   try {
-    console.log("id: ", id, "token: ", token);
+    
 
     const res = await fetch(`${URL}/users/unblock/${id}`, {
       method: "PUT",
@@ -666,9 +752,64 @@ export const unblockUser = async (token: string, id: string) => {
   }
 };
 
-export const getProductRequestById = async (productReqId: string) => {
+export const getProductRequestById = async (
+  productReqId: string,
+  token: string
+) => {
   try {
-    const res = await fetch(`${URL}/product-request/${productReqId}`);
+    const res = await fetch(`${URL}/product-request/${productReqId}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (!res.ok) {
+      throw new Error("Res was not found");
+    }
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  }
+};
+
+//CREAR FERIA
+export const postCreateFair = async (fairData: FairDto, token: string) => {
+
+  try {
+    const res = await fetch(`${URL}/fairs/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(fairData),
+    });
+    
+    if (!res.ok) {
+      throw new Error("Error en la creación de la feria");
+    }
+
+    return res.json();
+  } catch (error: any) {
+    console.error(error);
+    throw new Error("Error al crear la feria SERVICES");
+  }
+};
+
+export const getProductsBySeller = async (
+  sellerId: string | undefined,
+  token: string
+) => {
+  try {
+    const res = await fetch(`${URL}/products/seller/${sellerId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, //SELLER TOKEN
+      },
+    });
     if (!res.ok) {
       throw new Error("Res was not found");
     }

@@ -1,0 +1,278 @@
+"use client";
+import React, { useEffect, useState } from "react";
+import {
+  IHandleSelectProductStatus,
+  IProductNotification,
+  Notification,
+  ProductProps,
+  productsStatusEnum,
+} from "@/types";
+import {
+  getAllProductRequest,
+  getAllProducts,
+  updateProductStatus,
+} from "@/helpers/services";
+import { useAuth } from "@/context/AuthProvider";
+import ProductsTable from "@/components/Table/ProductsTable";
+import { useFair } from "@/context/FairProvider";
+import { FaCheckCircle } from "react-icons/fa";
+import "react-toastify/dist/ReactToastify.css";
+
+import WithAuthProtect from "@/helpers/WithAuth";
+import { Badge } from "@/components/Badges";
+import Dropdown from "@/components/Dropdown";
+import Product from "@/helpers/products";
+import { notify } from "@/components/Notifications/Notifications";
+
+const AdminPostFair = () => {
+  const { token } = useAuth();
+  const { activeFair } = useFair();
+  const [products, setProducts] = useState<IProductNotification[]>([]);
+  const [trigger, setTrigger] = useState<boolean>(false);
+  const [productRequestId, setProductRequestId] = useState<Notification | null>(
+    null
+  );
+  const [openModalUserId, setOpenModalUserId] = useState<boolean>(true);
+
+  const closeModalHandler = () => {
+    setOpenModalUserId(false);
+  };
+
+  useEffect(() => {
+    if (token) {
+      getAllProducts(token)
+        .then((res) => {
+          setProducts(res);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  }, [token, trigger]);
+
+  const soldedProducts = products.filter(
+    (product) => product.status === "sold"
+  ).length;
+  const soldedOnClearance = products.filter(
+    (product) => product.status === "soldOnClearance"
+  ).length;
+  const unSoldedProducts = products.filter(
+    (product) => product.status === "unsold"
+  ).length;
+  const totalSales = products
+    .filter(
+      (product) =>
+        product.status === "sold" || product.status === "soldOnClearance"
+    )
+    .reduce((acc, product) => acc + product.price, 0);
+  const applyLiquidation = (price: number) => {
+    const discount = price * 0.25;
+    const finalPrice = price - discount;
+    return finalPrice;
+  };
+
+  const actionsOptions = [
+    { id: productsStatusEnum.sold, name: "Vendido" },
+    { id: productsStatusEnum.soldOnClearance, name: "Vendido en liquidación" },
+    { id: productsStatusEnum.unsold, name: "No vendido" },
+  ];
+
+  const detailsColumns = [
+    { id: "code", label: "Codigo", sortable: true },
+    { id: "category", label: "Categoria", sortable: true },
+    { id: "size", label: "Talle", sortable: true },
+    { id: "brand", label: "Marca", sortable: true },
+    { id: "description", label: "Descripción", sortable: true },
+    { id: "price", label: "Precio", sortable: true },
+    { id: "liquidation", label: "Liquidación", sortable: true },
+    { id: "states", label: "Estados", sortable: true },
+    { id: "actions", label: "Acciones", sortable: true },
+  ];
+
+  const handleSelect = async ({ id, status }: IHandleSelectProductStatus) => {
+    if (!productRequestId) return;
+    await updateProductStatus(id, status, productRequestId.id, token);
+  };
+
+  const handleConcludeFair = async () => {
+    setOpenModalUserId(true);
+
+    // const res = await updateFairStatus(activeFair?.id, "concluded", token);
+    // console.log(res);
+    // const updatedFair = await getFairById(activeFair?.id, token);
+    // console.log(updatedFair);
+    // setTrigger(!trigger
+  };
+
+  return (
+    <div className="grid grid-rows-[auto_auto_1fr] grid-cols-2 mx-20 mt-8 gap-5">
+      <div className="col-span-2">
+        <div>
+          <div className="gap-4 flex justify-end">
+            <button className="bg-white flex items-center text-primary-darker gap-2 p-2 border border-[#D0D5DD] rounded-lg">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="1.5em"
+                height="1.5em"
+                viewBox="0 0 256 256"
+              >
+                <path
+                  fill="#2F8083"
+                  d="M178.34 165.66L160 147.31V208a8 8 0 0 1-16 0v-60.69l-18.34 18.35a8 8 0 0 1-11.32-11.32l32-32a8 8 0 0 1 11.32 0l32 32a8 8 0 0 1-11.32 11.32M160 40a88.08 88.08 0 0 0-78.71 48.68A64 64 0 1 0 72 216h40a8 8 0 0 0 0-16H72a48 48 0 0 1 0-96c1.1 0 2.2 0 3.29.12A88 88 0 0 0 72 128a8 8 0 0 0 16 0a72 72 0 1 1 100.8 66a8 8 0 0 0 3.2 15.34a7.9 7.9 0 0 0 3.2-.68A88 88 0 0 0 160 40"
+                />
+              </svg>
+              Exportar
+            </button>
+          </div>
+        </div>
+        <div className="w-full mt-5 flex p-6 flex-col rounded-lg bg-[#FFFFFF]">
+          <div>
+            <h1 className="font-semibold text-primary-darker text-3xl">
+              {activeFair?.name}
+            </h1>
+            <div className="flex gap-6">
+              <div>
+                <h3 className="text-[#5E5F60] text-lg">Vendidos</h3>
+                <span className="text-[#5E5F60] text-3xl font-bold">
+                  {soldedProducts}
+                </span>
+              </div>
+              <div className="border border-[#E5E9EB]"></div>
+              <div>
+                <h3 className="text-[#5E5F60] text-lg">
+                  Vendidos en liquidación
+                </h3>
+                <span className="text-[#5E5F60] text-3xl font-bold">
+                  {soldedOnClearance}
+                </span>
+              </div>
+              <div className="border border-[#E5E9EB]"></div>
+
+              <div>
+                <h3 className="text-[#5E5F60] text-lg">No vendidos</h3>
+                <span className="text-[#5E5F60] text-3xl font-bold">
+                  {unSoldedProducts}
+                </span>
+              </div>
+              <div className="border border-[#E5E9EB]"></div>
+
+              <div>
+                <h3 className="text-[#5E5F60] text-lg">Ingresos</h3>
+                <span className="text-[#5E5F60] text-3xl font-bold">
+                  ${totalSales}
+                </span>
+              </div>
+              <button
+                onClick={handleConcludeFair}
+                className="bg-white flex items-center text-primary-darker gap-2 p-2 border border-[#D0D5DD] rounded-lg"
+              >
+                <FaCheckCircle />
+                Concluir feria
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="row-span-3 col-span-2">
+        <table>
+          <thead>
+            <tr>
+              {detailsColumns.map((column) => (
+                <th key={column.id} scope="col" className="px-6 py-3">
+                  {column.label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {products.map((product: IProductNotification) => (
+              <tr key={product.id} className="shadow-sm">
+                <td className="px-6 py-4 text-primary-darker font-medium">
+                  {product.code}
+                </td>
+                <td className="px-6 py-4 text-primary-darker font-medium">
+                  {product.category}
+                </td>
+                <td className="px-6 py-4 text-primary-darker font-medium">
+                  {product.size}
+                </td>
+                <td className="px-6 py-4 text-primary-darker font-medium">
+                  {product.brand}
+                </td>
+                <td className="px-6 py-4 text-primary-darker font-medium">
+                  {product.description}
+                </td>
+                <td className="px-6 py-4 text-primary-darker font-medium">
+                  ${product.price}
+                </td>
+                <td className="px-6 py-4 text-primary-darker font-medium">
+                  {product.liquidation
+                    ? `$${applyLiquidation(product.price)}`
+                    : "No aplica"}
+                </td>
+                <td className="px-6 py-4 text-primary-darker font-medium">
+                  <Badge type={product.status} />
+                </td>
+                <td className="px-5 py-4 text-primary-darker font-medium">
+                  <Dropdown
+                    onSelect={(selectedOption) =>
+                      handleSelect({
+                        id: product.id,
+                        status: selectedOption.id,
+                      })
+                    }
+                    options={actionsOptions}
+                    className="w-60"
+                    bg="bg-[#F9FAFB]"
+                    value="Selecciona el estado"
+                    noId={true}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {openModalUserId && (
+          <div
+            className="fixed z-20 inset-0 flex items-center justify-center bg-black bg-opacity-50"
+            onClick={() => closeModalHandler()}
+          >
+            <div
+              className="bg-primary-lighter h-[40vh] w-[50vw] p-8 m-3 md:m-0 rounded-3xl relative flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                className="absolute top-2 right-2 text-2xl font-bold text-primary-darker rounded-full"
+                onClick={() => closeModalHandler()}
+              >
+                ✖
+              </button>
+              <div className="flex flex-col gap-4 justify-center items-center">
+                <p className="font-bold text-3xl flex items-center justify-center text-center text-primary-darker">
+                  ¿Querés concluir la feria?
+                </p>
+                <div className="gap-4 flex">
+                  <button
+                    onClick={() => closeModalHandler()}
+                    className="bg-primary-darker text-white w-20 p-2 rounded-lg border border-[#D0D5DD]"
+                  >
+                    Si
+                  </button>
+                  <button
+                    onClick={() => closeModalHandler()}
+                    className="bg-white text-primary-darker w-20 p-2 rounded-lg border border-[#D0D5DD]"
+                  >
+                    No
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default WithAuthProtect({ Component: AdminPostFair, role: "admin" });

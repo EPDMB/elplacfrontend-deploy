@@ -1,6 +1,8 @@
+import { StepProps } from "@/types";
 import React from "react";
+import { FaChevronRight } from "react-icons/fa";
 
-const Tips = () => {
+const Tips: React.FC<StepProps> = ({ setVisibleStep }) => {
   return (
     <div className="bg-secondary-lighter rounded-md max-h-full min-h-[50vh] max-w-full min-w-[50%] shadow-lg font-semibold text-primary-dark p-10 overflow-auto">
       <ul className="space-y-2">
@@ -60,6 +62,14 @@ const Tips = () => {
           pertenecer a la misma vendedora
         </li>
       </ul>
+      <div className="w-full flex items-end justify-end">
+        <button
+          onClick={() => setVisibleStep("DATOS")}
+          className=" flex justify-center items-center w-10 h-10 p-2 rounded-full border border-primary-dark text-primary-dark"
+        >
+          <FaChevronRight />
+        </button>
+      </div>
     </div>
   );
 };

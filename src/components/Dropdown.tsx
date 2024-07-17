@@ -8,6 +8,7 @@ const Dropdown: React.FC<DropdownProps> = ({
   value,
   onSelect,
   placeholder,
+  noId,
   bg,
   className = "",
 }) => {
@@ -46,7 +47,7 @@ const Dropdown: React.FC<DropdownProps> = ({
               key={option.name}
               className={`p-2 cursor-pointer text-[#9EAAAA] hover:text-primary-dark border-t border-primary-light`}
               onClick={() => handleSelect(option)}>
-              {option.id} - {option.name}
+              {noId ? option.name : `${option.id} - ${option.name}`}
             </li>
           ))}
         </ul>

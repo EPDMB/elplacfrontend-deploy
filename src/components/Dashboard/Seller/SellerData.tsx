@@ -1,8 +1,11 @@
 "use client";
 import { useProfile } from "@/context/ProfileProvider";
+import { StepProps } from "@/types";
 import React from "react";
+import { FaChevronRight } from "react-icons/fa";
 
-const SellerData = () => {
+
+const SellerData: React.FC<StepProps> = ({ setVisibleStep }) => {
   const { userDtos, sellerDtos } = useProfile();
 
   return (
@@ -50,6 +53,14 @@ const SellerData = () => {
             </p>
           </div>
         </div>
+      </div>
+      <div className="w-full flex items-end justify-end mt-5">
+        <button
+          onClick={() => setVisibleStep("PRODUCTOS")}
+          className=" flex justify-center items-center w-10 h-10 p-2 rounded-full border border-primary-dark text-primary-dark"
+        >
+          <FaChevronRight />
+        </button>
       </div>
     </div>
   );

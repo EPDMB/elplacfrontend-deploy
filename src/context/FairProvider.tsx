@@ -20,8 +20,7 @@ export const FairProvider: React.FC<IFairProviderProps> = ({ children }) => {
   const [timeSelect, setTimeSelect] = useState<string>("");
   const [activeFair, setActiveFair] = useState<IFair | undefined>(undefined);
 
-  console.log("activeFair", activeFair);
-  console.log("fairs", fairs);
+
 
   useEffect(() => {
     const fetchFair = async () => {

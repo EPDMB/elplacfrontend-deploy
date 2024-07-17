@@ -12,10 +12,11 @@ const DashboardCard: React.FC<IDashboardCardProps> = ({
   description,
   typeEnum,
   message,
+  classname,
 }) => {
   return (
     <Link href={`/dashboard/${typeEnum}`}>
-      <div className="p-5 relative bg-secondary-light text-wrap w-80 rounded-[2.5rem] h-48 shadow-xl">
+      <div className={classname}>
         <div className="flex gap-2">
           {typeEnum === dashboardEnum.profile && (
             <FaUser style={{ color: "#2f8083" }} size={30} />
