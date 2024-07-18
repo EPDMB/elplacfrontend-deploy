@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { initMercadoPago, Wallet } from "@mercadopago/sdk-react";
 
 import { MERCADOPAGO_PUBLIC_KEY, URL } from "../../../envs";
-import { PaymentsSellerProps } from "@/types"; 
+import { PaymentsSellerProps } from "@/types";
 
 export default function PaymentsSeller({
   userId,
@@ -17,7 +17,7 @@ export default function PaymentsSeller({
   const [preferenceId, setPreferenceId] = useState<string | null>(null);
 
   useEffect(() => {
-    initMercadoPago(`${MERCADOPAGO_PUBLIC_KEY}`, {
+    initMercadoPago("TEST-e211a22c-ca94-477e-9d15-4fce28331fa5", {
       locale: "es-AR",
     });
   }, []);
