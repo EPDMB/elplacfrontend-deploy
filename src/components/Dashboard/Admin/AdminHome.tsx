@@ -102,21 +102,21 @@ const AdminHome = () => {
                   <div>
                     <h3 className="text-[#5E5F60] text-lg">Usuarios</h3>
                     <span className="text-[#5E5F60] text-3xl font-bold">
-                      {userCounter.length || 0}
+                      {userCounter?.length || 0}
                     </span>
                   </div>
                   <div className="border border-[#E5E9EB]"></div>
                   <div>
                     <h3 className="text-[#5E5F60] text-lg">Vendedores</h3>
                     <span className="text-[#5E5F60] text-3xl font-bold">
-                      {sellerCounter.length || 0}
+                      {sellerCounter?.length || 0}
                     </span>
                   </div>
                   <div className="border border-[#E5E9EB]"></div>
                   <div>
                     <h3 className="text-[#5E5F60] text-lg">Productos</h3>
                     <span className="text-[#5E5F60] text-3xl font-bold">
-                      {products.length || 0}
+                      {products?.length || 0}
                     </span>
                   </div>
                 </div>
