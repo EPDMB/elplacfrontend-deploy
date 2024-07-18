@@ -571,14 +571,19 @@ export interface BadgeProps {
 export interface SearchbarProps {
   users: UserDto[];
   setUsersFiltered: (users: UserDto[]) => void;
+  
 }
 
 export interface ExcelDataProfiles {
   SKU: string;
   Rol?: string;
-  Nombre: string;
-  FechaAlta: string;
+  Nombre?: string;
+  FechaAlta?: string;
   Estado?: statusGeneralEnum;
+  Categoria?: string;
+  Precio?: number;
+  Liquidacion?: boolean | string;
+  EstadoFinal?: productsStatusEnum | string;
 }
 
 export interface ISellerNotification {

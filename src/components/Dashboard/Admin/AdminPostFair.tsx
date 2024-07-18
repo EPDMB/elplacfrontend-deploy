@@ -26,6 +26,7 @@ import Dropdown from "@/components/Dropdown";
 import Product from "@/helpers/products";
 import { notify } from "@/components/Notifications/Notifications";
 import { useRouter } from "next/navigation";
+import exportToExcel from "@/helpers/exportToExcel";
 
 const AdminPostFair = () => {
   const { token } = useAuth();
@@ -33,6 +34,7 @@ const AdminPostFair = () => {
   const [products, setProducts] = useState<IProductNotification[]>([]);
   const [trigger, setTrigger] = useState<boolean>(false);
   const [openModalUserId, setOpenModalUserId] = useState<boolean>(false);
+  const [openModalExport, setOpenModalExport] = useState<boolean>(false);
   const router = useRouter();
 
   const closeModalHandler = () => {
@@ -104,6 +106,7 @@ const AdminPostFair = () => {
     if (!activeFair) return;
 
     const res = await updateFairStatus(token, activeFair?.id);
+    setOpenModalExport(false);
     if (res?.ok) {
       notify("ToastSuccess", "Feria concluida con éxito");
       setActiveFair(undefined);
@@ -111,12 +114,43 @@ const AdminPostFair = () => {
     }
   };
 
+  const finalStateTranslate = {
+    accepted: "Aceptado",
+    notAccepted: "No aceptado",
+    notAvailable: "No disponible",
+    categoryNotApply: "Categoría no aplica",
+    secondMark: "Segunda marca",
+    pendingVerification: "Pendiente de verificación",
+    sold: "Vendido",
+    soldOnClearance: "Vendido en liquidación",
+    unsold: "No vendido",
+  };
+
+  const handleExport = () => {
+    const filename = `${activeFair?.name || "feria actual"}.xlsx`;
+    const data = products.map((product) => ({
+      SKU: product.code || "-",
+      Categoria: product.category,
+      Descripcion: product.description,
+      Precio: product.price,
+      Liquidacion: product.liquidation ? "Si" : "No Aplica",
+      EstadoFinal: finalStateTranslate[product.status]
+    }));
+
+    exportToExcel(data, "Feria Actual", filename);
+    setOpenModalExport(false);
+  };
+
   return (
     <div className="grid grid-rows-[auto_auto_1fr] grid-cols-2 mx-20 mt-8 gap-5">
       <div className="col-span-2">
         <div>
           <div className="gap-4 flex justify-end">
-            <button className="bg-[#ebfafa] flex items-center text-primary-darker gap-2 p-2 border border-[#D0D5DD] rounded-lg">
+            
+            <button
+              onClick={() => setOpenModalExport(true)}
+              className="bg-[#ebfafa] flex items-center text-primary-darker gap-2 p-2 border border-[#D0D5DD] rounded-lg"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="1.5em"
@@ -284,6 +318,43 @@ const AdminPostFair = () => {
                   </button>
                   <button
                     onClick={() => closeModalHandler()}
+                    className="bg-white text-primary-darker w-20 p-2 rounded-lg border border-[#D0D5DD]"
+                  >
+                    No
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {openModalExport && (
+          <div
+            className="fixed z-20 inset-0 flex items-center justify-center bg-black bg-opacity-50"
+            onClick={() => setOpenModalExport(false)}
+          >
+            <div
+              className="bg-primary-lighter h-[40vh] w-[50vw] p-8 m-3 md:m-0 rounded-3xl relative flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                className="absolute top-2 right-2 text-2xl font-bold text-primary-darker rounded-full"
+                onClick={() => setOpenModalExport(false)}
+              >
+                ✖
+              </button>
+              <div className="flex flex-col gap-4 justify-center items-center">
+                <p className="font-bold text-3xl flex items-center justify-center text-center text-primary-darker">
+                  ¿Deseas exportar la información de esta feria?
+                </p>
+                <div className="gap-4 flex">
+                  <button
+                    onClick={() => handleExport()}
+                    className="bg-primary-darker text-white w-20 p-2 rounded-lg border border-[#D0D5DD]"
+                  >
+                    Si
+                  </button>
+                  <button
+                    onClick={() => setOpenModalExport(false)}
                     className="bg-white text-primary-darker w-20 p-2 rounded-lg border border-[#D0D5DD]"
                   >
                     No
