@@ -96,27 +96,27 @@ const AdminHome = () => {
             {activeFair ? (
               <>
                 <h1 className="font-semibold text-primary-darker text-xl">
-                  {activeFair?.name}
+                  {activeFair?.name || "Feria activa"}
                 </h1>
                 <div className="flex gap-6">
                   <div>
                     <h3 className="text-[#5E5F60] text-lg">Usuarios</h3>
                     <span className="text-[#5E5F60] text-3xl font-bold">
-                      {userCounter.length}
+                      {userCounter.length || 0}
                     </span>
                   </div>
                   <div className="border border-[#E5E9EB]"></div>
                   <div>
                     <h3 className="text-[#5E5F60] text-lg">Vendedores</h3>
                     <span className="text-[#5E5F60] text-3xl font-bold">
-                      {sellerCounter.length}
+                      {sellerCounter.length || 0}
                     </span>
                   </div>
                   <div className="border border-[#E5E9EB]"></div>
                   <div>
                     <h3 className="text-[#5E5F60] text-lg">Productos</h3>
                     <span className="text-[#5E5F60] text-3xl font-bold">
-                      {products.length}
+                      {products.length || 0}
                     </span>
                   </div>
                 </div>
