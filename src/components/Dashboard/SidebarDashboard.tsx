@@ -55,13 +55,13 @@ const Sidebar: React.FC<ISidebarProps> = ({ userRole }) => {
 
   return (
     <div
-      className={`w-full h-full z-10 shadow-2xl flex flex-col items-center justify-start gap-8 pt-10 ${userRole === "seller"
+      className={`w-full h-full z-10 shadow-2xl flex flex-col items-center justify-start gap-8 pt-10 ${
+        userRole === "seller"
           ? "bg-secondary-default"
           : userRole === "user"
-            ? "bg-primary-default"
-            : "bg-primary-darker"
-        }`}
-    >
+          ? "bg-primary-default"
+          : "bg-primary-darker"
+      }`}>
       {userRole === "admin" && (
         <div className="flex flex-col items-start gap-10 text-primary-lighter font-medium">
           <Link href="/admin">Dashboard</Link>
@@ -76,7 +76,7 @@ const Sidebar: React.FC<ISidebarProps> = ({ userRole }) => {
           <button>
             <Link href="/dashboard">
               <IoHomeOutline
-                className="w-14 h-14 p-2 rounded-md shadow-lg bg-secondary-light"
+                className="w-8 h-8 md:w-14 md:h-14 p-2 rounded-md shadow-lg bg-secondary-light"
                 style={{ color: "#2f8083" }}
                 size={40}
               />
@@ -85,7 +85,7 @@ const Sidebar: React.FC<ISidebarProps> = ({ userRole }) => {
           <button>
             <Link href="/dashboard/profile">
               <IoPersonOutline
-                className="w-14 h-14 p-2 rounded-md shadow-lg bg-secondary-light"
+                className="w-8 h-8 md:w-14 md:h-14 p-2 rounded-md shadow-lg bg-secondary-light"
                 style={{ color: "#2f8083" }}
                 size={40}
               />
@@ -95,7 +95,7 @@ const Sidebar: React.FC<ISidebarProps> = ({ userRole }) => {
             <button>
               <Link href="/dashboard/fairs">
                 <PiCoatHanger
-                  className="w-14 h-14 p-2 rounded-md shadow-lg bg-secondary-light"
+                  className="w-8 h-8 md:w-14 md:h-14 p-2 rounded-md shadow-lg bg-secondary-light"
                   style={{ color: "#2f8083" }}
                   size={40}
                 />
@@ -104,7 +104,7 @@ const Sidebar: React.FC<ISidebarProps> = ({ userRole }) => {
           ) : (
             <button className="cursor-not-allowed">
               <PiCoatHanger
-                className="w-14 h-14 p-2 rounded-md shadow-lg bg-secondary-light"
+                className="w-8 h-8 md:w-14 md:h-14 p-2 rounded-md shadow-lg bg-secondary-light"
                 style={{ color: "#2f8083" }}
                 size={40}
               />
@@ -115,7 +115,7 @@ const Sidebar: React.FC<ISidebarProps> = ({ userRole }) => {
             <button>
               <Link href="/dashboard/products">
                 <IoShirtOutline
-                  className="w-14 h-14 p-2 rounded-md shadow-lg bg-secondary-light"
+                  className="w-8 h-8 md:w-14 md:h-14 p-2 rounded-md shadow-lg bg-secondary-light"
                   style={{ color: "#2f8083" }}
                   size={40}
                 />
@@ -124,7 +124,7 @@ const Sidebar: React.FC<ISidebarProps> = ({ userRole }) => {
           ) : (
             <button className="cursor-not-allowed">
               <IoShirtOutline
-                className="w-14 h-14 p-2 rounded-md shadow-lg bg-secondary-light"
+                className="w-8 h-8 md:w-14 md:h-14 p-2 rounded-md shadow-lg bg-secondary-light"
                 style={{ color: "#2f8083" }}
                 size={40}
               />
@@ -137,7 +137,7 @@ const Sidebar: React.FC<ISidebarProps> = ({ userRole }) => {
           <button>
             <Link href="/dashboard">
               <IoHomeOutline
-                className="w-14 h-14 p-2 rounded-md shadow-lg bg-secondary-light"
+                className="w-8 h-8 md:w-14 md:h-14 p-2 rounded-md shadow-lg bg-secondary-light"
                 style={{ color: "#2f8083" }}
                 size={40}
               />
@@ -146,7 +146,7 @@ const Sidebar: React.FC<ISidebarProps> = ({ userRole }) => {
           <button>
             <Link href="/dashboard/profile">
               <IoPersonOutline
-                className="w-14 h-14 p-2 rounded-md shadow-lg bg-secondary-light"
+                className="w-8 h-8 md:w-14 md:h-14 p-2 rounded-md shadow-lg bg-secondary-light"
                 style={{ color: "#2f8083" }}
                 size={40}
               />
@@ -155,7 +155,7 @@ const Sidebar: React.FC<ISidebarProps> = ({ userRole }) => {
           <button>
             <Link href="/dashboard/changeType">
               <PiHandCoinsFill
-                className="w-14 h-14 p-2 rounded-md shadow-lg bg-secondary-light"
+                className="w-8 h-8 md:w-14 md:h-14 p-2 rounded-md shadow-lg bg-secondary-light"
                 style={{ color: "#2f8083" }}
                 size={40}
               />

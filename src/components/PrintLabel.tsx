@@ -23,7 +23,7 @@ export default function PrintLabel() {
   const getProducts = async (sellerId: string) => {
     try {
       const response = await fetch(
-        `https://myapp-backend-latest.onrender.com/products/seller/${sellerId}`,
+        `http://localhost:3002/products/seller/${sellerId}`,
         {
           method: "GET",
           headers: {
@@ -65,37 +65,40 @@ export default function PrintLabel() {
                     <body class="font-sans">
                         <div class="product-list">
                             ${products
-          .map(
-            (product) => `
+                              .map(
+                                (product) => `
                                 <div key=${product.id} class="product-item">
-                                    <svg id="barcode-${product.id
-              }" class="w-full h-auto mb-2"></svg>
-                                    <p class="text-lg font-semibold"><strong>Marca:</strong> ${product.brand
-              }</p>
-                                    <p class="text-lg"><strong>Tamaño:</strong> ${product.size
-              }</p>
+                                    <svg id="barcode-${
+                                      product.id
+                                    }" class="w-full h-auto mb-2"></svg>
+                                    <p class="text-lg font-semibold"><strong>Marca:</strong> ${
+                                      product.brand
+                                    }</p>
+                                    <p class="text-lg"><strong>Tamaño:</strong> ${
+                                      product.size
+                                    }</p>
                                     <p class="text-lg"><strong>Precio:</strong> $${product.price.toFixed(
-                2
-              )}</p>
+                                      2
+                                    )}</p>
                                     <hr class="border-t border-gray-300 my-2" />
                                 </div>
                             `
-          )
-          .join("")}
+                              )
+                              .join("")}
                         </div>
                         <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
                         <script>
                             document.addEventListener('DOMContentLoaded', () => {
                                 ${products
-          .map(
-            (product) => `
+                                  .map(
+                                    (product) => `
                                     JsBarcode("#barcode-${product.id}", "${product.code}", {
                                         format: "CODE128",
                                         displayValue: true
                                     });
                                 `
-          )
-          .join("")}
+                                  )
+                                  .join("")}
                                 window.print();
                             });
                         </script>

@@ -21,7 +21,6 @@ export const FairProvider: React.FC<IFairProviderProps> = ({ children }) => {
   const [activeFair, setActiveFair] = useState<IFair | undefined>(undefined);
 
 
-
   useEffect(() => {
     const fetchFair = async () => {
       const res: IFair[] = await getFair();
@@ -36,6 +35,7 @@ export const FairProvider: React.FC<IFairProviderProps> = ({ children }) => {
       value={{
         fairs,
         activeFair,
+        setActiveFair,
         setDateSelect,
         setTimeSelect,
         timeSelect,

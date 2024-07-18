@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import PrintButton from "./components/PrintButton";
 import { fetchProducts } from "./components/utils/Api";
 import { ProductPrinter } from "./components/utils/Product.type";
@@ -13,13 +13,11 @@ const PrintLabel: React.FC<PrintLabelProps> = ({ sellerId }) => {
   const { token } = useAuth();
 
   const getProductsAndPrint = async () => {
-
     try {
       const data = await fetchProducts(sellerId, token);
       const filteredData = data.filter(
         (product) => product.status === "accepted"
       );
-
 
       setProductInfo(filteredData);
       printLabel(filteredData);
@@ -36,7 +34,7 @@ const PrintLabel: React.FC<PrintLabelProps> = ({ sellerId }) => {
     }
   };
 
-  return <PrintButton onClick={() => getProductsAndPrint()} />;
+  return <PrintButton onClick={getProductsAndPrint} />;
 };
 
 export default PrintLabel;

@@ -6,12 +6,10 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useFair } from "@/context/FairProvider";
 import { CalendarProps } from "@/types";
 
-
 export const Calendar: React.FC<CalendarProps> = ({ fairDays = [] }) => {
   const [dateSelect, setDate] = useState<Date | null>(null);
-  const { fairs, setDateSelect } = useFair();
+  const { setDateSelect } = useFair();
   const [highlightedDates, setHighlightedDates] = useState<Date[]>([]);
-
 
   useEffect(() => {
     if (fairDays.length > 0) {
@@ -27,7 +25,6 @@ export const Calendar: React.FC<CalendarProps> = ({ fairDays = [] }) => {
     }
   }, [fairDays]);
 
-
   const onChange = (date: Date | null) => {
     if (date) {
       setDate(date);
@@ -42,7 +39,7 @@ export const Calendar: React.FC<CalendarProps> = ({ fairDays = [] }) => {
         selected={dateSelect}
         onChange={onChange}
         minDate={new Date()}
-        className="flex items-center justify-between w-48 p-2 rounded-md bg-secondary-lighter placeholder:text-primary-dark text-primary-dark shadow-md cursor-pointer"
+        className="flex items-center text-sm sm:text-base justify-between w-fit sm:w-48 p-2 rounded-md bg-secondary-lighter placeholder:text-primary-dark text-primary-dark shadow-md cursor-pointer"
         calendarClassName="rounded-lg shadow-md relative z-20 cursor-pointer"
         dateFormat="dd/MM/yyyy"
         highlightDates={highlightedDates}

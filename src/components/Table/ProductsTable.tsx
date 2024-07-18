@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import React, { useEffect, useState } from "react";
 import {
@@ -9,6 +10,7 @@ import {
 } from "@/types";
 import {
   checkedProductRequest,
+  getAllProductRequest,
   getAllUsers,
   getProductRequestById,
   updateProductStatus,
@@ -27,32 +29,45 @@ const socket: Socket = io(`${URL}`, {
 });
 
 const ProductsTable: React.FC<IProductRequestTableProps> = ({
-  productRequest,
   columns,
   detailColumns,
   activeFair,
+  products,
   trigger,
   setTrigger,
 }) => {
   const [details, setDetails] = useState<boolean>(false);
+
+  const { token } = useAuth();
+  const [expanded, setExpanded] = useState<boolean>(false);
+  const [productRequest, setProductRequest] = useState<Notification[]>([]);
   const [productRequestId, setProductRequestId] = useState<Notification | null>(
     null
   );
-  const { token } = useAuth();
-  const [expanded, setExpanded] = useState<boolean>(false);
+  const [triggerProducts, setTriggerProducts] = useState<boolean>(false);
 
   const handleDetails = async (id: string) => {
     const productRequest: Notification = await getProductRequestById(id, token);
-
 
     setProductRequestId(productRequest);
     setDetails(!details);
   };
 
   useEffect(() => {
-    checkRequest();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [trigger, setTrigger, productRequest]);
+    const fetchData = async () => {
+      const productRequests = await getAllProductRequest(token);
+      setProductRequest(productRequests);
+      if (productRequestId) {
+        const productRequestUpdated = await getProductRequestById(
+          productRequestId?.id,
+          token
+        );
+        setProductRequestId(productRequestUpdated);
+      }
+    };
+
+    fetchData();
+  }, [token, triggerProducts, setTriggerProducts, trigger, setTrigger]);
 
   const handleBack = () => {
     setDetails(false);
@@ -65,23 +80,9 @@ const ProductsTable: React.FC<IProductRequestTableProps> = ({
         return;
       }
 
-      const res = await updateProductStatus(
-        id,
-        status,
-        productRequestId.id,
-        token
-      );
+      await updateProductStatus(id, status, productRequestId.id, token);
 
-      //Acá fue la tristeza maxima de Carlitos
-
-      const updatedProductRequest = await getProductRequestById(
-        productRequestId.id,
-        token
-      );
-
-
-      setTrigger(!trigger);
-      // setProductRequestId
+      setTriggerProducts((prev) => !prev);
     } catch (error: any) {
       console.error(error.message);
     }
@@ -99,9 +100,6 @@ const ProductsTable: React.FC<IProductRequestTableProps> = ({
       name: "No corresponde categoría",
     },
     { id: productsStatusEnum.secondMark, name: "No aceptado (2da marca)" },
-    { id: productsStatusEnum.sold, name: "Vendido" },
-    { id: productsStatusEnum.soldOnClearance, name: "Vendido en liquidación" },
-    { id: productsStatusEnum.unsold, name: "No vendido" },
   ];
 
   const currentColumns = details ? detailColumns : columns;
@@ -122,162 +120,176 @@ const ProductsTable: React.FC<IProductRequestTableProps> = ({
 
   const checkRequest = async () => {
 
-
     if (productRequestId) {
       const notPending = productRequestId.products.every(
         (product) => product.status !== productsStatusEnum.pendingVerification
       );
 
-
       if (notPending) {
         const res = await checkedProductRequest(productRequestId?.id, token);
-
-
+        if (setTrigger) {
+          setTrigger(!trigger);
+        }
         handleBack();
       }
     }
   };
   return (
-    <table className="w-full  mb-20 text-sm text-left rtl:text-right bg-[#F9FAFB]">
-      <thead className="text-sm text-primary-darker uppercase bg-[#F9FAFB] border-b-primary-default border">
-        <tr>
-          <th scope="col" className="p-4">
-            {details && (
-              <button onClick={handleBack}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="1.5em"
-                  height="1.5em"
-                  viewBox="0 0 42 42">
-                  <path
-                    fill="#2F8083"
-                    fillRule="evenodd"
-                    d="M27.066 1L7 21.068l19.568 19.569l4.934-4.933l-14.637-14.636L32 5.933z"
-                  />
-                </svg>
-              </button>
-            )}
-          </th>
-          {currentColumns?.map((column) => (
-            <th key={column.id} scope="col" className="px-5 py-3">
-              {column.label}
+    <>
+      <table className="w-full  mb-20 text-sm text-left rtl:text-right bg-[#f1fafa]">
+        <thead className="text-sm text-primary-darker uppercase  bg-[#f1fafa] border-b-primary-default border">
+          <tr>
+            <th scope="col" className="p-4">
+              {details && (
+                <div className="flex gap-2 items-center ">
+                  <button onClick={handleBack}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="1.5em"
+                      height="1.5em"
+                      viewBox="0 0 42 42"
+                    >
+                      <path
+                        fill="#2F8083"
+                        fillRule="evenodd"
+                        d="M27.066 1L7 21.068l19.568 19.569l4.934-4.933l-14.637-14.636L32 5.933z"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => checkRequest()}
+                    className="bg-primary-darker hover:bg-primary-default transition m-auto text-white font-semibold p-2 rounded-lg shadow"
+                  >
+                    Enviar
+                  </button>
+                </div>
+              )}
             </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody className="text-[#667085] text-nowrap">
-        {!details ? (
-          productRequest.length !== 0 ? (
-            productRequest.map(
-              (product: Notification) =>
-                product.fair.id === activeFair?.id && (
-                  <tr key={product.id} className="shadow-sm">
-                    <th
-                      scope="row"
-                      className="px-5 py-4 font-medium whitespace-nowrap"></th>
-                    <td className="px-5 py-4 text-primary-darker font-medium">
-                      {product.seller.sku || "-"}
-                    </td>
-                    <td className="px-5 py-4 text-primary-darker font-medium">
-                      {product.category}
-                    </td>
-                    <td className="px-5 py-4 text-primary-darker font-medium">
-                      {product.status.toUpperCase()}
-                    </td>
-                    <td className="px-5 py-4 ">
-                      {product.status === "pending" ? (
-                        <p
-                          className="text-[#344054] font-medium bg-[#D0D5DD] p-2 w-fit rounded-lg cursor-pointer"
-                          onClick={() => handleDetails(product.id)}>
-                          Ver detalles
-                        </p>
-                      ) : (
-                        <button
-                          className="text-white font-medium bg-blue-500 p-2 w-fit rounded-lg cursor-pointer"
-                          onClick={() => informSeller(product.seller.id)}>
-                          Informar al vendedor
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                )
+
+            {currentColumns?.map((column) => (
+              <th key={column.id} scope="col" className="px-5 py-3">
+                {column.label}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="text-[#667085] text-nowrap">
+          {!details ? (
+            productRequest.length !== 0 ? (
+              productRequest.map(
+                (product: Notification) =>
+                  product.fair.id === activeFair?.id && (
+                    <tr key={product.id} className="shadow-sm">
+                      <th
+                        scope="row"
+                        className="px-5 py-4 font-medium whitespace-nowrap"
+                      ></th>
+                      <td className="px-5 py-4 text-primary-darker font-medium">
+                        {product.seller.sku || "-"}
+                      </td>
+                      <td className="px-5 py-4 text-primary-darker font-medium">
+                        {product.category}
+                      </td>
+                      <td className="px-5 py-4 text-primary-darker font-medium">
+                        {product.status.toUpperCase()}
+                      </td>
+                      <td className="px-5 py-4 ">
+                        {product.status === "pending" ? (
+                          <p
+                            className="text-[#344054] font-medium bg-[#D0D5DD] p-2 w-fit rounded-lg cursor-pointer"
+                            onClick={() => handleDetails(product.id)}
+                          >
+                            Ver detalles
+                          </p>
+                        ) : (
+                          <button
+                            className="text-white font-medium bg-blue-500 p-2 w-fit rounded-lg cursor-pointer"
+                            onClick={() => informSeller(product.seller.id)}
+                          >
+                            Informar al vendedor
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  )
+              )
+            ) : (
+              <tr className="shadow-md bg-[#F9FAFB]">
+                <td colSpan={columns && columns.length + 1} className="p-32">
+                  <div className="flex flex-col gap-4 items-center justify-center">
+                    <p className="font-semibold text-2xl text-primary-dark">
+                      No hay solicitudes de productos
+                    </p>
+                  </div>
+                </td>
+              </tr>
             )
           ) : (
-            <tr className="shadow-md bg-[#F9FAFB]">
-              <td colSpan={columns && columns.length + 1} className="p-32">
-                <div className="flex flex-col gap-4 items-center justify-center">
-                  <p className="font-semibold text-2xl text-primary-dark">
-                    No hay solicitudes de productos
-                  </p>
-                </div>
-              </td>
-            </tr>
-          )
-        ) : (
-          productRequestId?.products.map((product: IProductNotification) => (
-            <tr key={product.id} className="shadow-sm">
-              <th
-                scope="row"
-                className="px-5 py-4 font-medium whitespace-nowrap"></th>
-              <td className="px-5 py-4 text-primary-darker font-medium">
-                {product.code}
-              </td>
-              <td className="px-5 py-4 text-primary-darker font-medium">
-                {product.category}
-              </td>
-              <td className="px-5 py-4 text-primary-darker font-medium">
-                {product.size}
-              </td>
-              <td className="px-5 py-4 text-primary-darker font-medium">
-                {product.brand}
-              </td>
-              <td className="px-5 py-4  text-primary-darker font-medium">
-                <div className=" flex  items-center ">
-                  <p className=" overflow-hidden text-wrap w-32 overflow-ellipsis">
-                    {expanded || product.description.length <= 30
-                      ? product.description
-                      : `${product.description.slice(0, 30)}...`}
-                    {product.description.length > 30 && (
-                      <button
-                        className="text-white rounded-md p-1 text-xs bg-primary-dark hover:bg-primary-default cursor-pointer "
-                        onClick={() => setExpanded((prev) => !prev)}>
-                        {expanded ? "Mostrar menos" : "Ver más"}
-                      </button>
-                    )}
-                  </p>
-                </div>
-              </td>
-              <td className="px-5 py-4 text-primary-darker font-medium">
-                ${product.price}
-              </td>
-              <td className="px-5 py-4 text-primary-darker font-medium">
-                {product.liquidation
-                  ? `$${applyLiquidation(product.price)}`
-                  : "No aplica"}
-              </td>
-              <td className="px-5 py-4 text-primary-darker font-medium">
-                <Badge type={product.status} />
-              </td>
-              <td className="px-5 py-4 text-primary-darker font-medium">
-                <Dropdown
-                  onSelect={(selectedOption) =>
-                    handleSelect({
-                      id: product.id,
-                      status: selectedOption.id,
-                    })
-                  }
-                  options={actionsOptions}
-                  className="w-60"
-                  bg="bg-[#F9FAFB]"
-                  value="Selecciona el estado"
-                  noId={true}
-                />
-              </td>
-            </tr>
-          ))
-        )}
-      </tbody>
-    </table>
+            productRequestId?.products.map((product: IProductNotification) => (
+              <tr key={product.id} className="shadow-sm">
+                <th
+                  scope="row"
+                  className="px-5 py-4 font-medium whitespace-nowrap"
+                ></th>
+                <td className="px-5 py-4 text-primary-darker font-medium">
+                  {product.code}
+                </td>
+                <td className="px-5 py-4 text-primary-darker font-medium">
+                  {product.category}
+                </td>
+                <td className="px-5 py-4 text-primary-darker font-medium">
+                  {product.size}
+                </td>
+                <td className="px-5 py-4 text-primary-darker font-medium">
+                  {product.brand}
+                </td>
+                <td className="px-5 py-4  text-primary-darker font-medium">
+                  <div className=" flex  items-center ">
+                    <p className=" overflow-hidden text-wrap w-32 overflow-ellipsis">
+                      {expanded || product.description.length <= 30
+                        ? product.description
+                        : `${product.description.slice(0, 30)}...`}
+                      {product.description.length > 30 && (
+                        <button
+                          className="text-white rounded-md p-1 text-xs bg-primary-dark hover:bg-primary-default cursor-pointer "
+                          onClick={() => setExpanded((prev) => !prev)}
+                        >
+                          {expanded ? "Mostrar menos" : "Ver más"}
+                        </button>
+                      )}
+                    </p>
+                  </div>
+                </td>
+                <td className="px-5 py-4 text-primary-darker font-medium">
+                  ${product.price}
+                </td>
+                <td className="px-5 py-4 text-primary-darker font-medium">
+                  {product.liquidation
+                    ? `$${applyLiquidation(product.price)}`
+                    : "No aplica"}
+                </td>
+
+                <td className="px-5 py-4 text-primary-darker font-medium">
+                  <Dropdown
+                    onSelect={(selectedOption) =>
+                      handleSelect({
+                        id: product.id,
+                        status: selectedOption.id,
+                      })
+                    }
+                    options={actionsOptions}
+                    className="w-60"
+                    bg="bg-[#F9FAFB]"
+                    value="Selecciona el estado"
+                    noId={true}
+                  />
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </>
   );
 };
 

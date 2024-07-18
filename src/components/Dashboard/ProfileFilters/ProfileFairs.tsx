@@ -30,9 +30,9 @@ const ProfileFairs: React.FC<ProfileFairsProps> = ({
           <div className="flex">
             <Dropdown
               value={selectedOption || "Selecciona una feria"}
-              options={fairs.map((f: IFair) => ({
+              options={fairs?.map((f: IFair | undefined   ) => ({
                 id: "",
-                name: f.name,
+                name: f ? f.name : "No hay Feria disponible",
               }))}
               onSelect={handleSelect}
               className="w-48 z-10"
@@ -54,7 +54,8 @@ const ProfileFairs: React.FC<ProfileFairsProps> = ({
               {userDtos?.registrations?.map((fairRegistred) => (
                 <div
                   key={fairRegistred.id}
-                  className="flex justify-between flex-col gap-4">
+                  className="flex justify-between flex-col gap-4"
+                >
                   <p>Feria: {fairRegistred.fair?.name}</p>
                   <p>Fecha: {fairDates}</p>
                   <p>Hora: {fairRegistred.registrationHour}</p>

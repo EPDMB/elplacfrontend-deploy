@@ -38,7 +38,7 @@ const Tips: React.FC<StepProps> = ({ setVisibleStep }) => {
           calidad, para evitar que se salga
         </li>
         <li>
-          <span>10. </span>Pegar la cita sobre el lado derecho de la prenda, en
+          <span>10. </span>Pegar la cinta sobre el lado derecho de la prenda, en
           forma vertical, leyendo abajo hasta arriba
         </li>
         <li>
@@ -50,23 +50,18 @@ const Tips: React.FC<StepProps> = ({ setVisibleStep }) => {
           está claro al solo mirarlo
         </li>
         <li>
-          <span>13. </span>No hace falta que nos envíes la planilla, se
-          actualiza automáticamente
-        </li>
-        <li>
-          <span>14. </span>Recordar que la cinta sólo lleva: 1) CÓDIGO, 2) TALLE
+          <span>13. </span>Recordar que la cinta sólo lleva: 1) CÓDIGO, 2) TALLE
           y 3) PRECIO DE VENTA (en este orden)
         </li>
         <li>
-          <span>15. </span>Mínimo 30 productos. No hay máximo, aunque todo debe
+          <span>14. </span>Mínimo 30 productos. No hay máximo, aunque todo debe
           pertenecer a la misma vendedora
         </li>
       </ul>
       <div className="w-full flex items-end justify-end">
         <button
           onClick={() => setVisibleStep("DATOS")}
-          className=" flex justify-center items-center w-10 h-10 p-2 rounded-full border border-primary-dark text-primary-dark"
-        >
+          className=" flex justify-center items-center w-10 h-10 p-2 rounded-full border border-primary-dark text-primary-dark">
           <FaChevronRight />
         </button>
       </div>

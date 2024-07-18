@@ -63,14 +63,18 @@ function Welcome() {
   const [editSeller, setEditSeller] = useState(false);
   const [triggerReload, setTriggerReload] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { fairs, setFairSelected } = useFair();
+  const { setFairSelected, activeFair } = useFair();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [fairFilter, setFairFilter] = useState<IFair>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const activeArray = [activeFair] || [];
+
   const handleSelect = (option: { id: string; name: string }) => {
     setSelectedOption(option.name);
-    const fairSelectedPerUser = fairs.find((f) => f.name === option.name);
+    const fairSelectedPerUser = activeArray.find(
+      (f) => f?.name === option.name
+    );
 
     setFairFilter(fairSelectedPerUser);
   };
@@ -200,6 +204,7 @@ function Welcome() {
   const handleUpdateSellerPayments = async (user: IDashboardUser) => {
     try {
 
+
       if (token) {
         const decoded = decodeJWT(token);
         if (decoded && userDtos?.seller?.id && user) {
@@ -296,124 +301,126 @@ function Welcome() {
         formikSellerPayments.touched[name as keyof IDashboardSellerPayments],
       errors:
         formikSellerPayments.errors[name as keyof IDashboardSellerPayments],
-      edit: editSeller,
+      editSeller: editSeller,
       label: name,
     };
   };
 
   return (
-    <div className=" bg-secondary-lighter  h-full">
+    <div className="bg-secondary-lighter h-full">
       <div className="w-full h-32 flex items-center bg-primary-lighter">
         <Navbar />
       </div>
 
-      <main className="grid grid-cols-8 gap-0 relative place-content-center">
-        <div className="bg-secondary-lighter h-full col-span-1 hidden sm:flex">
+      <main className="grid grid-cols-4 sm:grid-cols-8 gap-0 relative place-content-center">
+        <div className="bg-secondary-lighter h-full col-span-1 flex">
           <SidebarDashboard userRole={userDtos?.role} />
         </div>
-
-        <div className="col-span-3 pl-[3px] sm:pl-0 py-5 md:py-8  xl:py-20">
-          <div className="flex">
-            <div className="sm:w-1/4 md:w-2/4"></div>
-            <div className="sm:w-3/4 lg:w-2/3">
-              <h1 className="text-primary-darker  font-bold sm:text-xl lg:text-2xl xl:text-4xl">
-                Mi Perfil
-              </h1>
-              <ProfileLeftFilters
-                dashBoardFilter={dashBoardFilter}
-                setDashBoardFilter={setDashBoardFilter}
-                handleImageUpload={handleImageUpload}
-                fileInputRef={fileInputRef}
-                handleChangePhotoClick={handleChangePhotoClick}
-                userRole={userDtos?.role}
-              />
+        <div className="flex flex-col sm:flex-row col-span-3 items-center place-content-center sm:gap-20 sm:col-span-7 w-full">
+          <div className="col-span-1 sm:col-span-3 p-5 md:py-8 xl:py-20">
+            <div className="flex flex-col sm:flex-row">
+              <div className="sm:w-1/4 md:w-2/4"></div>
+              <div className="sm:w-3/4 lg:w-2/3">
+                <h1 className="text-primary-darker font-bold sm:text-xl lg:text-2xl xl:text-4xl">
+                  Mi Perfil
+                </h1>
+                <ProfileLeftFilters
+                  dashBoardFilter={dashBoardFilter}
+                  setDashBoardFilter={setDashBoardFilter}
+                  handleImageUpload={handleImageUpload}
+                  fileInputRef={fileInputRef}
+                  handleChangePhotoClick={handleChangePhotoClick}
+                  userRole={userDtos?.role}
+                />
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className=" col-span-2 sm:col-span-4 ml-6 pl-2 sm:pl-0 py-5 md:py-8  xl:py-20">
-          <div className="relative  w-fit">
-            <h1 className="text-primary-darker font-bold sm:text-2xl lg:text-2xl xl:text-4xl">
+          <div className="ml-6 col-span-1 sm:col-span-4 p-5 md:py-8 xl:py-20">
+            <div className="relative w-fit">
+              <h1 className="text-primary-darker text-nowrap font-bold sm:text-2xl lg:text-2xl xl:text-4xl">
+                {dashBoardFilter === "Mis datos de contacto" &&
+                  "Datos de contacto"}
+                {userDtos?.role === "user" &&
+                  dashBoardFilter === "Ferias" &&
+                  "Ferias"}
+                {userDtos?.role === "seller" &&
+                  dashBoardFilter === "Datos de vendedor" &&
+                  "Datos de vendedor"}
+                {dashBoardFilter === "Ajustes de cuenta" && "Ajustes de cuenta"}
+              </h1>
+              {dashBoardFilter === "Mis datos de contacto" && (
+                <div className="absolute right-0 text-primary-dark w-fit h-fit">
+                  <button
+                    onClick={() => setEdit(!edit)}
+                    className={`flex gap-1 items-center hover:underline ${
+                      edit ? "hidden" : "inline"
+                    }`}>
+                    <h4 className="text-xs xl:text-lg">Editar</h4>
+                    <FaPencilAlt size={8} />
+                  </button>
+                </div>
+              )}
+              {dashBoardFilter === "Datos de vendedor" && (
+                <div className="absolute right-0 text-primary-dark w-fit h-fit">
+                  <button
+                    onClick={() => setEditSeller(!editSeller)}
+                    className={`flex gap-1 items-center hover:underline ${
+                      editSeller ? "hidden" : "inline"
+                    }`}>
+                    <h4 className="text-xs xl:text-lg">Editar</h4>
+                    <FaPencilAlt size={8} />
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div>
               {dashBoardFilter === "Mis datos de contacto" &&
-                "Datos de contacto"}
-              {userDtos?.role === "user" &&
-                dashBoardFilter === "Ferias" &&
-                "Ferias"}
-              {userDtos?.role === "seller" &&
-                dashBoardFilter === "Datos de vendedor" &&
-                "Datos de vendedor"}
-              {dashBoardFilter === "Ajustes de cuenta" && "Ajustes de cuenta"}
-            </h1>
-            {dashBoardFilter === "Mis datos de contacto" && (
-              <div className="absolute right-0 text-primary-dark  w-fit h-fit ">
-                <button
-                  onClick={() => setEdit(!edit)}
-                  className={`flex gap-1 items-center hover:underline ${edit ? "hidden" : "inline"
-                    }`}
-                >
-                  <h4 className="text-xs xl:text-lg">Editar</h4>
-                  <FaPencilAlt size={8} />
-                </button>
-              </div>
-            )}
-            {dashBoardFilter === "Datos de vendedor" && (
-              <div className="absolute right-0 text-primary-dark  w-fit h-fit ">
-                <button
-                  onClick={() => setEditSeller(!editSeller)}
-                  className={`flex gap-1 items-center hover:underline ${editSeller ? "hidden" : "inline"
-                    }`}
-                >
-                  <h4 className="text-xs xl:text-lg">Editar</h4>
-                  <FaPencilAlt size={8} />
-                </button>
-              </div>
-            )}
-          </div>
+                userDtos?.role === "user" && (
+                  <ProfileContact
+                    formikSeller={formikSeller}
+                    getPropsSeller={getPropsSeller}
+                    formikUser={formikUser}
+                    getPropsUser={getPropsUser}
+                    edit={edit}
+                  />
+                )}
 
-          <div>
-            {dashBoardFilter === "Mis datos de contacto" &&
-              userDtos?.role === "user" && (
-                <ProfileContact
+              {dashBoardFilter === "Mis datos de contacto" &&
+                userDtos?.role === "seller" && (
+                  <ProfileContactSeller
+                    formikSeller={formikSeller}
+                    getPropsSeller={getPropsSeller}
+                    formikUser={formikUser}
+                    getPropsUser={getPropsUser}
+                    edit={edit}
+                  />
+                )}
+
+              {dashBoardFilter === "Datos de vendedor" && (
+                <ProfilePayments
+                  formikSellerPayments={formikSellerPayments}
+                  getPropsSellerPayments={getPropsSellerPayments}
+                  editSeller={editSeller}
                   formikSeller={formikSeller}
-                  getPropsSeller={getPropsSeller}
-                  formikUser={formikUser}
-                  getPropsUser={getPropsUser}
-                  edit={edit}
+                  setEditSeller={setEditSeller}
                 />
               )}
 
-            {dashBoardFilter === "Mis datos de contacto" &&
-              userDtos?.role === "seller" && (
-                <ProfileContactSeller
-                  formikSeller={formikSeller}
-                  getPropsSeller={getPropsSeller}
-                  formikUser={formikUser}
-                  getPropsUser={getPropsUser}
-                  edit={edit}
+              {dashBoardFilter === "Ferias" && (
+                <ProfileFairs
+                  selectedOption={selectedOption}
+                  fairs={activeArray}
+                  handleSelect={handleSelect}
+                  fairFilter={fairFilter}
                 />
               )}
 
-            {dashBoardFilter === "Datos de vendedor" && (
-              <ProfilePayments
-                formikSellerPayments={formikSellerPayments}
-                getPropsSellerPayments={getPropsSellerPayments}
-                editSeller={editSeller}
-                formikSeller={formikSeller}
-              />
-            )}
-
-            {dashBoardFilter === "Ferias" && (
-              <ProfileFairs
-                selectedOption={selectedOption}
-                fairs={fairs}
-                handleSelect={handleSelect}
-                fairFilter={fairFilter}
-              />
-            )}
-
-            {dashBoardFilter === "Ajustes de cuenta" && (
-              <ProfileSettings getProps={getProps} formikPass={formikPass} />
-            )}
+              {dashBoardFilter === "Ajustes de cuenta" && (
+                <ProfileSettings getProps={getProps} formikPass={formikPass} />
+              )}
+            </div>
           </div>
         </div>
       </main>

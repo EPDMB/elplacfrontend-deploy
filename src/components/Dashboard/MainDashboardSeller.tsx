@@ -46,7 +46,6 @@ const MainDashboardSeller: React.FC = () => {
         const verificationMessage = verifyUserDetails(userDtos);
         if (verificationMessage) {
           setVerificationMsg(verificationMessage);
-
         }
       }
     };
@@ -64,8 +63,9 @@ const MainDashboardSeller: React.FC = () => {
         <SidebarDashboard userRole={userDtos?.role} />
       </div>
       <div
-        className={`bg-secondary-lighter p-16 flex flex-col h-[100vh]  ${isOpen ? "col-span-7" : "col-span-8"
-          } sm:col-span-7`}
+        className={`bg-secondary-lighter p-16 flex flex-col h-[100vh]  ${
+          isOpen ? "col-span-7" : "col-span-8"
+        } sm:col-span-7`}
       >
         <h1 className="pb-10 text-primary-darker text-4xl">
           Bienvenid@ <span className="font-bold">{userDtos?.name}!</span>
@@ -110,17 +110,17 @@ const MainDashboardSeller: React.FC = () => {
               )
             }
             typeEnum={!verificationMsg ? dashboardEnum.fairs : ""}
-            classname={`p-5 relative bg-secondary-light text-wrap w-80 rounded-[2.5rem] h-48 shadow-xl ${verificationMsg ? "cursor-not-allowed" : ""
-              }`}
+            classname={`p-5 relative bg-secondary-light text-wrap w-80 rounded-[2.5rem] h-48 shadow-xl ${
+              verificationMsg ? "cursor-not-allowed" : ""
+            }`}
           />
           <DashboardCard
             title={
               verificationMsg || !isRegisteredAtFair ? (
                 <span className="flex gap-2">
-                  {verificationMsg ||
-                    (!isRegisteredAtFair && (
-                      <IoShirtOutline style={{ color: "#2f8083" }} size={30} />
-                    ))}
+                  {(
+                    <IoShirtOutline style={{ color: "#2f8083" }} size={30} />
+                  )}
                   Mis Productos
                 </span>
               ) : (
@@ -129,14 +129,17 @@ const MainDashboardSeller: React.FC = () => {
             }
             description={
               verificationMsg || !isRegisteredAtFair ? (
-                <span className="flex gap-2">¡Inscribite para empezar a vender!</span>
+                <span className="flex gap-2">
+                  ¡Inscribite para empezar a vender!
+                </span>
               ) : (
                 "Vende tus productos, participa de las liquidaciones"
               )
             }
             typeEnum={isRegisteredAtFair ? dashboardEnum.products : ""}
-            classname={`p-5 relative bg-secondary-light text-wrap w-80 rounded-[2.5rem] h-48 shadow-xl ${!isRegisteredAtFair ? "cursor-not-allowed bg-slate-200" : ""
-              }`}
+            classname={`p-5 relative bg-secondary-light text-wrap w-80 rounded-[2.5rem] h-48 shadow-xl ${
+              !isRegisteredAtFair ? "cursor-not-allowed bg-slate-200" : ""
+            }`}
           />
         </div>
       </div>

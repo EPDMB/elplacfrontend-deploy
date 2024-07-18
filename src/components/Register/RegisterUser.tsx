@@ -140,7 +140,12 @@ const RegisterUser: React.FC = () => {
         />
         <Label>
           <span className={` ${"text-secondary-darker"}`}>Acepto los </span>
-          <a href="#" className={`${"text-primary-dark"} hover:underline `}>
+          <a
+            href="/terms&conditions"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary-dark hover:underline"
+          >
             Términos y Condiciones
           </a>
         </Label>
@@ -150,8 +155,9 @@ const RegisterUser: React.FC = () => {
           className={`
       bg-secondary-darker
       w-32 h-9 my-6 rounded-3xl text-center text-white text-base font-bold
-      ${!isChecked || !formikUser.isValid ? "opacity-50 cursor-not-allowed" : ""
-            }
+      ${
+        !isChecked || !formikUser.isValid ? "opacity-50 cursor-not-allowed" : ""
+      }
     `}
           type="submit"
           disabled={!isChecked || !formikUser.isValid}

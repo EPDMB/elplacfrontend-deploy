@@ -8,8 +8,9 @@ import {
   UserRegistrations,
   Notification,
   WebSocketNotification,
+  IProductNotification,
 } from "@/types";
-import { getAllUsers } from "@/helpers/services";
+import { getAllProducts, getAllUsers } from "@/helpers/services";
 import { useAuth } from "@/context/AuthProvider";
 
 import DataTable from "@/components/Table/DataTable";
@@ -41,10 +42,25 @@ const AdminHome = () => {
   const [sellerCounter, setSellerCounter] = useState<SellerRegistrations[]>([]);
   const [userCounter, setUserCounter] = useState<UserRegistrations[]>([]);
   const [requests, setRequests] = useState<WebSocketNotification[]>([]);
+  const [products, setProducts] = useState<IProductNotification[]>([]);
+  const [trigger, setTrigger] = useState<boolean>(false);
 
   const { userDtos } = useProfile();
   const { token } = useAuth();
   const router = useRouter();
+
+
+  useEffect(() => {
+    if (token) {
+      getAllProducts(token)
+        .then((res) => {
+          setProducts(res);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  }, [token, trigger]);
 
   useEffect(() => {
     socket.on("admin-notification", (notification: WebSocketNotification) => {
@@ -76,38 +92,54 @@ const AdminHome = () => {
   return (
     <div className="grid grid-rows-[auto_auto_1fr] grid-cols-3 mx-20 mt-8 gap-5">
       <div className="col-span-2">
-        <div className="w-full mt-5 flex p-6 flex-col rounded-lg bg-[#FFFFFF]">
+        <div className="w-full mt-5 flex p-6 flex-col rounded-lg bg-[#f1fafa]">
           <div>
-            <h1 className="font-semibold text-primary-darker text-xl">
-              {activeFair?.name}
-            </h1>
-            <div className="flex gap-6">
-              <div>
-                <h3 className="text-[#5E5F60] text-lg">Usuarios</h3>
-                <span className="text-[#5E5F60] text-3xl font-bold">
-                  {userCounter.length}
-                </span>
+            {activeFair ? (
+              <>
+                <h1 className="font-semibold text-primary-darker text-xl">
+                  {activeFair?.name}
+                </h1>
+                <div className="flex gap-6">
+                  <div>
+                    <h3 className="text-[#5E5F60] text-lg">Usuarios</h3>
+                    <span className="text-[#5E5F60] text-3xl font-bold">
+                      {userCounter.length}
+                    </span>
+                  </div>
+                  <div className="border border-[#E5E9EB]"></div>
+                  <div>
+                    <h3 className="text-[#5E5F60] text-lg">Vendedores</h3>
+                    <span className="text-[#5E5F60] text-3xl font-bold">
+                      {sellerCounter.length}
+                    </span>
+                  </div>
+                  <div className="border border-[#E5E9EB]"></div>
+                  <div>
+                    <h3 className="text-[#5E5F60] text-lg">Productos</h3>
+                    <span className="text-[#5E5F60] text-3xl font-bold">
+                      {products.length}
+                    </span>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-col gap-5">
+                <h1 className="font-semibold text-primary-darker text-xl">
+                  ¡No hay Ferias Activas! Crea una feria para comenzar...
+                </h1>
+                <a
+                  href="/admin/fairs"
+                  className="px-4 py-2 w-fit flex items-start justify-start m-auto text-white rounded-md hover:bg-primary-dark bg-primary-darker text-center"
+                >
+                  Ir ahora
+                </a>
               </div>
-              <div className="border border-[#E5E9EB]"></div>
-              <div>
-                <h3 className="text-[#5E5F60] text-lg">Vendedores</h3>
-                <span className="text-[#5E5F60] text-3xl font-bold">
-                  {sellerCounter.length}
-                </span>
-              </div>
-              <div className="border border-[#E5E9EB]"></div>
-              <div>
-                <h3 className="text-[#5E5F60] text-lg">Productos</h3>
-                <span className="text-[#5E5F60] text-3xl font-bold">
-                  {userCounter.length}
-                </span>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
       <div className="col-span-1 row-span-3 mb-5">
-        <div className="w-full h-full mt-5 flex p-6 flex-col rounded-lg bg-[#FFFFFF]">
+        <div className="w-full h-full mt-5 flex p-6 flex-col rounded-lg bg-[#f1fafa]">
           <div>
             <h1 className="font-semibold text-primary-darker text-xl flex justify-end">
               <FaBell />
@@ -117,7 +149,8 @@ const AdminHome = () => {
                 requests.map((request, index) => (
                   <div
                     key={index}
-                    className="shadow-xl bg-[#F9FAFB] text-primary-darker flex flex-col font-semibold rounded-3xl p-4 mt-4">
+                    className="shadow-xl bg-[#F9FAFB] text-primary-darker flex flex-col font-semibold rounded-3xl p-4 mt-4"
+                  >
                     <span className="text-sm font-normal">
                       {new Date(request.date).toLocaleString("es", {
                         year: "numeric",
@@ -150,7 +183,7 @@ const AdminHome = () => {
           </div>
         </div>
       </div>
-      <div className="row-span-3 mb-5 col-span-2 rounded-lg bg-[#FFFFFF]">
+      <div className="row-span-3 mb-5 col-span-2 rounded-lg bg-[#f1fafa]">
         <div className="w-full h-full  flex p-6 flex-col">
           <h1 className="font-semibold text-primary-darker text-xl">
             Historial de ferias
@@ -158,7 +191,8 @@ const AdminHome = () => {
           {fairs.map((fair) => (
             <div
               key={fair.id}
-              className="shadow-lg flex flex-col font-semibold rounded-lg p-4 mt-4">
+              className="shadow-lg flex flex-col font-semibold rounded-lg p-4 mt-4"
+            >
               <h3 className="text-[#5E5F60] text-lg border-b border-primary-default mb-2">
                 {fair.name}
               </h3>

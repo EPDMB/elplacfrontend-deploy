@@ -16,9 +16,9 @@ import WithAuthProtect from "@/helpers/WithAuth";
 
 const Fairs = () => {
   const [termsChecked, setTermsChecked] = useState(false);
-  const [salesChecked, setSalesChecked] = useState("Elige una opción");
+  const [salesChecked, setSalesChecked] = useState("Elegí una opcion");
   const { userDtos } = useProfile();
-  const { fairs } = useFair();
+  const { activeFair } = useFair();
   const {
     selectedOption,
     categoriesArray,
@@ -29,6 +29,9 @@ const Fairs = () => {
     handleSelectCategory,
     fairDescription,
   } = useFairSelection();
+
+  const activeArray = [activeFair] || [];
+
 
 
   const handleCheckboxChangeTerms = (
@@ -57,38 +60,44 @@ const Fairs = () => {
         <Navbar />
       </div>
       <div className="grid grid-cols-8 gap-0 relative place-content-center">
-        <div className="flex col-span-1 bg-secondary-lighter">
+        <div className="flex col-span-2 sm:col-span-1 bg-secondary-lighter">
           <SidebarDashboard userRole={userDtos?.role} />
         </div>
-        <div className="bg-secondary-lighter flex flex-col items-center lg:h-[100vh] col-span-8 sm:col-span-7">
+        <div className="bg-secondary-lighter flex flex-col items-center lg:h-[100vh] col-span-6  sm:col-span-7 ">
           {(userDtos?.seller?.registrations?.length || 0) === 0 ? (
-            <div className="p-5">
+            <div className="flex flex-col justify-center items-center p-5">
               <h1 className="text-primary-darker p-2 font-semibold text-4xl">
                 Ferias
               </h1>
-              <div className="p-16 pb-32 md:shadow w-[80vw] h-fit">
+              <div className="p-16 pb-32 md:shadow sm:w-[80vw] h-fit flex flex-col text-nowrap">
                 <h2 className="text-primary-darker font-semibold mb-3 text-3xl">
                   Inscripción
                 </h2>
-                <div className="gap-4 flex flex-col lg:flex-row  w-full lg:ml-32 h-full">
-                  <div className="flex flex-col w-1/2 gap-5 items-center">
+                <div className="gap-4 flex flex-col lg:flex-row  w-full h-full justify-around">
+                  <div className="flex flex-col w-fit sm:w-1/3 gap-5 items-center  text-nowrap">
+                    <h2 className="font-semibold text-primary-darker mb-2">
+                      Ferias disponibles
+                    </h2>
                     <Dropdown
-                      value={selectedOption || "Ferias disponibles"}
-                      options={fairs.map((f: IFair) => ({
+                      value={selectedOption || "Elegí una opcion"}
+                      options={activeArray?.map((f: IFair | undefined) => ({
                         id: "",
-                        name: f.name,
+                        name: f ? f.name : "No hay Feria disponible",
                       }))}
                       onSelect={handleSelect}
-                      className="lg:w-[60%] z-20"
+                      className="lg:w-full z-20"
                     />
+                    <h2 className="font-semibold text-primary-darker mb-2">
+                      Categorias disponibles
+                    </h2>
                     <Dropdown
-                      value={selectedOptionCategory || "Categorías disponibles"}
+                      value={selectedOptionCategory || "Elegí una opcion"}
                       options={categoriesArray?.map((c) => ({
                         id: c.maxSellers.toString(),
                         name: c.category.name,
                       }))}
                       onSelect={handleSelectCategory}
-                      className="lg:w-[60%]"
+                      className="lg:w-full"
                     />
 
                     <p className="text-primary-darker mt-5 font-semibold">
@@ -101,12 +110,12 @@ const Fairs = () => {
                         { id: "", name: "No" },
                       ]}
                       onSelect={handleDropdownChange}
-                      className="lg:w-[60%]"
+                      className="lg:w-full"
                     />
                   </div>
 
-                  <div className="flex flex-col w-1/2 gap-6">
-                    <div className="w-96 h-32">
+                  <div className="flex flex-col w-full sm:w-1/3 gap-6">
+                    <div className="w-full h-32">
                       <h2 className="font-semibold text-primary-darker mb-2">
                         Términos y Condiciones
                       </h2>
@@ -135,24 +144,27 @@ const Fairs = () => {
               </div>
             </div>
           ) : (
-            <div className="flex flex-col text-primary-dark">
-              <h1 className="text-primary-darker p-2 pt-12 font-semibold text-3xl">
+            <div className="w-full h-full items-center justify-center pb-16 flex flex-col text-primary-dark gap-16">
+              <h1 className="text-primary-darker pt-12 font-semibold text-3xl">
                 ¡Ya te registraste para vender! 🎉
               </h1>
-              <div className="bg-transparent border-b w-2/3 text-wrap text-sm sm:text-base border-primary-dark">
+              <div className="bg-transparent w-1/3 text-wrap text-sm sm:text-base shadow-lg rounded-lg">
                 {userDtos?.seller?.registrations?.map((fairRegistred) => (
                   <div
                     key={fairRegistred.fair?.id}
-                    className="flex justify-between flex-col gap-4 text-lg p-2"
-                  >
-                    <p>Feria: {fairRegistred.fair?.name}</p>
+                    className="flex justify-between flex-col gap-4 text-lg p-2">
+                    <p>
+                      <strong>Feria:</strong> {fairRegistred.fair?.name}
+                    </p>
                     <p className="text-sm mt-2">
                       * Ve a la pestaña de productos y comienza a cargar tus
                       artículos
                     </p>
-                    <button className="mt-4 px-4 py-2 text-white rounded-md hover:bg-primary-dark focus:outline-none bg-primary-darker disabled:cursor-not-allowed disabled:bg-primary-light">
-                      <Link href="/dashboard/products">Ir ahora</Link>
-                    </button>
+                    <a
+                      href="/dashboard/products"
+                      className="mt-4 px-4 py-2 w-fit m-auto text-white rounded-md hover:bg-primary-dark bg-primary-darker text-center">
+                      Ir ahora
+                    </a>
                   </div>
                 ))}
               </div>

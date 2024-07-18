@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { initMercadoPago, Wallet } from "@mercadopago/sdk-react";
 
 import { MERCADOPAGO_PUBLIC_KEY, URL } from "../../../envs";
-import { PaymentsSellerProps } from "@/types";
+import { PaymentsSellerProps } from "@/types"; 
 
 export default function PaymentsSeller({
   userId,
@@ -17,11 +17,10 @@ export default function PaymentsSeller({
   const [preferenceId, setPreferenceId] = useState<string | null>(null);
 
   useEffect(() => {
-    initMercadoPago("TEST-e211a22c-ca94-477e-9d15-4fce28331fa5", {
+    initMercadoPago(`${MERCADOPAGO_PUBLIC_KEY}`, {
       locale: "es-AR",
     });
   }, []);
-
 
 
   const handlePayment = async (
@@ -41,6 +40,7 @@ export default function PaymentsSeller({
       }
 
 
+
       const response = await fetch(`${URL}/payments/createPreferenceSeller`, {
         method: "POST",
         headers: {
@@ -55,7 +55,6 @@ export default function PaymentsSeller({
       });
 
       const text = await response.text();
-
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -81,7 +80,6 @@ export default function PaymentsSeller({
     try {
 
       const preference = await handlePayment(userId, fairId, categoryId, liquidation);
-
       if (preference && preference.preferenceId) {
         setPreferenceId(preference.preferenceId);
         if (preferenceId) {

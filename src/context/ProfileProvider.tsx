@@ -5,6 +5,7 @@ import React, {
   useState,
   ReactNode,
   useEffect,
+  use,
 } from "react";
 import {
   ISeller,
@@ -15,6 +16,7 @@ import {
 import { useAuth } from "./AuthProvider";
 import { decodeJWT } from "@/helpers/decoder";
 import { getSeller, getUser } from "@/helpers/services";
+import { useFair } from "./FairProvider";
 
 const ProfileImageContext = createContext<ProfileImageContextType | undefined>(
   undefined
@@ -27,6 +29,20 @@ export const ProfileImageProvider: React.FC<ProfileImageProviderProps> = ({
   const [userDtos, setUserDtos] = useState<UserDto | null>(null);
   const [profileImageChanged, setProfileImageChanged] = useState(false);
   const [sellerDtos, setSellerDtos] = useState<ISeller | null>(null);
+  const { activeFair } = useFair();
+  const [sellerRegistration, setSellerFairRegistration] = useState<
+    boolean | undefined
+  >(false);
+
+
+  useEffect(() => {
+    if (sellerDtos && activeFair) {
+      const fairRegistration = sellerDtos?.registrations?.some(
+        (fairRegistration) => fairRegistration.fair.id === activeFair.id
+      );
+      setSellerFairRegistration(fairRegistration);
+    }
+  }, [sellerDtos, activeFair]);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -66,7 +82,8 @@ export const ProfileImageProvider: React.FC<ProfileImageProviderProps> = ({
         setProfileImageChanged,
         sellerDtos,
         setSellerDtos,
-      }}>
+      }}
+    >
       {children}
     </ProfileImageContext.Provider>
   );

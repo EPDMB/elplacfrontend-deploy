@@ -38,14 +38,12 @@ const DashboardCard: React.FC<IDashboardCardProps> = ({
           )}
           <h3 className="text-primary-darker font-semibold text-xl">{title}</h3>
         </div>
-        <p className="font-base text-primary-darker mt-2 text-md">
+        <p className="font-base  text-primary-darker mt-2 text-md">
           {description}
         </p>
-        <p className="font-base text-red-600 mt-2 text-md">
-          {message}
-        </p>
+        <p className="font-base text-red-600 mt-2 text-md">{message}</p>
         <IoIosArrowForward
-          className="absolute right-0 bottom-0 -translate-x-5 -translate-y-5"
+          className="absolute right-0 bottom-0  -translate-x-5 -translate-y-5"
           style={{ color: "#D9AB4D" }}
           size={40}
         />

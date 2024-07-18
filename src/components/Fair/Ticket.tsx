@@ -23,7 +23,6 @@ const Ticket: React.FC<TicketProps> = ({
   category,
   termsChecked,
 }) => {
-
   const [amount, setAmount] = useState<number | string>("");
   const [charitableEntity, setCharitableEntity] = useState("");
   const { fairs, fairSelected, timeSelect, dateSelect } = useFair();
@@ -32,16 +31,14 @@ const Ticket: React.FC<TicketProps> = ({
   const [openModal, setOpenModal] = useState(false);
   const [liquidation, setLiquidation] = useState<string>("");
 
-
-
   useEffect(() => {
     if (salesChecked === "Si") {
       setLiquidation("si");
     } else {
       setLiquidation("no");
     }
-  }
-    , [salesChecked]);
+  }, [salesChecked]);
+
 
 
   const fairSelectedPerUser = fairs.find((f) => f.name === name);
@@ -113,7 +110,7 @@ const Ticket: React.FC<TicketProps> = ({
           <>
             <p className="font-bold"></p>
             {fairSelectedPerUser &&
-              fairSelectedPerUser.entryPriceBuyer === 0 ? (
+            fairSelectedPerUser.entryPriceBuyer === 0 ? (
               <div className="flex flex-col">
                 <input
                   type="text"
@@ -158,8 +155,12 @@ const Ticket: React.FC<TicketProps> = ({
         ) : (
           <div>
             <div className="mb-2">
-              <p>Inscripción:</p>
-              <p>${amount}</p>
+              {amount && (
+                <>
+                  <p>Inscripción:</p>
+                  <p>${amount}</p>
+                </>
+              )}
             </div>
             <div>
               <PaymentsSeller

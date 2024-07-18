@@ -6,10 +6,11 @@ interface InputProps {
   type: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   value: string | number;
-  onBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   error?: boolean;
   errorMessage?: string;
   placeholder?: string;
+
 }
 
 const Input: React.FC<InputProps> = ({ label, name, type, onChange, value, onBlur, error, errorMessage, placeholder }) => {

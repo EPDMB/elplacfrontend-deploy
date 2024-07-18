@@ -8,12 +8,14 @@ import {
 import { useFair } from "@/context/FairProvider";
 import { useAuth } from "@/context/AuthProvider";
 import { getProductsBySeller } from "@/helpers/services";
+import { useProfile } from "@/context/ProfileProvider";
 
 const SellerGettingActiveFair: React.FC<SellerGettingActiveFairProps> = ({
   sellerId,
 }) => {
   const { activeFair } = useFair();
   const { token } = useAuth();
+  const { sellerDtos } = useProfile();
   const [productsGetted, setProductsGetted] = useState<
     ProductsGettedBySellerId[] | null
   >(null);
@@ -30,23 +32,35 @@ const SellerGettingActiveFair: React.FC<SellerGettingActiveFairProps> = ({
   const handleSelect = async () => {}; //pendiente de agregar última opinion de la empresa
 
   const acceptedProducts =
-    productsGetted?.filter((product) => product.status === "accepted") || [];
+    productsGetted?.filter(
+      (product) =>
+        product.status === "accepted" ||
+        product.status === "sold" ||
+        product.status === "unsold" ||
+        product.status === "soldOnClearance"
+    ) || [];
   const acceptedProductCount = acceptedProducts.length;
 
-  const acceptedProductSum = acceptedProducts.reduce(
-    (sum, product) => sum + product.price,
-    0
-  );
+ 
 
-const applyLiquidation = (price: number) => {
-  const discount = price * 0.25;
-  const finalPrice = price - discount;
-  return finalPrice;
-};
+    const soldProducts =
+      productsGetted?.filter((product) => product.status === "sold") || [];
+    const soldProductsCount = soldProducts.length;
 
-const acceptedLiquidationSum = acceptedProducts
-  .filter((product) => product.liquidation && product.status === "accepted")
-  .reduce((sum, product) => sum + applyLiquidation(product.price), 0);
+    const soldProductSum = soldProducts.reduce(
+      (sum, product) => sum + product.price,
+      0
+    );
+
+  const applyLiquidation = (price: number) => {
+    const discount = price * 0.25;
+    const finalPrice = price - discount;
+    return finalPrice;
+  };
+
+  const acceptedLiquidationSum = acceptedProducts
+    .filter((product) => product.liquidation && product.status === "accepted")
+    .reduce((sum, product) => sum + applyLiquidation(product.price), 0);
 
   return (
     <div className="bg-secondary-lighter flex flex-col gap-4">
@@ -58,14 +72,19 @@ const acceptedLiquidationSum = acceptedProducts
           <div className="flex gap-2">
             <p>Productos aceptados:</p> <span>{acceptedProductCount}</span>
           </div>
+  
           <div className="flex gap-2">
-            <p>Total:</p> <span>${acceptedProductSum}</span>
+            <p>Productos Vendidos:</p> <span>{soldProductsCount}</span>
+          </div>
+          <div className="flex gap-2">
+            <p>Total:</p> <span>${soldProductSum}</span>
           </div>
           <div className="flex gap-2">
             <p>Liquidacion:</p> <span>${acceptedLiquidationSum}</span>
           </div>
         </div>
-        <div className="flex flex-col ml-5">
+        {activeFair?.id === sellerDtos?.registrations && (
+          <div className="flex flex-col ml-5">
           <p>Opciones para los productos no aceptados/no vendidos:</p>
           <Dropdown
             options={[
@@ -78,8 +97,9 @@ const acceptedLiquidationSum = acceptedProducts
             value="Elige una opción"
             onSelect={handleSelect}
             className="w-40"
-          />
+            />
         </div>
+          )}
       </div>
     </div>
   );

@@ -33,6 +33,7 @@ import { useRouter } from "next/navigation";
 import { useFair } from "@/context/FairProvider";
 import WithAuthProtect from "@/helpers/WithAuth";
 import PrintLabel from "@/components/PrintLabel/PrintLabel";
+import { PiCoatHanger } from "react-icons/pi";
 
 const socket: Socket = io(`${URL}`, {
   withCredentials: true,
@@ -50,16 +51,17 @@ const SellerProducts = () => {
   const [products, setProducts] = useState<ProductProps[]>([]);
   const [usersFiltered, setUsersFiltered] = useState<any[]>([]);
   const [myRequest, setMyRequest] = useState<any[]>([]);
+  const { activeFair } = useFair();
   const [visibleStep, setVisibleStep] = useState<string>("TIPS");
-  const [categorySelected, setCategorySelected] =
-    useState<string>("0-12-mujer");
+  const [visibleProducts, setVisibleProducts] = useState<boolean>(false);
 
   const router = useRouter();
 
+ 
 
   useEffect(() => {
     const handleNotification = (notification: NotificationsFromAdmin) => {
-
+ 
       const isRelevantNotification =
         userDtos?.seller?.id === notification.sellerId ||
         (notification.forAll && notification.message);
@@ -80,8 +82,7 @@ const SellerProducts = () => {
     sellerId: userDtos?.seller?.id ?? "",
     fairId: userDtos?.seller?.registrations?.[0]?.fair?.id ?? "",
     category:
-      userDtos?.seller?.registrations?.[0]?.fair?.fairCategories?.[0]?.category
-        ?.name ?? "0-12 mujer",
+      userDtos?.seller?.registrations?.[0]?.categoryFair.category.name ?? "",
   };
 
   const postProductsReq = async () => {
@@ -102,7 +103,6 @@ const SellerProducts = () => {
       return {
         ...rest,
         price: numericPrice,
-        category: categorySelected,
       };
     });
 
@@ -115,7 +115,6 @@ const SellerProducts = () => {
         infoToPost.fairId,
         infoToPost.category
       );
-
       setProducts([]);
       socket.emit("notify-admin", {
         date: new Date(),
@@ -152,12 +151,12 @@ const SellerProducts = () => {
       prev.map((product) =>
         product.id === id
           ? {
-            ...product,
-            [field]:
-              product[field] !== undefined
-                ? formatPrice(product[field].toString())
-                : product[field],
-          }
+              ...product,
+              [field]:
+                product[field] !== undefined
+                  ? formatPrice(product[field].toString())
+                  : product[field],
+            }
           : product
       )
     );
@@ -174,27 +173,42 @@ const SellerProducts = () => {
     setProducts(updatedProducts);
   };
 
+  const liquidationSelected = sellerDtos?.registrations?.[0]?.liquidation
+    ? "Si"
+    : "No Aplica";
+
   const handleAddProduct = () => {
     const newProduct: ProductProps = {
       id: products.length + 1,
       brand: "",
       description: "",
       price: 0,
-      liquidation: false,
+      liquidation: liquidationSelected,
       size: "",
-      category: "",
+      category: "0-12-Mujer",
     };
     setProducts((prev) => [...prev, newProduct]);
   };
 
   const categoryOptions = [
-    { value: "0-12-mujer", label: "0-12 Mujer" },
+    { value: "0-12-Mujer", label: "0-12 Mujer" },
     { value: "0-12-Varon", label: "0-12 Varón" },
     { value: "+12-Mujer", label: "+12 Mujer" },
     { value: "+12-Varon", label: "+12 Varón" },
-    { value: "adultos", label: "Adultos" },
-    { value: "libros/juguetes", label: "Libros/Juguetes" },
+    { value: "Adultos", label: "Adultos" },
+    { value: "Libros/Juguetes", label: "Libros/Juguetes" },
   ];
+
+  useEffect(() => {
+    if (
+      sellerDtos?.registrations?.length === 0 ||
+      sellerDtos?.registrations?.every(
+        (registration) => registration.fair.id !== activeFair?.id
+      )
+    ) {
+      setVisibleProducts(true);
+    }
+  }, [activeFair, sellerDtos]);
 
   return (
     <div>
@@ -202,295 +216,325 @@ const SellerProducts = () => {
         <Navbar />
       </div>
       <div className="grid grid-cols-8 gap-0 relative place-content-center">
-        <div className="flex col-span-1  bg-secondary-lighter">
+        <div className="flex col-span-2 sm:col-span-1  bg-secondary-lighter">
           <Sidebar userRole={userDtos?.role} />
         </div>
-        <div className="bg-secondary-lighter  col-span-8 sm:col-span-7 lg:h-[100vh]">
-          <div className="mx-10 flex flex-col items-center">
-            <div className="mt-10 w-full flex justify-between">
-              <div className="border border-primary-lighter font-semibold rounded-lg text-primary-darker">
-                <div>
-                  <button
-                    onClick={() => setVisibleStep("TIPS")}
-                    className={`p-2 ${visibleStep === "TIPS"
-                      ? "bg-[#F9FAFB] text-primary-darker"
-                      : "bg-secondary-lighter text-primary-darker"
-                      }`}
-                  >
-                    TIPS
-                  </button>
-                  <button
-                    onClick={() => setVisibleStep("DATOS")}
-                    className={`border-l border-gray-300 p-2 ${visibleStep === "DATOS"
-                      ? "bg-[#F9FAFB] text-primary-darker"
-                      : "bg-secondary-lighter text-primary-darker"
-                      }`}
-                  >
-                    DATOS
-                  </button>
-                  <button
-                    onClick={() => setVisibleStep("PRODUCTOS")}
-                    className={`border-l border-gray-300 p-2 ${visibleStep === "PRODUCTOS"
-                      ? "bg-[#F9FAFB] text-primary-darker"
-                      : "bg-secondary-lighter text-primary-darker"
-                      }`}
-                  >
-                    PRODUCTOS
-                  </button>
-                  <button
-                    onClick={() => setVisibleStep("RESUMEN")}
-                    className={`border-l border-gray-300 p-2 ${visibleStep === "RESUMEN"
-                      ? "bg-[#F9FAFB] text-primary-darker"
-                      : "bg-secondary-lighter text-primary-darker"
-                      }`}
-                  >
-                    RESUMEN
-                  </button>
+        <div className="bg-secondary-lighter  col-span-6 sm:col-span-7 lg:h-[100vh]">
+          {visibleProducts && (
+            <div className="w-full flex-col h-full flex items-center justify-center font-bold  gap-4">
+              <h2 className="text-primary-darker text-3xl">
+                ¡No puedes cargar productos todavía!
+              </h2>
+              <h2 className="text-primary-darker text-xl">
+                Primero debes registrarte en la feria...
+              </h2>
+              <Link
+                href="/dashboard/fairs"
+                className="flex items-center rounded-md shadow-lg bg-secondary-light gap-2 p-2">
+                <PiCoatHanger
+                  className="w-10 h-10  "
+                  style={{ color: "#2f8083" }}
+                  size={40}
+                />
+                <h2 className="text-primary-darker text-xl">Ir a Ferias </h2>
+              </Link>
+            </div>
+          )}
+          {!visibleProducts && (
+            <div className="mx-10 flex flex-col items-center ">
+              <div className="mt-10 w-full  flex justify-between">
+                <div className="border border-primary-lighter font-semibold rounded-lg text-primary-darker">
+                  <div>
+                    <button
+                      onClick={() => setVisibleStep("TIPS")}
+                      className={`p-2 ${
+                        visibleStep === "TIPS"
+                          ? "bg-[#F9FAFB] text-primary-darker"
+                          : "bg-secondary-lighter text-primary-darker"
+                      }`}>
+                      TIPS
+                    </button>
+                    <button
+                      onClick={() => setVisibleStep("DATOS")}
+                      className={`border-l border-gray-300 p-2 ${
+                        visibleStep === "DATOS"
+                          ? "bg-[#F9FAFB] text-primary-darker"
+                          : "bg-secondary-lighter text-primary-darker"
+                      }`}>
+                      DATOS
+                    </button>
+                    <button
+                      onClick={() => setVisibleStep("PRODUCTOS")}
+                      className={`border-l border-gray-300 p-2 ${
+                        visibleStep === "PRODUCTOS"
+                          ? "bg-[#F9FAFB] text-primary-darker"
+                          : "bg-secondary-lighter text-primary-darker"
+                      }`}>
+                      PRODUCTOS
+                    </button>
+                    <button
+                      onClick={() => setVisibleStep("RESUMEN")}
+                      className={`border-l border-gray-300 p-2 ${
+                        visibleStep === "RESUMEN"
+                          ? "bg-[#F9FAFB] text-primary-darker"
+                          : "bg-secondary-lighter text-primary-darker"
+                      }`}>
+                      RESUMEN
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-            <PrintLabel sellerId={userDtos?.seller?.id} />
-            {visibleStep === "TIPS" && <Tips setVisibleStep={setVisibleStep} />}
-            {visibleStep === "DATOS" && (
-              <SellerData setVisibleStep={setVisibleStep} />
-            )}
-            {visibleStep === "RESUMEN" && (
-              <>
-                <div className="grid grid-rows-[auto_auto_1fr] grid-cols-3 gap-5">
-                  <div className="col-span-2">
-                    <div className="w-full mt-5 flex flex-col rounded-lg bg-secondary-lighter shadow-md">
-                      <h1 className="font-semibold text-primary-darker text-xl h-72 overflow-auto">
-                        <SellerProductRequestResponse
-                          sellerId={userDtos?.seller?.id}
-                        />
-                      </h1>
-                    </div>
-                  </div>
-                  <div className="col-span-1 row-span-3 mb-5">
-                    <div className="w-full h-full mt-5 flex p-6 flex-col rounded-lg bg-secondary-lighter shadow-md">
-                      <div>
-                        <h1 className="font-semibold text-primary-darker text-xl flex justify-end">
-                          <FaBell />
+              {visibleStep === "TIPS" && (
+                <Tips setVisibleStep={setVisibleStep} />
+              )}
+              {visibleStep === "DATOS" && (
+                <SellerData setVisibleStep={setVisibleStep} />
+              )}
+              {visibleStep === "RESUMEN" && (
+                <>
+                  <div className="grid grid-rows-[auto_auto_1fr] grid-cols-3 gap-5">
+                    <div className="col-span-2">
+                      <div className="flex items-end justify-end gap-2 ">
+                        <p className="text-xs text-primary-dark w-60 text-end">
+                          *Solamente se imprimirán etiquetas de productos
+                          <span className="font-bold ml-1">aceptados</span>
+                        </p>
+                        <PrintLabel sellerId={userDtos?.seller?.id} />
+                      </div>
+                      <div className="w-full mt-5 flex flex-col rounded-lg bg-secondary-lighter shadow-md">
+                        <h1 className="font-semibold text-primary-darker text-xl h-72 overflow-auto">
+                          <SellerProductRequestResponse
+                            sellerId={userDtos?.seller?.id}
+                          />
                         </h1>
-                        <div className="mt-4">
-                          {notifications.length > 0 ? (
-                            notifications.map((request, index) => (
-                              <div
-                                key={index}
-                                className="shadow-xl bg-[#F9FAFB] text-primary-darker flex flex-col font-semibold rounded-3xl p-4 mt-4"
-                              >
-                                <span className="text-sm font-normal"></span>
-                                <h3 className="text-lg border-b border-primary-default mb-2">
-                                  {request.message}
-                                </h3>
-                                <p>{request.callToAction}</p>
+                      </div>
+                    </div>
+                    <div className="col-span-1 row-span-3 mb-5">
+                      <div className="w-full h-full mt-5 flex p-6 flex-col rounded-lg bg-secondary-lighter shadow-md">
+                        <div>
+                          <h1 className="font-semibold text-primary-darker text-xl flex justify-end">
+                            <FaBell />
+                          </h1>
+                          <div className="mt-4">
+                            {notifications.length > 0 ? (
+                              notifications.map((request, index) => (
+                                <div
+                                  key={index}
+                                  className="shadow-xl bg-[#F9FAFB] text-primary-darker flex flex-col font-semibold rounded-3xl p-4 mt-4">
+                                  <span className="text-sm font-normal"></span>
+                                  <h3 className="text-lg border-b border-primary-default mb-2">
+                                    {request.message}
+                                  </h3>
+                                  <p>{request.callToAction}</p>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="text-center text-[#5E5F60] text-lg font-normal">
+                                No tienes notificaciones
                               </div>
-                            ))
-                          ) : (
-                            <div className="text-center text-[#5E5F60] text-lg font-normal">
-                              No tienes notificaciones
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="row-span-3 mb-5 col-span-2 rounded-lg bg-secondary-lighter shadow-md">
-                    <div className="w-full h-full  flex p-6 flex-col">
-                      <SellerGettingActiveFair
-                        sellerId={userDtos?.seller?.id}
-                      />
+                    <div className="row-span-3 mb-5 col-span-2 rounded-lg bg-secondary-lighter shadow-md">
+                      <div className="w-full h-full  flex p-6 flex-col">
+                        <SellerGettingActiveFair
+                          sellerId={userDtos?.seller?.id}
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </>
-            )}
+                </>
+              )}
 
-            {visibleStep === "PRODUCTOS" && (
-              <>
-                <div className="max-h-80 overflow-y-auto w-full">
-                  <table className="w-full  text-sm text-left rtl:text-right bg-[#F9FAFB]">
-                    {products.length !== 0 && (
-                      <thead className="text-sm text-primary-darker uppercase bg-[#F9FAFB] border-b-primary-default border">
-                        <tr>
-                          <th scope="col" className="p-4"></th>
-
-                          <th scope="col" className="px-6 py-3">
-                            Talle
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            Marca
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            Descripción
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            Precio
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            Liquidación
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            Categoria
-                          </th>
-
-                          <th scope="col" className="px-6 py-3">
-                            Acciones
-                          </th>
-                        </tr>
-                      </thead>
-                    )}
-                    <tbody className="text-[#667085]">
-                      {products.length !== 0 ? (
-                        products.map((product) => (
-                          <tr
-                            key={product.id}
-                            className="bg-secondary-lighter border border-secondary-dark hover:bg-secondary-light "
-                          >
-                            <td className="px-6 py-4 font-medium whitespace-nowrap"></td>
-
-                            <td className="px-6 py-4 text-primary-darker font-medium">
-                              <input
-                                type="text"
-                                value={product.size}
-                                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                  handleInputChange(
-                                    product.id,
-                                    "size",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="Talle"
-                                className="w-full p-2 bg-white border border-gray-300 rounded "
-                              />
-                            </td>
-                            <td className="px-6 py-4 text-primary-darker font-medium">
-                              <input
-                                type="text"
-                                value={product.brand}
-                                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                  handleInputChange(
-                                    product.id,
-                                    "brand",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="Marca"
-                                className="w-full p-2 bg-white border border-gray-300 rounded "
-                              />
-                            </td>
-                            <td className="px-6 py-4 text-primary-darker font-medium">
-                              <input
-                                type="text"
-                                value={product.description}
-                                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                  handleInputChange(
-                                    product.id,
-                                    "description",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="Descripción"
-                                className="w-full p-2 bg-white border border-gray-300 rounded "
-                              />
-                            </td>
-                            <td className="px-6 py-4 text-primary-darker font-medium">
-                              <input
-                                type="text"
-                                value={product.price.toString()}
-                                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                  handleInputChange(
-                                    product.id,
-                                    "price",
-                                    e.target.value
-                                  )
-                                }
-                                onFocus={() => handleFocus(product.id, "price")}
-                                onBlur={() => handleBlur(product.id, "price")}
-                                placeholder="Precio"
-                                className="w-full p-2 bg-white border border-gray-300 rounded "
-                              />
-                            </td>
-                            <td className="px-6 py-4 text-primary-darker font-medium">
-                              <input
-                                type="text"
-                                value={
-                                  sellerDtos?.registrations?.[0]?.liquidation
-                                    ? "Si"
-                                    : "No Aplica"
-                                }
-                                readOnly
-                                disabled
-                                placeholder="Liquidación"
-                                className="w-full p-2  border border-gray-300 rounded cursor-default"
-                                onFocus={(e) => e.target.blur()}
-                                onClick={(e) => e.preventDefault()}
-                              />
-                            </td>
-                            <td className="px-6 py-4 text-primary-darker font-medium">
-                              <select
-                                value={categorySelected}
-                                onChange={(e) =>
-                                  setCategorySelected(e.target.value)
-                                }
-                                className="block w-full pl-3 pr-10 py-2 cursor-pointer text-base border border-gray-300 focus:outline-none focus:ring-primary-darker focus:border-primary-darker sm:text-sm rounded-md"
-                              >
-                                {categoryOptions.map((option) => (
-                                  <option
-                                    key={option.value}
-                                    value={option.value}
-                                  >
-                                    {option.label}
-                                  </option>
-                                ))}
-                              </select>
-                            </td>
-
-                            <td className="px-6 py-4 text-primary-darker font-medium">
-                              <button
-                                onClick={() => handleDeleteProduct(product.id)}
-                                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
-                              >
-                                Eliminar
-                              </button>
-                            </td>
+              {visibleStep === "PRODUCTOS" && (
+                <>
+                  <div className="max-h-80 overflow-y-auto w-full">
+                    <table className="w-full text-sm text-left rtl:text-right bg-[#F9FAFB]">
+                      {products.length !== 0 && (
+                        <thead className="text-sm text-primary-darker uppercase bg-[#F9FAFB] border-b-primary-default border">
+                          <tr>
+                            <th scope="col" className="px-6 py-3">
+                              Talle
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                              Marca
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                              Descripción
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                              Precio
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                              Liquidación
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                              Categoria
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                              Acciones
+                            </th>
                           </tr>
-                        ))
-                      ) : (
-                        <div className=" shadow-md bg-secondary-lighter">
-                          <div className="p-32 flex flex-col gap-4 items-center justify-center">
-                            <div className="flex flex-row gap-4">
-                              <div className="flex flex-col items-center gap-4 w-fit h-fit shadow-md rounded-lg p-5">
-                                <p className="font-semibold text-2xl text-primary-dark text-center">
-                                  ¡Comienza a cargar tus productos!
-                                </p>
-                                <FaArrowDown />
+                        </thead>
+                      )}
+                      <tbody className="text-[#667085]">
+                        {products.length !== 0 ? (
+                          products.map((product) => (
+                            <tr
+                              key={product.id}
+                              className="bg-secondary-lighter border border-secondary-dark hover:bg-secondary-light">
+                              <td className="px-6 py-4 text-primary-darker font-medium">
+                                <input
+                                  type="text"
+                                  value={product.size}
+                                  onChange={(
+                                    e: ChangeEvent<HTMLInputElement>
+                                  ) =>
+                                    handleInputChange(
+                                      product.id,
+                                      "size",
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder="Talle"
+                                  className="w-full p-2 bg-white border border-gray-300 rounded"
+                                />
+                              </td>
+                              <td className="px-6 py-4 text-primary-darker font-medium">
+                                <input
+                                  type="text"
+                                  value={product.brand}
+                                  onChange={(
+                                    e: ChangeEvent<HTMLInputElement>
+                                  ) =>
+                                    handleInputChange(
+                                      product.id,
+                                      "brand",
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder="Marca"
+                                  className="w-full p-2 bg-white border border-gray-300 rounded"
+                                />
+                              </td>
+                              <td className="px-6 py-4 text-primary-darker font-medium">
+                                <input
+                                  type="text"
+                                  value={product.description}
+                                  onChange={(
+                                    e: ChangeEvent<HTMLInputElement>
+                                  ) =>
+                                    handleInputChange(
+                                      product.id,
+                                      "description",
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder="Descripción"
+                                  className="w-full p-2 bg-white border border-gray-300 rounded"
+                                />
+                              </td>
+                              <td className="px-6 py-4 text-primary-darker font-medium">
+                                <input
+                                  type="text"
+                                  value={product.price.toString()}
+                                  onChange={(
+                                    e: ChangeEvent<HTMLInputElement>
+                                  ) =>
+                                    handleInputChange(
+                                      product.id,
+                                      "price",
+                                      e.target.value
+                                    )
+                                  }
+                                  onFocus={() =>
+                                    handleFocus(product.id, "price")
+                                  }
+                                  onBlur={() => handleBlur(product.id, "price")}
+                                  placeholder="Precio"
+                                  className="w-full p-2 bg-white border border-gray-300 rounded"
+                                />
+                              </td>
+                              <td className="px-6 py-4 text-primary-darker font-medium">
+                                <input
+                                  type="text"
+                                  value={liquidationSelected}
+                                  readOnly
+                                  disabled
+                                  placeholder="Liquidación"
+                                  className="w-full p-2 border border-gray-300 rounded cursor-default"
+                                  onFocus={(e) => e.target.blur()}
+                                  onClick={(e) => e.preventDefault()}
+                                />
+                              </td>
+                              <td className="px-6 py-4 text-primary-darker font-medium">
+                                <select
+                                  value={product.category}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      product.id,
+                                      "category",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="block w-full py-2 cursor-pointer text-base border border-gray-300 focus:outline-none focus:ring-primary-darker focus:border-primary-darker sm:text-sm rounded-md">
+                                  {categoryOptions.map((option) => (
+                                    <option
+                                      key={option.value}
+                                      value={option.value}>
+                                      {option.label}
+                                    </option>
+                                  ))}
+                                </select>
+                              </td>
+
+                              <td className="px-6 py-4 text-primary-darker font-medium">
+                                <button
+                                  onClick={() =>
+                                    handleDeleteProduct(product.id)
+                                  }
+                                  className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">
+                                  Eliminar
+                                </button>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <div className=" shadow-md bg-secondary-lighter">
+                            <div className="p-32 flex flex-col gap-4 items-center justify-center">
+                              <div className="flex flex-row gap-4">
+                                <div className="flex flex-col items-center gap-4 w-fit h-fit shadow-md rounded-lg p-5">
+                                  <p className="font-semibold text-2xl text-primary-dark text-center">
+                                    ¡Comienza a cargar tus productos!
+                                  </p>
+                                  <FaArrowDown />
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-                <div className="flex justify-end mt-4 flex-col items-end">
-                  <button
-                    className="text-sm mt-5 p-2 text-primary-darker hover:underline flex items-center justify-center md:h-8 md:w-36"
-                    onClick={handleAddProduct}
-                  >
-                    + Agregar producto
-                  </button>
-                  <button
-                    disabled={products.length === 0} //esto es temporal tambien, hay que hacer mas validaciones
-                    onClick={postProductsReq}
-                    className="disabled:cursor-not-allowed mb-10 bg-primary-darker mt-5 text-white p-2 rounded hover:bg-primary-dark md:h-8 flex items-center justify-center md:w-36 md:text-base text-xs sm:text-sm"
-                  >
-                    Enviar
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="flex justify-end mt-4 flex-col items-end">
+                    <button
+                      className="text-sm mt-5 p-2 text-primary-darker hover:underline flex items-center justify-center md:h-8 md:w-36"
+                      onClick={handleAddProduct}>
+                      + Agregar producto
+                    </button>
+                    <button
+                      disabled={products.length === 0} //esto es temporal tambien, hay que hacer mas validaciones
+                      onClick={postProductsReq}
+                      className="disabled:cursor-not-allowed mb-10 bg-primary-darker mt-5 text-white p-2 rounded hover:bg-primary-dark md:h-8 flex items-center justify-center md:w-36 md:text-base text-xs sm:text-sm">
+                      Enviar
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

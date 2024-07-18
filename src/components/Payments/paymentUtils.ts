@@ -20,7 +20,6 @@ export const handlePayment = async (
 
     const text = await response.text();
 
-
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

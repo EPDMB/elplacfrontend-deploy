@@ -179,10 +179,12 @@ const RegisterSeller: React.FC = () => {
             onChange={handleCheckboxChange}
           />
           <Label>
-            <span className={`${"text-primary-darker"} `}>Acepto los </span>
+            <span className={`${"text-secondary-darker"} `}>Acepto los </span>
             <a
-              href="#"
-              className={`${"text-secondary-darker"} hover:underline `}
+              href="/terms&conditions"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary-dark hover:underline"
             >
               Términos y Condiciones
             </a>
@@ -192,10 +194,11 @@ const RegisterSeller: React.FC = () => {
           <button
             className={`
       bg-primary-dark w-32 h-9 my-6 rounded-3xl text-center text-white text-base font-bold
-      ${!isChecked || !formikSeller.isValid
-                ? "opacity-50 cursor-not-allowed"
-                : ""
-              }
+      ${
+        !isChecked || !formikSeller.isValid
+          ? "opacity-50 cursor-not-allowed"
+          : ""
+      }
       `}
             type="submit"
             disabled={!isChecked || !formikSeller.isValid}

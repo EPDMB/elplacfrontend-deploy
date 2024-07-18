@@ -16,12 +16,10 @@ import WithAuthProtect from "@/helpers/WithAuth";
 
 const AdminProfiles = () => {
   const { token } = useAuth();
-  const { userDtos } = useProfile();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const [users, setUsers] = useState<UserDto[]>([]);
   const [usersFiltered, setUsersFiltered] = useState<UserDto[]>([]);
   const [trigger, setTrigger] = useState<boolean>(false);
-  const router = useRouter();
 
   useEffect(() => {
     getAllUsers(token)
@@ -101,12 +99,14 @@ const AdminProfiles = () => {
             <Searchbar setUsersFiltered={setUsersFiltered} users={users} />
             <button
               onClick={handleExport}
-              className="bg-white flex items-center text-primary-darker gap-2 p-2 border border-[#D0D5DD] rounded-lg">
+              className="bg-white flex items-center text-primary-darker gap-2 p-2 border border-[#D0D5DD] rounded-lg"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="1.5em"
                 height="1.5em"
-                viewBox="0 0 256 256">
+                viewBox="0 0 256 256"
+              >
                 <path
                   fill="#2F8083"
                   d="M178.34 165.66L160 147.31V208a8 8 0 0 1-16 0v-60.69l-18.34 18.35a8 8 0 0 1-11.32-11.32l32-32a8 8 0 0 1 11.32 0l32 32a8 8 0 0 1-11.32 11.32M160 40a88.08 88.08 0 0 0-78.71 48.68A64 64 0 1 0 72 216h40a8 8 0 0 0 0-16H72a48 48 0 0 1 0-96c1.1 0 2.2 0 3.29.12A88 88 0 0 0 72 128a8 8 0 0 0 16 0a72 72 0 1 1 100.8 66a8 8 0 0 0 3.2 15.34a7.9 7.9 0 0 0 3.2-.68A88 88 0 0 0 160 40"
@@ -116,7 +116,7 @@ const AdminProfiles = () => {
             </button>
           </div>
         </div>
-        <div className="w-full mt-5 flex p-6 flex-col rounded-lg bg-[#FFFFFF]">
+        <div className="w-full mt-5 flex p-6 flex-col rounded-lg bg-[#f1fafa]">
           <div>
             <h1 className="font-semibold text-primary-darker text-xl">
               ELPLAC

@@ -18,7 +18,6 @@ function TimeRange() {
             new Date(day.day).toDateString() === dateSelect.toDateString()
         )
       );
-
       if (selectedFair) {
         const fairDay = selectedFair.fairDays.find(
           (day: FairDay) =>
@@ -35,8 +34,9 @@ function TimeRange() {
 
   const options = [...schedulesTurns].reverse().map((hc) => ({
     id: hc.hour,
-    name: `${hc.capacity === 0 ? "Agotado" : `Turnos disponibles (${hc.capacity})`
-      }`,
+    name: `${
+      hc.capacity === 0 ? "Agotado" : `Turnos disponibles (${hc.capacity})`
+    }`,
   }));
 
 

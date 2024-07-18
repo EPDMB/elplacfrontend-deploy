@@ -95,7 +95,7 @@ const Input: React.FC<IInputProps> = ({
                       ? "border-primary-default bg-primary-lighter"
                       : "border-secondary-default bg-secondary-lighter"
                   } rounded-md pl-4 pr-12 py-2 focus:outline-none`
-                : "bg-transparent mb-4 border-b border-primary-dark focus:outline-none text-xs sm:text-base xl:text-xl py-1 lg:py-2"
+                : "bg-transparent w-full mb-4 border-b border-primary-dark focus:outline-none text-xs sm:text-base xl:text-xl py-1 lg:py-2"
             }
             type={passwordVisible ? "text" : type}
             {...inputProps}

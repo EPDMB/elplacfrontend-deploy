@@ -66,6 +66,7 @@ export interface IProfilePayments {
   formikSellerPayments: any;
   editSeller?: boolean;
   formikSeller: any;
+  setEditSeller: (editSeller: boolean) => void;
 }
 
 export interface IProfileSettings {
@@ -124,7 +125,7 @@ export interface IDashboardSellerErrors extends IDashboardUserErrors {
 
 export interface IHandleSelectProductStatus {
   id: string;
-  status: string;
+  status: string | productsStatusEnum;
 }
 
 export interface ILoginFormErrors {
@@ -217,7 +218,7 @@ export interface ProductProps {
   description: string;
   price: number;
   size: string;
-  liquidation: boolean;
+  liquidation: string;
   category: string;
   status?: productsStatusEnum;
 }
@@ -255,7 +256,7 @@ export interface FairCategories {
 }
 
 export interface Category {
-  id: string;
+  id?: string;
   name: string;
 }
 
@@ -319,6 +320,7 @@ export interface IFairContainer {
 export interface IFairContext {
   fairs: IFair[];
   activeFair?: IFair;
+  setActiveFair: (fair: IFair | undefined) => void  
   setDateSelect: (date: Date) => void;
   setTimeSelect: (time: string) => void;
   timeSelect: string;
@@ -397,7 +399,7 @@ export interface TicketProps {
 
 export interface ProfileFairsProps {
   selectedOption: string | null | [];
-  fairs: IFair[];
+  fairs: (IFair | undefined)[];
   handleSelect: (option: DropdownOption) => void;
   fairFilter?: IFair;
 }
@@ -480,7 +482,7 @@ export interface userDashboardProps {
 }
 
 export type DropdownOption = {
-  id: string;
+  id: string | productsStatusEnum;
   name: string;
 };
 
@@ -534,10 +536,10 @@ export interface IProductRequestTableProps {
   detailColumns?: Column[];
   state?: DropdownOption;
   profiles?: DropdownOption;
-  productRequest: Notification[];
-  trigger: boolean;
+  products?: IProductNotification[];
+  trigger?: boolean;
   activeFair?: IFair;
-  setTrigger: (newValue: boolean) => void;
+  setTrigger?: (newValue: boolean) => void;
 }
 
 export interface ISellerProductRequestTableProps {
@@ -563,7 +565,7 @@ export interface ProductsGettedBySellerId {
 }
 
 export interface BadgeProps {
-  type?: statusGeneralEnum | productsStatusEnum;
+  type?: statusGeneralEnum | productsStatusEnum | string;
 }
 
 export interface SearchbarProps {
@@ -604,7 +606,7 @@ export interface IProductNotification {
   description: string;
   price: number;
   size: string;
-  photoUrl: string;
+
   liquidation: boolean;
   code: string;
   status: productsStatusEnum;
@@ -675,6 +677,7 @@ export interface SelectedOption {
 export interface WithAuthProtectProps {
   Component: React.FC<any>;
   role?: string;
+  registrations?: SellerRegistrations[];
 }
 export interface FairDto {
   name: string;
@@ -706,3 +709,44 @@ export interface StepProps {
 export interface PrintLabelProps {
   sellerId: string | undefined;
 }
+
+export interface CategoryData {
+  name: string;
+  maxProductsSeller: string;
+  minProductsSeller: string;
+  maxSellers: string;
+  maxProducts: string;
+}
+
+export type CategoryDataField =
+  | "name"
+  | "maxProductsSeller"
+  | "minProductsSeller"
+  | "maxSellers"
+  | "maxProducts";
+
+  export type CategoryKey =
+    | "youngMan"
+    | "youngWoman"
+    | "man"
+    | "woman"
+    | "adults"
+    | "booksToys";
+
+    export interface CategoryArray {
+      youngMan: string
+      youngWoman: string
+      man: string
+      woman: string
+      adults: string
+      booksToys: string
+    };
+
+    export type IsCheckedType = {
+      youngMan: boolean;
+      youngWoman: boolean;
+      man: boolean;
+      woman: boolean;
+      adults: boolean;
+      booksToys: boolean;
+    };

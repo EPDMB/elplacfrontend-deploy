@@ -39,10 +39,10 @@ const MainDashboardUser: React.FC = () => {
 
   return (
     <div className="grid grid-cols-8 gap-0 relative place-content-center">
-      <div className="hidden sm:flex sm:col-span-1 bg-secondary-lighter">
+      <div className="flex col-span-2 sm:col-span-1 bg-secondary-lighter">
         <SidebarDashboard userRole={userDtos?.role} />
       </div>
-      <div className="bg-secondary-lighter p-16 flex flex-col h-[100vh] sm:col-span-7">
+      <div className="bg-secondary-lighter p-16 flex flex-col h-[100vh] col-span-6 sm:col-span-7">
         <h1 className="pb-10 text-primary-darker text-4xl">
           Bienvenid@ <span className="font-bold">{userDtos?.name}!</span>
         </h1>
@@ -52,13 +52,13 @@ const MainDashboardUser: React.FC = () => {
             description="Configura tus datos de contacto y medios de pago y claves"
             typeEnum={dashboardEnum.profile}
             message={verificationMsg}
-            classname="p-5 relative bg-secondary-light text-wrap w-80 rounded-[2.5rem] h-48 shadow-xl"
+            classname="p-5 relative bg-secondary-light text-wrap w-fit sm:w-80 rounded-[2.5rem] sm:h-48 shadow-xl"
           />
           <DashboardCard
             title="Vendé tus productos"
             description="Forma parte de nuestra ferias, y vendé tus productos de una manera muy fácil"
             typeEnum={dashboardEnum.changeType}
-            classname="p-5 relative bg-secondary-light text-wrap w-80 rounded-[2.5rem] h-48 shadow-xl"
+            classname="p-5  relative bg-secondary-light text-wrap w-fit sm:w-80 rounded-[2.5rem] sm:h-48 shadow-xl"
           />
         </div>
       </div>

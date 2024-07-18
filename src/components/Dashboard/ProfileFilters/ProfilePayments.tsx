@@ -5,9 +5,10 @@ import React, { useEffect } from "react";
 
 const ProfilePayments: React.FC<IProfilePayments> = ({
   formikSellerPayments,
-  editSeller,
   getPropsSellerPayments,
+  editSeller,
   formikSeller,
+  setEditSeller,
 }) => {
   const { userDtos } = useProfile();
 
@@ -22,22 +23,21 @@ const ProfilePayments: React.FC<IProfilePayments> = ({
     };
   };
 
-  useEffect(() => {
+useEffect(() => {
 
+  const formik = userDtos?.role === "seller" && formikSellerPayments;
 
-    const formik = userDtos?.role === "seller" && formikSellerPayments;
+  const fieldsToCheck = ["bank_account", "phone", "address", "social_media"];
 
-    const fieldsToCheck = ["bank_account", "phone", "address", "social_media"];
+  fieldsToCheck.forEach((field) => {
+   
 
-    fieldsToCheck.forEach((field) => {
-
-
-      if (formik.values[field].trim() === "" && !formik.touched[field]) {
-        formik.setFieldTouched(field, true);
-        formik.setFieldError(field, "Este campo es requerido");
-      }
-    });
-  }, [userDtos?.role, formikSellerPayments, formikSeller]);
+    if (formik.values[field].trim() === "" && !formik.touched[field]) {
+      formik.setFieldTouched(field, true);
+      formik.setFieldError(field, "Este campo es requerido");
+    }
+  });
+}, [userDtos?.role, formikSellerPayments, formikSeller]);
 
 
   return (
@@ -55,9 +55,13 @@ const ProfilePayments: React.FC<IProfilePayments> = ({
         />
         {editSeller && (
           <button
-            type="submit"
+            type="button"
             disabled={!formikSellerPayments.isValid}
             className="bg-primary-darker absolute text-white p-2 rounded"
+            onClick={() => {
+              formikSellerPayments.handleSubmit();
+              setEditSeller(false); 
+            }}
           >
             Guardar Cambios
           </button>

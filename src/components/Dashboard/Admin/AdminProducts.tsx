@@ -1,37 +1,48 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Notification } from "@/types";
-import { getAllProductRequest } from "@/helpers/services";
+import {
+  IProductNotification,
+  Notification,
+  productsStatusEnum,
+} from "@/types";
+import { getAllProductRequest, getAllProducts } from "@/helpers/services";
 import { useAuth } from "@/context/AuthProvider";
 import ProductsTable from "@/components/Table/ProductsTable";
 import { useFair } from "@/context/FairProvider";
 
 import WithAuthProtect from "@/helpers/WithAuth";
+import { formatDate } from "@/helpers/formatDate";
+import exportToExcel from "@/helpers/exportToExcel";
 
 const AdminProducts = () => {
   const { token } = useAuth();
   const { activeFair } = useFair();
-  const [productRequest, setProductRequest] = useState<Notification[]>([]);
+
+  const [products, setProducts] = useState<IProductNotification[]>([]);
+
   const [trigger, setTrigger] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      const productRequests = await getAllProductRequest(token);
-      setProductRequest(productRequests);
+      const allProducts = await getAllProducts(token);
+      setProducts(allProducts);
     };
-
     fetchData();
-  }, [token, trigger, setTrigger]);
+  }, [token, trigger, setTrigger, activeFair?.id]);
 
-  const allProducts = productRequest.flatMap((product) => product.products);
-  const totalProducts = allProducts.length;
-  const acceptedProducts = allProducts.filter(
-    (product) => product.status === "accepted"
+  
+  const totalProducts = products.length || 0;
+  const acceptedProducts = products.filter(
+    (product) => product.status === productsStatusEnum.accepted
   ).length;
-  const rejectedProducts = allProducts.filter(
-    (product) => product.status === "notAccepted"
+  const rejectedProducts = products.filter(
+    (product) =>
+      product.status === productsStatusEnum.notAccepted ||
+      product.status === productsStatusEnum.secondMark ||
+      product.status === productsStatusEnum.categoryNotApply ||
+      product.status === productsStatusEnum.notAvailable
   ).length;
-  const pendingProducts = allProducts.filter(
+  const pendingProducts = products.filter(
     (product) => product.status === "pendingVerification"
   ).length;
 
@@ -50,31 +61,14 @@ const AdminProducts = () => {
     { id: "description", label: "Descripción", sortable: true },
     { id: "price", label: "Precio", sortable: true },
     { id: "liquidation", label: "Liquidación", sortable: true },
-    { id: "states", label: "Estados", sortable: true },
+
     { id: "actions", label: "Acciones", sortable: true },
   ];
 
   return (
     <div className="grid grid-rows-[auto_auto_1fr] grid-cols-2 mx-20 mt-8 gap-5">
       <div className="col-span-2">
-        <div>
-          <div className="gap-4 flex justify-end">
-            <button className="bg-white flex items-center text-primary-darker gap-2 p-2 border border-[#D0D5DD] rounded-lg">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="1.5em"
-                height="1.5em"
-                viewBox="0 0 256 256">
-                <path
-                  fill="#2F8083"
-                  d="M178.34 165.66L160 147.31V208a8 8 0 0 1-16 0v-60.69l-18.34 18.35a8 8 0 0 1-11.32-11.32l32-32a8 8 0 0 1 11.32 0l32 32a8 8 0 0 1-11.32 11.32M160 40a88.08 88.08 0 0 0-78.71 48.68A64 64 0 1 0 72 216h40a8 8 0 0 0 0-16H72a48 48 0 0 1 0-96c1.1 0 2.2 0 3.29.12A88 88 0 0 0 72 128a8 8 0 0 0 16 0a72 72 0 1 1 100.8 66a8 8 0 0 0 3.2 15.34a7.9 7.9 0 0 0 3.2-.68A88 88 0 0 0 160 40"
-                />
-              </svg>
-              Exportar
-            </button>
-          </div>
-        </div>
-        <div className="w-full mt-5 flex p-6 flex-col rounded-lg bg-[#FFFFFF]">
+        <div className="w-full mt-5 flex p-6 flex-col rounded-lg bg-[#f1fafa]">
           <div>
             <h1 className="font-semibold text-primary-darker text-3xl">
               {activeFair?.name}
@@ -114,13 +108,14 @@ const AdminProducts = () => {
       </div>
 
       <div
-        className="row-span-3 col-span-2 h-[30rem] bg-[#F9FAFB] w-full 
-       overflow-y-auto">
+        className="row-span-3 col-span-2 h-[30rem] bg-[#f1fafa] w-full 
+       overflow-y-auto"
+      >
         <ProductsTable
           columns={sellersColumns}
-          productRequest={productRequest}
           detailColumns={detailsColumns}
           trigger={trigger}
+          products={products}
           activeFair={activeFair}
           setTrigger={setTrigger}
         />

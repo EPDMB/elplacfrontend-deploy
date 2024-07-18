@@ -13,6 +13,7 @@ import { URL } from "../../envs";
 import { time } from "console";
 import Product from "./products";
 import { get } from "http";
+import { isTokenExpired } from "./auth";
 
 //REGISTRO DE USUARIO
 export const postUserRegister = async (user: Partial<UserDto>) => {
@@ -95,7 +96,6 @@ export const postSellerRegister = async (
       body: JSON.stringify(seller),
     });
 
-    
 
     if (!res.ok) {
       throw new Error("Error en el registro");
@@ -164,9 +164,12 @@ export const getSeller = async (token: string, id: string) => {
       },
     });
 
-    
     if (!res.ok) {
-      throw new Error("Error en la petición");
+      const errorData = await res.json();
+      console.error("Error en la petición", errorData);
+      throw new Error(
+        `Error ${res.status}: ${errorData.message || res.statusText}`
+      );
     }
     const data = await res.json();
     return data;
@@ -205,7 +208,7 @@ export const putSeller = async (
   id: string,
   user: Partial<UserDto>
 ) => {
- 
+
   try {
     const res = await fetch(`${URL}/sellers/update/${id}`, {
       method: "PUT",
@@ -241,7 +244,6 @@ export const changeRole = async (
       },
       body: JSON.stringify({ role: role }),
     });
-    
 
     if (!res.ok) {
       const errorText = await res.text();
@@ -432,6 +434,26 @@ export const getFair = async () => {
   }
 };
 
+export const updateFairStatus = async (token:string, fairId:string | undefined) => {
+  try {
+    const res = await fetch(`${URL}/fairs/close/${fairId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!res.ok) {
+      throw new Error("Error en la petición");
+    }
+    
+
+    return res;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const postInscription = async (
   fairId: string | undefined,
   userId: string | undefined,
@@ -468,7 +490,7 @@ export const postTicket = async (
   dateSelect: string | null,
   timeSelect: string
 ) => {
- 
+
 
   try {
     const res = await fetch(`${URL}/users/${userId}/register/fair/${fairId}`, {
@@ -528,7 +550,6 @@ export const checkIsGmailfirstTime = async (email: string) => {
 
     const data = await res.json();
 
-    
 
     if (data.dni === "" && data.bankAccount === "") {
       return "Por favor, completa tu DNI y tu cuenta bancaria.";
@@ -591,7 +612,11 @@ export const createProductRequest = async (
       }),
     });
     if (!res.ok) {
-      throw new Error("Error en la petición");
+      const errorData = await res.json();
+      console.error("Error en la petición", errorData);
+      throw new Error(
+        `Error ${res.status}: ${errorData.message || res.statusText}`
+      );
     }
     const data = await res.json();
 
@@ -633,12 +658,17 @@ export const updateProductStatus = async (
   }
 };
 
-export const putProductStatus = async (id: string, status: string) => {
+export const putProductStatus = async (
+  id: string,
+  status: string,
+  token: string
+) => {
   try {
     const res = await fetch(`${URL}/products/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, //ADMIN TOKEN
       },
       body: JSON.stringify({ status: status }),
     });
@@ -706,7 +736,6 @@ export const getAllProducts = async (token: string) => {
       throw new Error("Error en la petición");
     }
     const data = await res.json();
-    
 
     return data;
   } catch (error) {
@@ -716,7 +745,6 @@ export const getAllProducts = async (token: string) => {
 
 export const blockUser = async (token: string, id: string) => {
   try {
-    
 
     const res = await fetch(`${URL}/users/block/${id}`, {
       method: "PUT",
@@ -735,7 +763,6 @@ export const blockUser = async (token: string, id: string) => {
 
 export const unblockUser = async (token: string, id: string) => {
   try {
-    
 
     const res = await fetch(`${URL}/users/unblock/${id}`, {
       method: "PUT",
@@ -786,9 +813,12 @@ export const postCreateFair = async (fairData: FairDto, token: string) => {
       },
       body: JSON.stringify(fairData),
     });
-    
     if (!res.ok) {
-      throw new Error("Error en la creación de la feria");
+      const errorData = await res.json();
+      console.error("Error en la petición", errorData);
+      throw new Error(
+        `Error ${res.status}: ${errorData.message || res.statusText}`
+      );
     }
 
     return res.json();

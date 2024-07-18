@@ -56,7 +56,8 @@ const ChangeType = () => {
             </button>
             <h1
               className=" text-primary-darker text-xl  lg:text-4xl font-bold"
-              ref={titleRef}>
+              ref={titleRef}
+            >
               ¡Formá parte de nuestras ferias y vendé tus productos!
             </h1>
           </div>
@@ -74,8 +75,11 @@ const ChangeType = () => {
             <Label>
               <span className={`${"text-primary-darker"} `}>Acepto los </span>
               <a
-                href="#"
-                className={`${"text-secondary-darker"} hover:underline `}>
+                href="/terms&conditions"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-secondary-darker hover:underline"
+              >
                 Términos y Condiciones
               </a>
             </Label>
@@ -92,12 +96,13 @@ const ChangeType = () => {
                   handleRoleChange(userId, "seller");
                   notify(
                     "ToastSuccess",
-                    "Ya sos vendedor, ¡Bienvenido a la comunidad!"
+                    "¡Ya puedes empezar a vender!"
                   );
                 } else {
                   console.error("User ID is undefined");
                 }
-              }}>
+              }}
+            >
               ¡Comienza a vender!
             </button>
           </div>

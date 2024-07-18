@@ -10,6 +10,8 @@ import {
 import {
   getAllProductRequest,
   getAllProducts,
+  putProductStatus,
+  updateFairStatus,
   updateProductStatus,
 } from "@/helpers/services";
 import { useAuth } from "@/context/AuthProvider";
@@ -23,16 +25,15 @@ import { Badge } from "@/components/Badges";
 import Dropdown from "@/components/Dropdown";
 import Product from "@/helpers/products";
 import { notify } from "@/components/Notifications/Notifications";
+import { useRouter } from "next/navigation";
 
 const AdminPostFair = () => {
   const { token } = useAuth();
-  const { activeFair } = useFair();
+  const { activeFair, setActiveFair } = useFair();
   const [products, setProducts] = useState<IProductNotification[]>([]);
   const [trigger, setTrigger] = useState<boolean>(false);
-  const [productRequestId, setProductRequestId] = useState<Notification | null>(
-    null
-  );
-  const [openModalUserId, setOpenModalUserId] = useState<boolean>(true);
+  const [openModalUserId, setOpenModalUserId] = useState<boolean>(false);
+  const router = useRouter();
 
   const closeModalHandler = () => {
     setOpenModalUserId(false);
@@ -85,23 +86,29 @@ const AdminPostFair = () => {
     { id: "description", label: "Descripción", sortable: true },
     { id: "price", label: "Precio", sortable: true },
     { id: "liquidation", label: "Liquidación", sortable: true },
-    { id: "states", label: "Estados", sortable: true },
     { id: "actions", label: "Acciones", sortable: true },
   ];
 
   const handleSelect = async ({ id, status }: IHandleSelectProductStatus) => {
-    if (!productRequestId) return;
-    await updateProductStatus(id, status, productRequestId.id, token);
+    try {
+      const res = await putProductStatus(id, status, token);
+
+      setTrigger((prev) => !prev);
+    } catch (error: any) {
+      console.error(error.message);
+    }
   };
 
   const handleConcludeFair = async () => {
-    setOpenModalUserId(true);
+    closeModalHandler();
+    if (!activeFair) return;
 
-    // const res = await updateFairStatus(activeFair?.id, "concluded", token);
-    // console.log(res);
-    // const updatedFair = await getFairById(activeFair?.id, token);
-    // console.log(updatedFair);
-    // setTrigger(!trigger
+    const res = await updateFairStatus(token, activeFair?.id);
+    if (res?.ok) {
+      notify("ToastSuccess", "Feria concluida con éxito");
+      setActiveFair(undefined);
+      router.push("/admin/fairs");
+    }
   };
 
   return (
@@ -109,7 +116,7 @@ const AdminPostFair = () => {
       <div className="col-span-2">
         <div>
           <div className="gap-4 flex justify-end">
-            <button className="bg-white flex items-center text-primary-darker gap-2 p-2 border border-[#D0D5DD] rounded-lg">
+            <button className="bg-[#ebfafa] flex items-center text-primary-darker gap-2 p-2 border border-[#D0D5DD] rounded-lg">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="1.5em"
@@ -125,7 +132,7 @@ const AdminPostFair = () => {
             </button>
           </div>
         </div>
-        <div className="w-full mt-5 flex p-6 flex-col rounded-lg bg-[#FFFFFF]">
+        <div className="w-full mt-5 flex p-6 flex-col rounded-lg bg-[#f1fafa]">
           <div>
             <h1 className="font-semibold text-primary-darker text-3xl">
               {activeFair?.name}
@@ -163,7 +170,7 @@ const AdminPostFair = () => {
                 </span>
               </div>
               <button
-                onClick={handleConcludeFair}
+                onClick={() => setOpenModalUserId(true)}
                 className="bg-white flex items-center text-primary-darker gap-2 p-2 border border-[#D0D5DD] rounded-lg"
               >
                 <FaCheckCircle />
@@ -174,8 +181,12 @@ const AdminPostFair = () => {
         </div>
       </div>
 
-      <div className="row-span-3 col-span-2">
-        <table>
+      <div
+        className="row-span-3 col-span-2 h-[30rem] bg-[#f1fafa] w-full 
+       overflow-y-auto"
+      >
+        {" "}
+        <table className="bg-[#f1fafa] overflow-auto">
           <thead>
             <tr>
               {detailsColumns.map((column) => (
@@ -186,51 +197,63 @@ const AdminPostFair = () => {
             </tr>
           </thead>
           <tbody>
-            {products.map((product: IProductNotification) => (
-              <tr key={product.id} className="shadow-sm">
-                <td className="px-6 py-4 text-primary-darker font-medium">
-                  {product.code}
-                </td>
-                <td className="px-6 py-4 text-primary-darker font-medium">
-                  {product.category}
-                </td>
-                <td className="px-6 py-4 text-primary-darker font-medium">
-                  {product.size}
-                </td>
-                <td className="px-6 py-4 text-primary-darker font-medium">
-                  {product.brand}
-                </td>
-                <td className="px-6 py-4 text-primary-darker font-medium">
-                  {product.description}
-                </td>
-                <td className="px-6 py-4 text-primary-darker font-medium">
-                  ${product.price}
-                </td>
-                <td className="px-6 py-4 text-primary-darker font-medium">
-                  {product.liquidation
-                    ? `$${applyLiquidation(product.price)}`
-                    : "No aplica"}
-                </td>
-                <td className="px-6 py-4 text-primary-darker font-medium">
-                  <Badge type={product.status} />
-                </td>
-                <td className="px-5 py-4 text-primary-darker font-medium">
-                  <Dropdown
-                    onSelect={(selectedOption) =>
-                      handleSelect({
-                        id: product.id,
-                        status: selectedOption.id,
-                      })
-                    }
-                    options={actionsOptions}
-                    className="w-60"
-                    bg="bg-[#F9FAFB]"
-                    value="Selecciona el estado"
-                    noId={true}
-                  />
+            {products.length > 0 ? (
+              products.map((product: IProductNotification) => (
+                <tr key={product.id} className="shadow-sm">
+                  <td className="px-6 py-4 text-primary-darker font-medium">
+                    {product.code}
+                  </td>
+                  <td className="px-6 py-4 text-primary-darker font-medium">
+                    {product.category}
+                  </td>
+                  <td className="px-6 py-4 text-primary-darker font-medium">
+                    {product.size}
+                  </td>
+                  <td className="px-6 py-4 text-primary-darker font-medium">
+                    {product.brand}
+                  </td>
+                  <td className="px-6 py-4 text-primary-darker font-medium">
+                    {product.description}
+                  </td>
+                  <td className="px-6 py-4 text-primary-darker font-medium">
+                    ${product.price}
+                  </td>
+                  <td className="px-6 py-4 text-primary-darker font-medium">
+                    {product.liquidation
+                      ? `$${applyLiquidation(product.price)}`
+                      : "No aplica"}
+                  </td>
+                  <td className="px-5 py-4 text-primary-darker font-medium">
+                    <Dropdown
+                      onSelect={(selectedOption) =>
+                        handleSelect({
+                          id: product.id,
+                          status: selectedOption.id,
+                        })
+                      }
+                      options={actionsOptions}
+                      className="w-60"
+                      bg="bg-[#F9FAFB]"
+                      value="Selecciona el estado"
+                      noId={true}
+                    />
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr className=" ">
+                <td
+                  colSpan={detailsColumns && detailsColumns.length + 1}
+                  className="p-32"
+                >
+                  <div className="flex flex-col gap-4 items-center justify-center">
+                    <p className="font-semibold text-2xl text-primary-dark">
+                      No hay solicitudes de productos
+                    </p>
+                  </div>
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
         {openModalUserId && (
@@ -254,7 +277,7 @@ const AdminPostFair = () => {
                 </p>
                 <div className="gap-4 flex">
                   <button
-                    onClick={() => closeModalHandler()}
+                    onClick={() => handleConcludeFair()}
                     className="bg-primary-darker text-white w-20 p-2 rounded-lg border border-[#D0D5DD]"
                   >
                     Si
