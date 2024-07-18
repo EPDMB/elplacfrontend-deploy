@@ -57,11 +57,11 @@ const SellerProducts = () => {
 
   const router = useRouter();
 
- 
+
 
   useEffect(() => {
     const handleNotification = (notification: NotificationsFromAdmin) => {
- 
+
       const isRelevantNotification =
         userDtos?.seller?.id === notification.sellerId ||
         (notification.forAll && notification.message);
@@ -151,12 +151,12 @@ const SellerProducts = () => {
       prev.map((product) =>
         product.id === id
           ? {
-              ...product,
-              [field]:
-                product[field] !== undefined
-                  ? formatPrice(product[field].toString())
-                  : product[field],
-            }
+            ...product,
+            [field]:
+              product[field] !== undefined
+                ? formatPrice(product[field].toString())
+                : product[field],
+          }
           : product
       )
     );
@@ -247,38 +247,34 @@ const SellerProducts = () => {
                   <div>
                     <button
                       onClick={() => setVisibleStep("TIPS")}
-                      className={`p-2 ${
-                        visibleStep === "TIPS"
+                      className={`p-2 ${visibleStep === "TIPS"
                           ? "bg-[#F9FAFB] text-primary-darker"
                           : "bg-secondary-lighter text-primary-darker"
-                      }`}>
+                        }`}>
                       TIPS
                     </button>
                     <button
                       onClick={() => setVisibleStep("DATOS")}
-                      className={`border-l border-gray-300 p-2 ${
-                        visibleStep === "DATOS"
+                      className={`border-l border-gray-300 p-2 ${visibleStep === "DATOS"
                           ? "bg-[#F9FAFB] text-primary-darker"
                           : "bg-secondary-lighter text-primary-darker"
-                      }`}>
+                        }`}>
                       DATOS
                     </button>
                     <button
                       onClick={() => setVisibleStep("PRODUCTOS")}
-                      className={`border-l border-gray-300 p-2 ${
-                        visibleStep === "PRODUCTOS"
+                      className={`border-l border-gray-300 p-2 ${visibleStep === "PRODUCTOS"
                           ? "bg-[#F9FAFB] text-primary-darker"
                           : "bg-secondary-lighter text-primary-darker"
-                      }`}>
+                        }`}>
                       PRODUCTOS
                     </button>
                     <button
                       onClick={() => setVisibleStep("RESUMEN")}
-                      className={`border-l border-gray-300 p-2 ${
-                        visibleStep === "RESUMEN"
+                      className={`border-l border-gray-300 p-2 ${visibleStep === "RESUMEN"
                           ? "bg-[#F9FAFB] text-primary-darker"
                           : "bg-secondary-lighter text-primary-darker"
-                      }`}>
+                        }`}>
                       RESUMEN
                     </button>
                   </div>
@@ -297,7 +293,7 @@ const SellerProducts = () => {
                       <div className="flex items-end justify-end gap-2 ">
                         <p className="text-xs text-primary-dark w-60 text-end">
                           *Solamente se imprimirán etiquetas de productos
-                          <span className="font-bold ml-1">aceptados</span>
+                          <span className="font-bold ml-1">pendientes</span>
                         </p>
                         <PrintLabel sellerId={userDtos?.seller?.id} />
                       </div>

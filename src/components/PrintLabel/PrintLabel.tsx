@@ -16,7 +16,7 @@ const PrintLabel: React.FC<PrintLabelProps> = ({ sellerId }) => {
     try {
       const data = await fetchProducts(sellerId, token);
       const filteredData = data.filter(
-        (product) => product.status === "accepted"
+        (product) => product.status === "pendingVerification"
       );
 
       setProductInfo(filteredData);
