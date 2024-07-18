@@ -10,7 +10,14 @@ import { useFair } from "@/context/FairProvider";
 import { useRouter } from "next/navigation";
 import { notify } from "../Notifications/Notifications";
 import { Checkbox, Label } from "flowbite-react";
-import { Category, CategoryArray, CategoryData, CategoryDataField, CategoryKey, IsCheckedType } from "@/types";
+import {
+  Category,
+  CategoryArray,
+  CategoryData,
+  CategoryDataField,
+  CategoryKey,
+  IsCheckedType,
+} from "@/types";
 
 const CreateFairForm: React.FC = () => {
   const { token } = useAuth();
@@ -25,7 +32,7 @@ const CreateFairForm: React.FC = () => {
     adults: false,
     booksToys: false,
   });
-const [categoriesData, setCategoriesData] = useState<CategoryData[]>([]);
+  const [categoriesData, setCategoriesData] = useState<CategoryData[]>([]);
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = event.target;
     setIsChecked((prevState) => ({
@@ -109,7 +116,6 @@ const [categoriesData, setCategoriesData] = useState<CategoryData[]>([]);
           ],
         })),
       };
-
 
       try {
         const response = await postCreateFair(transformedData, token);
@@ -269,7 +275,7 @@ const [categoriesData, setCategoriesData] = useState<CategoryData[]>([]);
                     <div className="flex space-x-4">
                       <div className="w-1/2">
                         <Input
-                          label="Precio de entrada comprador"
+                          label="Valor del Turno (Usuario)"
                           name="entryPriceBuyer"
                           type="number"
                           onChange={formik.handleChange}
@@ -279,7 +285,7 @@ const [categoriesData, setCategoriesData] = useState<CategoryData[]>([]);
                       </div>
                       <div className="w-1/2">
                         <Input
-                          label="Precio de entrada vendedor"
+                          label="Valor de Inscripción (Vendedor)"
                           name="entryPriceSeller"
                           type="number"
                           onChange={formik.handleChange}
@@ -290,7 +296,7 @@ const [categoriesData, setCategoriesData] = useState<CategoryData[]>([]);
                     </div>
                     <div className="mt-4">
                       <Input
-                        label="Descripción de la entrada"
+                        label="Descripción / Términos y Condiciones"
                         name="entryDescription"
                         type="text"
                         onChange={formik.handleChange}
@@ -328,7 +334,7 @@ const [categoriesData, setCategoriesData] = useState<CategoryData[]>([]);
                             onChange={handleCheckboxChange}
                           />
                           <Label htmlFor={category} className="ml-2">
-                            {category}
+                            {categoryMap[category as keyof typeof categoryMap]}
                           </Label>
                         </div>
                       ))}
@@ -340,7 +346,7 @@ const [categoriesData, setCategoriesData] = useState<CategoryData[]>([]);
                         className="mb-4 border p-4 rounded-lg"
                       >
                         <h4 className="text-md text-primary-darker font-semibold mb-2">
-                          {category.name}
+                          {categoryMap[category.name as keyof typeof categoryMap]}
                         </h4>
                         <div className="grid grid-cols-2 gap-4">
                           <Input

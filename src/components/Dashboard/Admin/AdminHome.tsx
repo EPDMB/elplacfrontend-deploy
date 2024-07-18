@@ -49,7 +49,6 @@ const AdminHome = () => {
   const { token } = useAuth();
   const router = useRouter();
 
-
   useEffect(() => {
     if (token) {
       getAllProducts(token)
@@ -185,25 +184,35 @@ const AdminHome = () => {
       </div>
       <div className="row-span-3 mb-5 col-span-2 rounded-lg bg-[#f1fafa]">
         <div className="w-full h-full  flex p-6 flex-col">
-          <h1 className="font-semibold text-primary-darker text-xl">
-            Historial de ferias
-          </h1>
-          {fairs.map((fair) => (
-            <div
-              key={fair.id}
-              className="shadow-lg flex flex-col font-semibold rounded-lg p-4 mt-4"
-            >
-              <h3 className="text-[#5E5F60] text-lg border-b border-primary-default mb-2">
-                {fair.name}
-              </h3>
-              <span className="text-[#5E5F60] text-lg font-normal">
-                {fair.sellerRegistrations.length} vendedores
-              </span>
-              <span className="text-[#5E5F60] text-lg font-normal">
-                {fair.userRegistrations.length} usuarios
-              </span>
+          {fairs.length > 0 ? (
+            <>
+              <h1 className="font-semibold text-primary-darker text-xl">
+                Historial de ferias
+              </h1>
+              {fairs.map((fair) => (
+                <div
+                  key={fair.id}
+                  className="shadow-lg flex flex-col font-semibold rounded-lg p-4 mt-4"
+                >
+                  <h3 className="text-[#5E5F60] text-lg border-b border-primary-default mb-2">
+                    {fair.name}
+                  </h3>
+                  <span className="text-[#5E5F60] text-lg font-normal">
+                    {fair.sellerRegistrations.length} vendedores
+                  </span>
+                  <span className="text-[#5E5F60] text-lg font-normal">
+                    {fair.userRegistrations.length} usuarios
+                  </span>
+                </div>
+              ))}
+            </>
+          ) : (
+            <div className="w-full h-full pb-96">
+              <h1 className="font-semibold text-primary-darker text-xl">
+                No hay Ferias en el historial aún...
+              </h1>
             </div>
-          ))}
+          )}
         </div>
       </div>
     </div>
